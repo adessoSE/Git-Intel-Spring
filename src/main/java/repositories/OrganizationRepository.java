@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  */
 public interface OrganizationRepository extends MongoRepository<Organization, String> {
 
-    public Organization findByName(String name);
+    Organization findByName(String name);
 
-    public Organization findById(Id id);
+    Organization findById(Id id);
 }

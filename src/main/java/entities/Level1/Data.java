@@ -1,23 +1,24 @@
 package entities.Level1;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import entities.Level1.Level2.Nodes;
 import entities.Level1.Level2.Organization;
-import entities.Level1.Level2.Viewer;
+
+import java.util.ArrayList;
 
 //@JsonIgnoreProperties(ignoreUnknown = true)
 public class Data {
 
-    private Viewer viewer;
     private Organization organization;
+    private ArrayList<Nodes> nodes;
 
-    public Data() {
-    }
-
-    public Viewer getViewer() {
-        return viewer;
-    }
+    public Data() {}
 
     public Organization getOrganization() {
         return organization;
+    }
+
+
+    public ArrayList<Nodes> getNodes() {
+        return nodes;
     }
 }

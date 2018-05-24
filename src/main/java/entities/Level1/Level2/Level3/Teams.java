@@ -1,18 +1,18 @@
 package entities.Level1.Level2.Level3;
 
-import entities.Level1.Level2.Level3.Level4.PageInfo;
+
 import entities.Level1.Level2.Level3.Level4.Nodes;
+import entities.Level1.Level2.Level3.Level4.PageInfo;
 
 import java.util.ArrayList;
 
-public class Members {
+public class Teams {
 
     private int totalCount;
     private ArrayList<Nodes> nodes;
     private PageInfo pageInfo;
 
-    public Members() {
-    }
+    public Teams() {}
 
     public int getTotalCount() {
         return totalCount;
@@ -22,5 +22,9 @@ public class Members {
         return pageInfo;
     }
 
-    public ArrayList<Nodes> getNodes() { return  nodes; }
+    public ArrayList<Nodes> getNodes() {
+        return nodes;
+    }
+
+
 }
