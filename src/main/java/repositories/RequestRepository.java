@@ -13,5 +13,5 @@ import java.util.ArrayList;
 public interface RequestRepository extends MongoRepository<Query, String> {
 
     Query findById(Id id);
-    ArrayList<Query> findByRequestStatus(RequestStatus status);
+    ArrayList<Query> findByQueryStatus(RequestStatus status);
 }

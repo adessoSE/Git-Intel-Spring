@@ -1,5 +1,6 @@
 package requests;
 
+import enums.RequestType;
 import enums.ResponseProcessor;
 import objects.Query;
 
@@ -7,6 +8,7 @@ public class MemberIDRequest extends Request {
 
     private String query;
     private ResponseProcessor responseProcessor;
+    private RequestType requestType;
     private String organizationName;
 
     public MemberIDRequest(String organizationName, String endCursor) {
@@ -26,11 +28,10 @@ public class MemberIDRequest extends Request {
                 "}";
 
         this.responseProcessor = ResponseProcessor.MEMBER_ID;
+        this.requestType = RequestType.MEMBER_ID;
     }
 
-    public Query crawlData() {
-        Query requestQuery = new Query(this.organizationName, this.query, this.responseProcessor);
-        requestQuery.setQueryResponse(this.crawlData(requestQuery).getData());
-        return requestQuery;
+    public Query generateQuery() {
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
     }
 }

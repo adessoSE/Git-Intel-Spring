@@ -1,27 +1,31 @@
 package objects;
 
-import entities.Level1.Data;
+import resources.organisationResources.Data;
 import enums.RequestStatus;
+import enums.RequestType;
 import enums.ResponseProcessor;
 import org.springframework.data.annotation.Id;
+import requests.Request;
 
 
-public class Query {
+public class Query extends Request {
     @Id
-    private int id;
+    private String id;
 
     private RequestStatus queryStatus;
     private String organizationName;
     private String queryContent;
-    private Data queryResponse;
+    private Response queryResponse;
+    private RequestType queryRequestType;
     private ResponseProcessor queryResponseProcessorType;
     private String queryError;
 
-    public Query(String organizationName, String queryContent, ResponseProcessor queryResponseProcessorType) {
+    public Query(String organizationName, String queryContent, ResponseProcessor queryResponseProcessorType, RequestType queryRequestType) {
         this.setOrganizationName(organizationName);
         this.setQueryStatus(RequestStatus.CREATED);
         this.setQuery(queryContent);
         this.setQueryResponseProcessorType(queryResponseProcessorType);
+        this.queryRequestType = queryRequestType;
     }
 
     public RequestStatus getQueryStatus() {
@@ -40,13 +44,15 @@ public class Query {
         this.queryContent = queryContent;
     }
 
-    public Data getQueryResponse() {
+    public Response getQueryResponse() {
         return queryResponse;
     }
 
-    public void setQueryResponse(Data queryResponse) {
+    public void setQueryResponse(Response queryResponse) {
         this.queryResponse = queryResponse;
     }
+
+    public void crawlQueryResponse() { this.crawlData(this);   }
 
     public String getQueryError() {
         return queryError;
@@ -70,6 +76,10 @@ public class Query {
 
     public void setOrganizationName(String organizationName) {
         this.organizationName = organizationName;
+    }
+
+    public RequestType getQueryRequestType() {
+        return queryRequestType;
     }
 
 }

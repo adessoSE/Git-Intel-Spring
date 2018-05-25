@@ -28,16 +28,10 @@ public class RequestManager {
 
     public Query processRequest(RequestType requestType) {
         switch (requestType) {
-            case MEMBER_PR:
-                return new MemberPRRequest(organizationName,endCursor).crawlData();
             case ORGANIZATION_DETAIL:
-                return new OrganizationDetailRequest(organizationName).crawlData();
+                return new OrganizationDetailRequest(organizationName).generateQuery();
             case MEMBER_ID:
-                return new MemberIDRequest(organizationName,endCursor).crawlData();
-            case REPOSITORY_ID:
-                return new RepositoryIDRequest(organizationName,endCursor).crawlData();
-            case MEMBER:
-                return new MemberRequest(organizationName,memberIDs).crawlData();
+                return new MemberIDRequest(organizationName,endCursor).generateQuery();
             default:
                 return null;
         }

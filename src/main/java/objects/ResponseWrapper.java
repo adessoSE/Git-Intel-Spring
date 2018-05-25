@@ -1,15 +1,16 @@
 package objects;
 
-import entities.Level1.Data;
-
-import java.util.ArrayList;
 
 public class ResponseWrapper {
 
-    private Data data;
+    private Response response;
     private MemberID memberID;
     private OrganizationDetail organizationDetail;
     private RepositoryID repositoryID;
+
+    public ResponseWrapper(Response response) {
+        this.response = response;
+    }
 
     public ResponseWrapper(MemberID memberID) {
         this.memberID = memberID;
@@ -19,12 +20,8 @@ public class ResponseWrapper {
         this.repositoryID = repositoryID;
     }
 
-    public ResponseWrapper(OrganizationDetail organizationDetail){
+    public ResponseWrapper(OrganizationDetail organizationDetail) {
         this.organizationDetail = organizationDetail;
-    }
-
-    public ResponseWrapper(Data data) {
-        this.data = data;
     }
 
     public MemberID getMemberID() {
@@ -39,8 +36,5 @@ public class ResponseWrapper {
         return repositoryID;
     }
 
-    public Data getData() {
-        return data;
-    }
 
 }

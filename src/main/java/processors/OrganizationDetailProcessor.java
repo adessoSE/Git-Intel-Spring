@@ -1,6 +1,6 @@
 package processors;
 
-import entities.Level1.Level2.Organization;
+import resources.organisationResources.Organization;
 import objects.OrganizationDetail;
 import objects.Query;
 import objects.ResponseWrapper;
@@ -14,7 +14,7 @@ public class OrganizationDetailProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        Organization organization = this.requestQuery.getQueryResponse().getOrganization();
+        Organization organization = this.requestQuery.getQueryResponse().getResponseOrganization().getData().getOrganization();
         return new ResponseWrapper(new OrganizationDetail(organization.getName(),organization.getDescription(),organization.getWebsiteUrl(),organization.getUrl(),organization.getLocation(),organization.getMembers().getTotalCount(),organization.getRepositories().getTotalCount(),organization.getTeams().getTotalCount()));
     }
 }
