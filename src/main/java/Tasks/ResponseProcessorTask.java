@@ -18,14 +18,17 @@ public class ResponseProcessorTask {
         if (!requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED).isEmpty()) {
             Query processingQuery = requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED).get(0);
             ResponseWrapper response = new ResponseProcessorManager(processingQuery).processResponse();
+            System.out.println(response);
             if(response.getMemberID() != null){
                 System.out.println(response.getMemberID().getMemberIDs());
             }
-
             if(response.getOrganizationDetail() != null){
                 System.out.println(response.getOrganizationDetail().getName());
             }
-
+            if(response.getMemberPR() != null){
+                System.out.println(response.getMemberPR().getMemberPRrepositoryIDs());
+            }
+            processingQuery.setQueryStatus(RequestStatus.FINISHED);
             requestRepository.delete(processingQuery);
         }
     }

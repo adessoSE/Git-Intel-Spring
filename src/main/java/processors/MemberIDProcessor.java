@@ -3,7 +3,7 @@ package processors;
 import objects.MemberID;
 import objects.Query;
 import objects.ResponseWrapper;
-import resources.memberIDResources.Organization;
+import resources.memberID_Resources.Organization;
 
 import java.util.ArrayList;
 

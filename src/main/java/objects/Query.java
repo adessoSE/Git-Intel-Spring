@@ -1,6 +1,5 @@
 package objects;
 
-import resources.organisationResources.Data;
 import enums.RequestStatus;
 import enums.RequestType;
 import enums.ResponseProcessor;

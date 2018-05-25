@@ -13,7 +13,6 @@ public class OrganisationUpdateTask {
 
     @Scheduled(fixedRate = 12000)
     private void generateQuery() {
-        requestRepository.save(new RequestManager("adessoAG").processRequest(RequestType.MEMBER_ID));
-        requestRepository.save(new RequestManager("adessoAG").processRequest(RequestType.ORGANIZATION_DETAIL));
+        requestRepository.save(new RequestManager("adessoAG").processRequest(RequestType.MEMBER_PR));
     }
 }

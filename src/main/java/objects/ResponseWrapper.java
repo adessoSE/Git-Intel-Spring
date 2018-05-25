@@ -7,10 +7,13 @@ public class ResponseWrapper {
     private MemberID memberID;
     private OrganizationDetail organizationDetail;
     private RepositoryID repositoryID;
+    private MemberPR memberPR;
 
     public ResponseWrapper(Response response) {
         this.response = response;
     }
+
+    public ResponseWrapper(MemberPR memberPR){ this.memberPR = memberPR;}
 
     public ResponseWrapper(MemberID memberID) {
         this.memberID = memberID;
@@ -34,6 +37,10 @@ public class ResponseWrapper {
 
     public RepositoryID getRepositoryID() {
         return repositoryID;
+    }
+
+    public MemberPR getMemberPR() {
+        return memberPR;
     }
 
 

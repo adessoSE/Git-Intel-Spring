@@ -32,6 +32,8 @@ public class RequestManager {
                 return new OrganizationDetailRequest(organizationName).generateQuery();
             case MEMBER_ID:
                 return new MemberIDRequest(organizationName,endCursor).generateQuery();
+            case MEMBER_PR:
+                return new MemberPRRequest(organizationName,endCursor).generateQuery();
             default:
                 return null;
         }

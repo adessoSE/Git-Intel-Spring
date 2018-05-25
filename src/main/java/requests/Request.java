@@ -1,20 +1,21 @@
 package requests;
 
-import objects.Response;
-import resources.memberIDResources.ResponseMemberID;
-import resources.organisationResources.ResponseOrganization;
 import enums.RequestStatus;
 import objects.Query;
+import objects.Response;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import resources.memberID_Resources.ResponseMemberID;
+import resources.memberPR_Resources.ResponseMemberPR;
+import resources.organisation_Resources.ResponseOrganization;
 
 
 public abstract class Request {
 
     private String query;
-    private static final String API_TOKEN = "a6501bb4d69760e7bbb30f653d50fa9fe8d64b6e";
+    private static final String API_TOKEN = "5257a152697783b568f78cea50c143a73158765e";
     private static final String API_URL = "https://api.github.com/graphql";
 
 
@@ -33,7 +34,7 @@ public abstract class Request {
         HttpEntity entity = new HttpEntity(requestQuery, headers);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            processRequest(requestQuery,restTemplate,entity);
+            processRequest(requestQuery, restTemplate, entity);
         } catch (HttpClientErrorException e) {
             requestQuery.setQueryStatus(RequestStatus.ERROR_RECIEVED);
             requestQuery.setQueryError(e.toString());
@@ -52,16 +53,25 @@ public abstract class Request {
             case MEMBER_ID:
                 processMemberIDRequest(requestQuery, restTemplate, entity);
                 break;
+            case MEMBER_PR:
+                processMemberPRRequest(requestQuery, restTemplate, entity);
+                break;
+
         }
     }
 
-    private void processOrganizationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity){
+    private void processOrganizationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         requestQuery.setQueryResponse(new Response(restTemplate.postForObject(API_URL, entity, ResponseOrganization.class)));
         requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED);
     }
 
-    private void processMemberIDRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity){
+    private void processMemberIDRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         requestQuery.setQueryResponse(new Response(restTemplate.postForObject(API_URL, entity, ResponseMemberID.class)));
+        requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED);
+    }
+
+    private void processMemberPRRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(API_URL, entity, ResponseMemberPR.class)));
         requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED);
     }
 }
