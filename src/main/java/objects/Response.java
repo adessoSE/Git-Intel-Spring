@@ -10,16 +10,18 @@ public class Response {
     private ResponseMemberPR responseMemberPR;
     private ResponseOrganization responseOrganization;
 
-    public Response() {}
+    public Response() {
+    }
 
-    public Response(ResponseMemberPR responseMemberPR){
+    public Response(ResponseMemberPR responseMemberPR) {
         this.responseMemberPR = responseMemberPR;
     }
-    public Response(ResponseMemberID responseMemberID){
+
+    public Response(ResponseMemberID responseMemberID) {
         this.responseMemberID = responseMemberID;
     }
 
-    public Response(ResponseOrganization responseOrganization){
+    public Response(ResponseOrganization responseOrganization) {
         this.responseOrganization = responseOrganization;
     }
 

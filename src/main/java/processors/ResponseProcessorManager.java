@@ -12,6 +12,12 @@ public class ResponseProcessorManager {
         this.requestQuery = requestQuery;
     }
 
+    /**
+     * Manager for the selection of the suitable response processor. Selection is based on the ResponseProcessor specified in the query.
+     * Returns the processed response in a ResponseWrapper because of the various responses.
+     *
+     * @return ResponseWrapper to fit all the different response in one object.
+     */
     public ResponseWrapper processResponse() {
         ResponseProcessor responseProcessor = requestQuery.getQueryResponseProcessorType();
         switch (responseProcessor) {

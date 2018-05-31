@@ -11,8 +11,13 @@ public class OrganisationUpdateTask {
     @Autowired
     RequestRepository requestRepository;
 
+    /**
+     * Scheduled task for generating queries in order to update saved organisation.
+     * Currently used for debugging the requests.
+     * TODO: Scheduled task should run at night time!
+     */
     @Scheduled(fixedRate = 12000)
     private void generateQuery() {
-        requestRepository.save(new RequestManager("adessoAG").processRequest(RequestType.MEMBER_PR));
+        requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.MEMBER_PR));
     }
 }

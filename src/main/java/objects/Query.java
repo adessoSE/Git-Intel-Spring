@@ -51,7 +51,9 @@ public class Query extends Request {
         this.queryResponse = queryResponse;
     }
 
-    public void crawlQueryResponse() { this.crawlData(this);   }
+    public void crawlQueryResponse() {
+        this.crawlData(this);
+    }
 
     public String getQueryError() {
         return queryError;

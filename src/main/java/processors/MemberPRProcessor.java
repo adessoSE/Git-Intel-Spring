@@ -1,7 +1,11 @@
 package processors;
 
-import objects.*;
-import resources.memberPR_Resources.Organization;
+import objects.MemberPR;
+import objects.Query;
+import objects.ResponseWrapper;
+import resources.memberPR_Resources.Members;
+import resources.memberPR_Resources.NodesMember;
+import resources.memberPR_Resources.NodesPR;
 
 import java.util.ArrayList;
 
@@ -13,12 +17,20 @@ public class MemberPRProcessor {
         this.requestQuery = requestQuery;
     }
 
+    /**
+     * Response processing of the MemberPR request. Processing through every MemberPRRepoID and save it in a ArrayList.
+     * Creating a MemberPR object containing the MemberPRRepoID ArrayList and the PageInfo wrapped into the ResponseWrapper.
+     *
+     * @return ResponseWrapper containing the MemberPR object.
+     */
     public ResponseWrapper processResponse() {
         ArrayList<String> memberPRRepoIDs = new ArrayList<>();
-        Organization organization = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization();
-        System.out.println(organization.getMembers().getPageInfo().getEndCursor());
-        organization.getMembers().getNodes().forEach(nodes -> nodes.getPullRequests().getNodes().forEach(pullRequests -> memberPRRepoIDs.add(pullRequests.getRepository().getId())));
-        System.out.println(memberPRRepoIDs.size());
-        return new ResponseWrapper(new MemberPR(memberPRRepoIDs,organization.getMembers().getPageInfo().getEndCursor(),organization.getMembers().getPageInfo().isHasNextPage()));
+        Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
+        for (NodesMember nodes : members.getNodes()) {
+            for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
+                memberPRRepoIDs.add(pullRequests.getRepository().getId());
+            }
+        }
+        return new ResponseWrapper(new MemberPR(memberPRRepoIDs, members.getPageInfo().getEndCursor(), members.getPageInfo().isHasNextPage()));
     }
 }

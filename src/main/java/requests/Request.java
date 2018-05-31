@@ -1,5 +1,6 @@
 package requests;
 
+import config.Config;
 import enums.RequestStatus;
 import objects.Query;
 import objects.Response;
@@ -14,37 +15,38 @@ import resources.organisation_Resources.ResponseOrganization;
 
 public abstract class Request {
 
-    private String query;
-    private static final String API_TOKEN = "5257a152697783b568f78cea50c143a73158765e";
-    private static final String API_URL = "https://api.github.com/graphql";
 
-
-    public String getQuery() {
-        return query;
-    }
-
-    public void setQuery(String query) {
-        this.query = query;
-    }
-
+    /**
+     * Starting of the request to the GraphQL GitHub API. Setting up the fundamental structure of the request and processing the request.
+     *
+     * @param requestQuery Query containing the content for the request.
+     * @return Requested query is returned with the new status and response/error.
+     */
     public Query crawlData(Query requestQuery) {
         requestQuery.setQueryStatus(RequestStatus.STARTED);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + API_TOKEN);
+        headers.add("Authorization", "Bearer " + Config.API_TOKEN);
         HttpEntity entity = new HttpEntity(requestQuery, headers);
         RestTemplate restTemplate = new RestTemplate();
         try {
             processRequest(requestQuery, restTemplate, entity);
         } catch (HttpClientErrorException e) {
-            requestQuery.setQueryStatus(RequestStatus.ERROR_RECIEVED);
+            requestQuery.setQueryStatus(RequestStatus.ERROR_RECEIVED);
             requestQuery.setQueryError(e.toString());
         } catch (Exception e) {
-            requestQuery.setQueryStatus(RequestStatus.ERROR_RECIEVED);
+            requestQuery.setQueryStatus(RequestStatus.ERROR_RECEIVED);
             requestQuery.setQueryError(e.toString());
         }
         return requestQuery;
     }
 
+    /**
+     * Processing the request according to the request type. Differentiation needed because of the various response classes.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
     private void processRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         switch (requestQuery.getQueryRequestType()) {
             case ORGANIZATION_DETAIL:
@@ -58,20 +60,39 @@ public abstract class Request {
                 break;
 
         }
+        requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
     }
 
+    /**
+     * Processing of the request for the organization detail. Usage of the Response class for the organization.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
     private void processOrganizationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(API_URL, entity, ResponseOrganization.class)));
-        requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED);
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseOrganization.class)));
     }
 
+    /**
+     * Processing of the request for the memberID. Usage of the Response class for the memberID.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
     private void processMemberIDRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(API_URL, entity, ResponseMemberID.class)));
-        requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED);
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMemberID.class)));
     }
 
+    /**
+     * Processing of the request for the memberPRRepos. Usage of the Response class for the MemberPR.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
     private void processMemberPRRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(API_URL, entity, ResponseMemberPR.class)));
-        requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECIEVED);
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMemberPR.class)));
     }
 }
