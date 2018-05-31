@@ -38,3 +38,7 @@ transaction-logs
 secrets.yml
 .gradletasknamecache
 .sts4-cache
+
+src/main/java/config/Config\.java
+
+*.class
