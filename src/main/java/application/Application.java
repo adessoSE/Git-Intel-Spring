@@ -1,6 +1,6 @@
 package application;
 
-import Tasks.OrganisationUpdateTask;
+import Tasks.OrganizationUpdateTask;
 import Tasks.RequestProcessorTask;
 import Tasks.ResponseProcessorTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +26,11 @@ public class Application {
     /**
      * Initialization of the Update Task for the saved organisation
      *
-     * @return OrganisationUpdateTask
+     * @return OrganizationUpdateTask
      */
     @Bean
-    public OrganisationUpdateTask organisationUpdateTask() {
-        return new OrganisationUpdateTask();
+    public OrganizationUpdateTask organisationUpdateTask() {
+        return new OrganizationUpdateTask();
     }
 
     /**

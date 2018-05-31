@@ -1,17 +1,24 @@
 package Tasks;
 
 import enums.RequestStatus;
+import enums.RequestType;
+import objects.OrganizationWrapper;
 import objects.Query;
 import objects.ResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import processors.ResponseProcessorManager;
+import repositories.OrganizationRepository;
 import repositories.RequestRepository;
+import requests.RequestManager;
 
 public class ResponseProcessorTask {
 
     @Autowired
     RequestRepository requestRepository;
+
+    @Autowired
+    OrganizationRepository organizationRepository;
 
     /**
      * Scheduled task for checking all the saved queries response status. If there is a valid response the response processing begins.
@@ -22,18 +29,46 @@ public class ResponseProcessorTask {
         if (!requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).isEmpty()) {
             Query processingQuery = requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).get(0);
             ResponseWrapper response = new ResponseProcessorManager(processingQuery).processResponse();
-            System.out.println(response);
-            if (response.getMemberID() != null) {
-                System.out.println(response.getMemberID().getMemberIDs());
-            }
-            if (response.getOrganizationDetail() != null) {
-                System.out.println(response.getOrganizationDetail().getName());
-            }
-            if (response.getMemberPR() != null) {
-                System.out.println(response.getMemberPR().getMemberPRrepositoryIDs());
-            }
-            processingQuery.setQueryStatus(RequestStatus.FINISHED);
+            this.processResponse(processingQuery,response);
             requestRepository.delete(processingQuery);
         }
+    }
+
+    private void processResponse(Query processingQuery, ResponseWrapper responseWrapper) {
+        OrganizationWrapper organization = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName());
+        switch (processingQuery.getQueryRequestType()) {
+            case ORGANIZATION_DETAIL:
+                if(organization != null){
+                    organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
+                } else {
+                    organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+                    organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
+                }
+                break;
+            case MEMBER_ID:
+                if(organization != null){
+                    organization.addMemberIDs(responseWrapper.getMemberID().getMemberIDs());
+                } else {
+                    organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+                    organization.setMemberIDs(responseWrapper.getMemberID().getMemberIDs());
+                }
+                if (responseWrapper.getMemberID().isHasNextPage()) {
+                    requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberID().getEndCursor()).generateRequest(RequestType.MEMBER_ID));
+                }
+                break;
+            case MEMBER_PR:
+                if(organization != null){
+                    organization.addMemberPRs(responseWrapper.getMemberPR().getMemberPRrepositoryIDs());
+                } else {
+                    organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+                    organization.setMemberPRRepoIDs(responseWrapper.getMemberPR().getMemberPRrepositoryIDs());
+                }
+                if (responseWrapper.getMemberPR().isHasNextPage()) {
+                    requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor()).generateRequest(RequestType.MEMBER_PR));
+                }
+                break;
+        }
+        organizationRepository.save(organization);
+        processingQuery.setQueryStatus(RequestStatus.FINISHED);
     }
 }

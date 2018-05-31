@@ -8,6 +8,8 @@ import resources.memberPR_Resources.NodesMember;
 import resources.memberPR_Resources.NodesPR;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MemberPRProcessor {
 
@@ -24,7 +26,7 @@ public class MemberPRProcessor {
      * @return ResponseWrapper containing the MemberPR object.
      */
     public ResponseWrapper processResponse() {
-        ArrayList<String> memberPRRepoIDs = new ArrayList<>();
+        Set<String> memberPRRepoIDs = new HashSet<>();
         Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
