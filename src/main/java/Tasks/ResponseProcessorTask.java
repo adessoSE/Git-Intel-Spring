@@ -92,12 +92,9 @@ public class ResponseProcessorTask {
                 }
                 break;
             case MEMBER:
-                System.out.println("HeeeY");
                 if (organization != null) {
-                    System.out.println("wHAT");
                     organization.addMembers(responseWrapper.getMembers());
                 } else {
-                    System.out.println("sHIT");
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
                     organization.setMembers(responseWrapper.getMembers());
                 }
