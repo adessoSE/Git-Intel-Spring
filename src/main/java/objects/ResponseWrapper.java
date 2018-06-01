@@ -13,7 +13,9 @@ public class ResponseWrapper {
         this.response = response;
     }
 
-    public ResponseWrapper(MemberPR memberPR){ this.memberPR = memberPR;}
+    public ResponseWrapper(MemberPR memberPR) {
+        this.memberPR = memberPR;
+    }
 
     public ResponseWrapper(MemberID memberID) {
         this.memberID = memberID;

@@ -2,7 +2,6 @@ package objects;
 
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +18,7 @@ public class OrganizationWrapper {
 
     /**
      * Wrapper for all the needed information of a organization.
+     *
      * @param organizationName Specified organizationName on GitHub
      */
     public OrganizationWrapper(String organizationName) {
@@ -54,7 +54,9 @@ public class OrganizationWrapper {
         this.memberIDs = memberIDs;
     }
 
-    public void addMemberIDs(Set<String> memberIDs) { this.memberIDs.addAll(memberIDs); }
+    public void addMemberIDs(Set<String> memberIDs) {
+        this.memberIDs.addAll(memberIDs);
+    }
 
     public Set<String> getMemberPRRepoIDs() {
         return memberPRRepoIDs;
@@ -64,7 +66,9 @@ public class OrganizationWrapper {
         this.memberPRRepoIDs = memberPRRepoIDs;
     }
 
-    public void addMemberPRs(Set<String> memberPRRepoIDs) { this.memberPRRepoIDs.addAll(memberPRRepoIDs); }
+    public void addMemberPRs(Set<String> memberPRRepoIDs) {
+        this.memberPRRepoIDs.addAll(memberPRRepoIDs);
+    }
 
     public Set<String> getOrganizationRepoIDs() {
         return organizationRepoIDs;
@@ -74,6 +78,8 @@ public class OrganizationWrapper {
         this.organizationRepoIDs = organizationRepoIDs;
     }
 
-    public void addOrganizationRepoIDs(Set<String> organizationRepoIDs) { this.organizationRepoIDs.addAll(organizationRepoIDs); }
+    public void addOrganizationRepoIDs(Set<String> organizationRepoIDs) {
+        this.organizationRepoIDs.addAll(organizationRepoIDs);
+    }
 
 }

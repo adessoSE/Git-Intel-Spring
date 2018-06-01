@@ -29,7 +29,7 @@ public class ResponseProcessorTask {
         if (!requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).isEmpty()) {
             Query processingQuery = requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).get(0);
             ResponseWrapper response = new ResponseProcessorManager(processingQuery).processResponse();
-            this.processResponse(processingQuery,response);
+            this.processResponse(processingQuery, response);
             requestRepository.delete(processingQuery);
         }
     }
@@ -38,7 +38,7 @@ public class ResponseProcessorTask {
         OrganizationWrapper organization = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName());
         switch (processingQuery.getQueryRequestType()) {
             case ORGANIZATION_DETAIL:
-                if(organization != null){
+                if (organization != null) {
                     organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
                 } else {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
@@ -46,7 +46,7 @@ public class ResponseProcessorTask {
                 }
                 break;
             case MEMBER_ID:
-                if(organization != null){
+                if (organization != null) {
                     organization.addMemberIDs(responseWrapper.getMemberID().getMemberIDs());
                 } else {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
@@ -57,7 +57,7 @@ public class ResponseProcessorTask {
                 }
                 break;
             case MEMBER_PR:
-                if(organization != null){
+                if (organization != null) {
                     organization.addMemberPRs(responseWrapper.getMemberPR().getMemberPRrepositoryIDs());
                 } else {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
@@ -68,7 +68,7 @@ public class ResponseProcessorTask {
                 }
                 break;
             case REPOSITORY_ID:
-                if(organization != null){
+                if (organization != null) {
                     organization.addOrganizationRepoIDs(responseWrapper.getRepositoryID().getRepositoryIDs());
                 } else {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());

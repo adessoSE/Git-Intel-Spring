@@ -7,7 +7,6 @@ import resources.memberPR_Resources.Members;
 import resources.memberPR_Resources.NodesMember;
 import resources.memberPR_Resources.NodesPR;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 

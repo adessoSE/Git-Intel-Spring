@@ -15,7 +15,7 @@ public class Response {
     public Response() {
     }
 
-    public Response (ResponseOrganRepoID responseOrganRepoID) {
+    public Response(ResponseOrganRepoID responseOrganRepoID) {
         this.responseOrganRepoID = responseOrganRepoID;
     }
 
@@ -30,7 +30,6 @@ public class Response {
     public Response(ResponseOrganization responseOrganization) {
         this.responseOrganization = responseOrganization;
     }
-
 
 
     public ResponseOrganRepoID getResponseOrganRepoID() {

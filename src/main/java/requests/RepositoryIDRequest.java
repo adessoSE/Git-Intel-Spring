@@ -4,7 +4,7 @@ import enums.RequestType;
 import enums.ResponseProcessor;
 import objects.Query;
 
-public class RepositoryIDRequest{
+public class RepositoryIDRequest {
 
     private String query;
     private ResponseProcessor responseProcessor;
