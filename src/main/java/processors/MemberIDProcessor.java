@@ -7,6 +7,8 @@ import resources.memberID_Resources.Members;
 import resources.memberID_Resources.Nodes;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MemberIDProcessor {
 
@@ -23,7 +25,7 @@ public class MemberIDProcessor {
      * @return ResponseWrapper containing the MemberID object.
      */
     public ResponseWrapper processResponse() {
-        ArrayList<String> memberIDs = new ArrayList<>();
+        Set<String> memberIDs = new HashSet<>();
         Members members = this.requestQuery.getQueryResponse().getResponseMemberID().getData().getOrganization().getMembers();
         for (Nodes nodes : members.getNodes()) {
             memberIDs.add(nodes.getId());

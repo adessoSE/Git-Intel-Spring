@@ -12,9 +12,6 @@ public class OrganizationUpdateTask {
     @Autowired
     RequestRepository requestRepository;
 
-    @Autowired
-    OrganizationRepository organizationRepository;
-
     /**
      * Scheduled task for generating queries in order to update saved organisation.
      * Currently used for debugging the requests.
@@ -22,8 +19,7 @@ public class OrganizationUpdateTask {
      */
     @Scheduled(fixedDelay = 300000000, initialDelay = 20000)
     private void generateQuery() {
-        requestRepository.save(new RequestManager("google").generateRequest(RequestType.ORGANIZATION_DETAIL));
-        requestRepository.save(new RequestManager("google").generateRequest(RequestType.MEMBER_PR));
-        requestRepository.save(new RequestManager("google").generateRequest(RequestType.MEMBER_ID));
+        requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.ORGANIZATION_DETAIL));
+        requestRepository.save(new RequestManager("google").generateRequest(RequestType.REPOSITORY_ID));
     }
 }

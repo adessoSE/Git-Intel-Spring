@@ -42,6 +42,8 @@ public class RequestManager {
                 return new MemberIDRequest(organizationName, endCursor).generateQuery();
             case MEMBER_PR:
                 return new MemberPRRequest(organizationName, endCursor).generateQuery();
+            case REPOSITORY_ID:
+                return new RepositoryIDRequest(organizationName,endCursor).generateQuery();
             default:
                 return null;
         }

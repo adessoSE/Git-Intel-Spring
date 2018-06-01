@@ -67,6 +67,17 @@ public class ResponseProcessorTask {
                     requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor()).generateRequest(RequestType.MEMBER_PR));
                 }
                 break;
+            case REPOSITORY_ID:
+                if(organization != null){
+                    organization.addOrganizationRepoIDs(responseWrapper.getRepositoryID().getRepositoryIDs());
+                } else {
+                    organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+                    organization.setOrganizationRepoIDs(responseWrapper.getRepositoryID().getRepositoryIDs());
+                }
+                if (responseWrapper.getRepositoryID().isHasNextPage()) {
+                    requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositoryID().getEndCursor()).generateRequest(RequestType.REPOSITORY_ID));
+                }
+                break;
         }
         organizationRepository.save(organization);
         processingQuery.setQueryStatus(RequestStatus.FINISHED);

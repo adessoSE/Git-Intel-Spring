@@ -27,6 +27,8 @@ public class ResponseProcessorManager {
                 return new MemberIDProcessor(this.requestQuery).processResponse();
             case MEMBER_PR:
                 return new MemberPRProcessor(this.requestQuery).processResponse();
+            case REPOSITORY_ID:
+                return new RepositoryIDProcessor(this.requestQuery).processResponse();
             default:
                 return new ResponseWrapper(this.requestQuery.getQueryResponse());
         }

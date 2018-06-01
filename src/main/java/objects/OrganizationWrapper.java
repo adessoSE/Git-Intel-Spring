@@ -13,8 +13,9 @@ public class OrganizationWrapper {
 
     private String organizationName;
     private OrganizationDetail organizationDetail;
-    private ArrayList<String> memberIDs = new ArrayList<>();
+    private Set<String> memberIDs = new HashSet<>();
     private Set<String> memberPRRepoIDs = new HashSet<>();
+    private Set<String> organizationRepoIDs = new HashSet<>();
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -45,15 +46,15 @@ public class OrganizationWrapper {
         this.organizationDetail = organizationDetail;
     }
 
-    public ArrayList<String> getMemberIDs() {
+    public Set<String> getMemberIDs() {
         return memberIDs;
     }
 
-    public void setMemberIDs(ArrayList<String> memberIDs) {
+    public void setMemberIDs(Set<String> memberIDs) {
         this.memberIDs = memberIDs;
     }
 
-    public void addMemberIDs(ArrayList<String> memberIDs) { this.memberIDs.addAll(memberIDs); }
+    public void addMemberIDs(Set<String> memberIDs) { this.memberIDs.addAll(memberIDs); }
 
     public Set<String> getMemberPRRepoIDs() {
         return memberPRRepoIDs;
@@ -64,5 +65,15 @@ public class OrganizationWrapper {
     }
 
     public void addMemberPRs(Set<String> memberPRRepoIDs) { this.memberPRRepoIDs.addAll(memberPRRepoIDs); }
+
+    public Set<String> getOrganizationRepoIDs() {
+        return organizationRepoIDs;
+    }
+
+    public void setOrganizationRepoIDs(Set<String> organizationRepoIDs) {
+        this.organizationRepoIDs = organizationRepoIDs;
+    }
+
+    public void addOrganizationRepoIDs(Set<String> organizationRepoIDs) { this.organizationRepoIDs.addAll(organizationRepoIDs); }
 
 }
