@@ -2,6 +2,7 @@ package objects;
 
 import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
+import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
 import resources.repositoryID_Resources.ResponseOrganRepoID;
 
@@ -11,8 +12,13 @@ public class Response {
     private ResponseMemberPR responseMemberPR;
     private ResponseOrganization responseOrganization;
     private ResponseOrganRepoID responseOrganRepoID;
+    private ResponseMember responseMember;
 
     public Response() {
+    }
+
+    public Response(ResponseMember responseMember) {
+        this.responseMember = responseMember;
     }
 
     public Response(ResponseOrganRepoID responseOrganRepoID) {
@@ -48,4 +54,7 @@ public class Response {
         return responseMemberPR;
     }
 
+    public ResponseMember getResponseMember() {
+        return responseMember;
+    }
 }

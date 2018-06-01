@@ -1,20 +1,21 @@
 package objects;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class RepositoryID {
 
-    private Set<String> repositoryIDs;
+    private ArrayList<String> repositoryIDs;
     private String endCursor;
     private boolean hasNextPage;
 
-    public RepositoryID(Set<String> repositoryIDs, String endCursor, boolean hasNextPage) {
+    public RepositoryID(ArrayList<String> repositoryIDs, String endCursor, boolean hasNextPage) {
         this.repositoryIDs = repositoryIDs;
         this.endCursor = endCursor;
         this.hasNextPage = hasNextPage;
     }
 
-    public Set<String> getRepositoryIDs() {
+    public ArrayList<String> getRepositoryIDs() {
         return repositoryIDs;
     }
 

@@ -10,6 +10,15 @@ public class Member {
     private ChartJSData previousIssues;
     private ChartJSData previousPullRequests;
 
+    public Member(String name, String username, String avatarURL, String githubURL, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
+        this.name = name;
+        this.username = username;
+        this.avatarURL = avatarURL;
+        this.githubURL = githubURL;
+        this.previousCommits = previousCommits;
+        this.previousIssues = previousIssues;
+        this.previousPullRequests = previousPullRequests;
+    }
 
     public String getName() {
         return name;

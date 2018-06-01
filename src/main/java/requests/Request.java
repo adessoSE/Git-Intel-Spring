@@ -10,6 +10,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
+import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
 import resources.repositoryID_Resources.ResponseOrganRepoID;
 
@@ -62,6 +63,8 @@ public abstract class Request {
             case REPOSITORY_ID:
                 processOrganizationRepoIDs(requestQuery, restTemplate, entity);
                 break;
+            case MEMBER:
+                processMemberRequest(requestQuery, restTemplate, entity);
 
         }
         requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
@@ -109,5 +112,17 @@ public abstract class Request {
      */
     private void processMemberPRRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMemberPR.class)));
+    }
+
+
+    /**
+     * Processing of the request for the memberPRRepos. Usage of the Response class for the MemberPR.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processMemberRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMember.class)));
     }
 }

@@ -12,6 +12,9 @@ import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import requests.RequestManager;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 public class ResponseProcessorTask {
 
     @Autowired
@@ -44,6 +47,7 @@ public class ResponseProcessorTask {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
                     organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
                 }
+                organizationRepository.save(organization);
                 break;
             case MEMBER_ID:
                 if (organization != null) {
@@ -52,8 +56,15 @@ public class ResponseProcessorTask {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
                     organization.setMemberIDs(responseWrapper.getMemberID().getMemberIDs());
                 }
+                organizationRepository.save(organization);
                 if (responseWrapper.getMemberID().isHasNextPage()) {
                     requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberID().getEndCursor()).generateRequest(RequestType.MEMBER_ID));
+                } else {
+                    ArrayList<String> memberIDs = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName()).getMemberIDs();
+                    while(!memberIDs.isEmpty()){
+                        requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.subList(0,Math.min(9, memberIDs.size()))).generateRequest(RequestType.MEMBER));
+                        memberIDs.removeAll(memberIDs.subList(0,Math.min(9, memberIDs.size())));
+                    }
                 }
                 break;
             case MEMBER_PR:
@@ -63,6 +74,7 @@ public class ResponseProcessorTask {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
                     organization.setMemberPRRepoIDs(responseWrapper.getMemberPR().getMemberPRrepositoryIDs());
                 }
+                organizationRepository.save(organization);
                 if (responseWrapper.getMemberPR().isHasNextPage()) {
                     requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor()).generateRequest(RequestType.MEMBER_PR));
                 }
@@ -74,12 +86,24 @@ public class ResponseProcessorTask {
                     organization = new OrganizationWrapper(processingQuery.getOrganizationName());
                     organization.setOrganizationRepoIDs(responseWrapper.getRepositoryID().getRepositoryIDs());
                 }
+                organizationRepository.save(organization);
                 if (responseWrapper.getRepositoryID().isHasNextPage()) {
                     requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositoryID().getEndCursor()).generateRequest(RequestType.REPOSITORY_ID));
                 }
                 break;
+            case MEMBER:
+                System.out.println("HeeeY");
+                if (organization != null) {
+                    System.out.println("wHAT");
+                    organization.addMembers(responseWrapper.getMembers());
+                } else {
+                    System.out.println("sHIT");
+                    organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+                    organization.setMembers(responseWrapper.getMembers());
+                }
+                organizationRepository.save(organization);
+                break;
         }
-        organizationRepository.save(organization);
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
     }
 }

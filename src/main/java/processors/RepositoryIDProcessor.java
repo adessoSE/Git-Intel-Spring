@@ -6,6 +6,7 @@ import objects.ResponseWrapper;
 import resources.repositoryID_Resources.NodesRepository;
 import resources.repositoryID_Resources.Repositories;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class RepositoryIDProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        Set<String> repositoryIDs = new HashSet<>();
+        ArrayList<String> repositoryIDs = new ArrayList<>();
         Repositories repository = this.requestQuery.getQueryResponse().getResponseOrganRepoID().getData().getOrganization().getRepositories();
         for (NodesRepository nodes : repository.getNodes()) {
             repositoryIDs.add(nodes.getId());

@@ -1,10 +1,13 @@
 package Tasks;
 
 import enums.RequestStatus;
+import enums.RequestType;
 import objects.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import repositories.RequestRepository;
+
+import java.util.ArrayList;
 
 public class RequestProcessorTask {
 
@@ -17,8 +20,9 @@ public class RequestProcessorTask {
      */
     @Scheduled(fixedRate = 5000)
     private void crawlQueryData() {
-        if (!requestRepository.findByQueryStatus(RequestStatus.CREATED).isEmpty()) {
-            Query processingQuery = requestRepository.findByQueryStatus(RequestStatus.CREATED).get(0);
+        ArrayList<Query> processingQuerys = requestRepository.findByQueryStatus(RequestStatus.CREATED);
+        if (!processingQuerys.isEmpty()) {
+            Query processingQuery = processingQuerys.get(0);
             requestRepository.delete(processingQuery);
             processingQuery.crawlQueryResponse();
             requestRepository.save(processingQuery);

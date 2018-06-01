@@ -2,6 +2,7 @@ package objects;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,9 +13,10 @@ public class OrganizationWrapper {
 
     private String organizationName;
     private OrganizationDetail organizationDetail;
-    private Set<String> memberIDs = new HashSet<>();
+    private ArrayList<String> memberIDs = new ArrayList<>();
     private Set<String> memberPRRepoIDs = new HashSet<>();
-    private Set<String> organizationRepoIDs = new HashSet<>();
+    private ArrayList<String> organizationRepoIDs = new ArrayList<>();
+    private ArrayList<Member> members = new ArrayList<>();
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -46,15 +48,15 @@ public class OrganizationWrapper {
         this.organizationDetail = organizationDetail;
     }
 
-    public Set<String> getMemberIDs() {
+    public ArrayList<String> getMemberIDs() {
         return memberIDs;
     }
 
-    public void setMemberIDs(Set<String> memberIDs) {
+    public void setMemberIDs(ArrayList<String> memberIDs) {
         this.memberIDs = memberIDs;
     }
 
-    public void addMemberIDs(Set<String> memberIDs) {
+    public void addMemberIDs(ArrayList<String> memberIDs) {
         this.memberIDs.addAll(memberIDs);
     }
 
@@ -70,16 +72,27 @@ public class OrganizationWrapper {
         this.memberPRRepoIDs.addAll(memberPRRepoIDs);
     }
 
-    public Set<String> getOrganizationRepoIDs() {
+    public ArrayList<String> getOrganizationRepoIDs() {
         return organizationRepoIDs;
     }
 
-    public void setOrganizationRepoIDs(Set<String> organizationRepoIDs) {
+    public void setOrganizationRepoIDs(ArrayList<String> organizationRepoIDs) {
         this.organizationRepoIDs = organizationRepoIDs;
     }
 
-    public void addOrganizationRepoIDs(Set<String> organizationRepoIDs) {
+    public void addOrganizationRepoIDs(ArrayList<String> organizationRepoIDs) {
         this.organizationRepoIDs.addAll(organizationRepoIDs);
     }
 
+    public ArrayList<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(ArrayList<Member> members) {
+        this.members = members;
+    }
+
+    public void addMembers(ArrayList<Member> members) {
+        this.members.addAll(members);
+    }
 }

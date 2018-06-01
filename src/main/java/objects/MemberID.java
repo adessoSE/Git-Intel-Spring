@@ -1,20 +1,20 @@
 package objects;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 public class MemberID {
 
-    private Set<String> memberIDs;
+    private ArrayList<String> memberIDs;
     private String endCursor;
     private boolean hasNextPage;
 
-    public MemberID(Set<String> memberIDs, String endCursor, boolean hasNextPage) {
+    public MemberID(ArrayList<String> memberIDs, String endCursor, boolean hasNextPage) {
         this.memberIDs = memberIDs;
         this.endCursor = endCursor;
         this.hasNextPage = hasNextPage;
     }
 
-    public Set<String> getMemberIDs() {
+    public ArrayList<String> getMemberIDs() {
         return memberIDs;
     }
 

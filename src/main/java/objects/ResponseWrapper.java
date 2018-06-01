@@ -1,6 +1,8 @@
 package objects;
 
 
+import java.util.ArrayList;
+
 public class ResponseWrapper {
 
     private Response response;
@@ -8,6 +10,9 @@ public class ResponseWrapper {
     private OrganizationDetail organizationDetail;
     private RepositoryID repositoryID;
     private MemberPR memberPR;
+    private ArrayList<Member> members;
+
+    public ResponseWrapper(ArrayList<Member> members) { this.members = members; }
 
     public ResponseWrapper(Response response) {
         this.response = response;
@@ -45,5 +50,7 @@ public class ResponseWrapper {
         return memberPR;
     }
 
-
+    public ArrayList<Member> getMembers() {
+        return members;
+    }
 }
