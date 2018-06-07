@@ -1,5 +1,6 @@
 package objects;
 
+import enums.RequestType;
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class OrganizationWrapper {
     private Set<String> memberPRRepoIDs = new HashSet<>();
     private ArrayList<String> organizationRepoIDs = new ArrayList<>();
     private ArrayList<Member> members = new ArrayList<>();
+    private ArrayList<RequestType> finishedRequests = new ArrayList<>();
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -95,4 +97,10 @@ public class OrganizationWrapper {
     public void addMembers(ArrayList<Member> members) {
         this.members.addAll(members);
     }
+
+    public ArrayList<RequestType> getFinishedRequests() {
+        return finishedRequests;
+    }
+
+    public void addFinishedRequest(RequestType finishedRequest) { this.finishedRequests.add(finishedRequest); }
 }
