@@ -44,6 +44,7 @@ public class RequestManager {
     public Query generateRequest(RequestType requestType) {
         switch (requestType) {
             case ORGANIZATION_DETAIL:
+                System.out.println("Hihihi");
                 return new OrganizationDetailRequest(organizationName).generateQuery();
             case MEMBER_ID:
                 return new MemberIDRequest(organizationName, endCursor).generateQuery();
