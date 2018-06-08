@@ -3,8 +3,12 @@ package processors;
 import objects.Query;
 import objects.RepositoryID;
 import objects.ResponseWrapper;
+import resources.repositoryID_Resources.NodesRepository;
+import resources.repositoryID_Resources.Repositories;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RepositoryIDProcessor {
 
@@ -16,7 +20,10 @@ public class RepositoryIDProcessor {
 
     public ResponseWrapper processResponse() {
         ArrayList<String> repositoryIDs = new ArrayList<>();
-        this.requestQuery.getQueryResponse().getOrganization().getRepositories().getNodes().forEach(nodes -> repositoryIDs.add(nodes.getId()) );
-        return new ResponseWrapper(new RepositoryID(repositoryIDs,this.requestQuery.getQueryResponse().getOrganization().getRepositories().getPageInfo().getEndCursor(),this.requestQuery.getQueryResponse().getOrganization().getRepositories().getPageInfo().isHasNextPage()));
+        Repositories repository = this.requestQuery.getQueryResponse().getResponseOrganRepoID().getData().getOrganization().getRepositories();
+        for (NodesRepository nodes : repository.getNodes()) {
+            repositoryIDs.add(nodes.getId());
+        }
+        return new ResponseWrapper(new RepositoryID(repositoryIDs, repository.getPageInfo().getEndCursor(), repository.getPageInfo().isHasNextPage()));
     }
 }

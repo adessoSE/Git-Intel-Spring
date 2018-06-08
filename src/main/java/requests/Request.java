@@ -1,44 +1,144 @@
 package requests;
 
-import entities.Response;
+import config.Config;
 import enums.RequestStatus;
 import objects.Query;
+import objects.Response;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import resources.memberID_Resources.ResponseMemberID;
+import resources.memberPR_Resources.ResponseMemberPR;
+import resources.member_Resources.ResponseMember;
+import resources.organisation_Resources.ResponseOrganization;
+import resources.repositoryID_Resources.ResponseOrganRepoID;
+import resources.repository_Resources.ResponseRepository;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 public abstract class Request {
 
-    private String query;
 
-
-    public String getQuery() {
-        return query;
-    }
-
-    public void setQuery(String query) {
-        this.query = query;
-    }
-
-    public Response crawlData(Query requestQuery) {
+    /**
+     * Starting of the request to the GraphQL GitHub API. Setting up the fundamental structure of the request and processing the request.
+     *
+     * @param requestQuery Query containing the content for the request.
+     * @return Requested query is returned with the new status and response/error.
+     */
+    public Query crawlData(Query requestQuery) {
         requestQuery.setQueryStatus(RequestStatus.STARTED);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + "a6501bb4d69760e7bbb30f653d50fa9fe8d64b6e");
+        headers.add("Authorization", "Bearer " + Config.API_TOKEN);
         HttpEntity entity = new HttpEntity(requestQuery, headers);
         RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.postForObject("https://api.github.com/graphql", entity, Response.class);
+        try {
+            processRequest(requestQuery, restTemplate, entity);
+        } catch (HttpClientErrorException e) {
+            requestQuery.setQueryStatus(RequestStatus.ERROR_RECEIVED);
+            requestQuery.setQueryError(e.toString());
+        } catch (Exception e) {
+            requestQuery.setQueryStatus(RequestStatus.ERROR_RECEIVED);
+            requestQuery.setQueryError(e.toString());
+        }
+        return requestQuery;
     }
 
-    public String getDateWeekAgoInISO8601UTC() {
-        long DAY_IN_MS = 1000 * 60 * 60 * 24;
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        df.setTimeZone(tz);
-        return df.format(new Date(System.currentTimeMillis() - (7 * DAY_IN_MS)));
+    /**
+     * Processing the request according to the request type. Differentiation needed because of the various response classes.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        switch (requestQuery.getQueryRequestType()) {
+            case ORGANIZATION_DETAIL:
+                processOrganizationRequest(requestQuery, restTemplate, entity);
+                break;
+            case MEMBER_ID:
+                processMemberIDRequest(requestQuery, restTemplate, entity);
+                break;
+            case MEMBER_PR:
+                processMemberPRRequest(requestQuery, restTemplate, entity);
+                break;
+            case REPOSITORY_ID:
+                processOrganizationRepoIDs(requestQuery, restTemplate, entity);
+                break;
+            case MEMBER:
+                processMemberRequest(requestQuery, restTemplate, entity);
+                break;
+            case REPOSITORY:
+                processRespositoriesDetail(requestQuery, restTemplate, entity);
+                break;
+
+        }
+        requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
+    }
+
+    /**
+     * Processing of the request for the repositories detail of the organization. Usage of the Response class for the repositories.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processRespositoriesDetail(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseRepository.class)));
+    }
+
+    /**
+     * Processing of the request for the organization detail. Usage of the Response class for the organization.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processOrganizationRepoIDs(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseOrganRepoID.class)));
+    }
+
+    /**
+     * Processing of the request for the organization detail. Usage of the Response class for the organization.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processOrganizationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseOrganization.class)));
+    }
+
+    /**
+     * Processing of the request for the memberID. Usage of the Response class for the memberID.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processMemberIDRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMemberID.class)));
+    }
+
+    /**
+     * Processing of the request for the memberPRRepos. Usage of the Response class for the MemberPR.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processMemberPRRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMemberPR.class)));
+    }
+
+
+    /**
+     * Processing of the request for the memberPRRepos. Usage of the Response class for the MemberPR.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processMemberRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMember.class)));
     }
 }

@@ -1,13 +1,15 @@
 package requests;
 
+import enums.RequestType;
 import enums.ResponseProcessor;
 import objects.Query;
 
-public class RepositoryIDRequest extends Request{
+public class RepositoryIDRequest {
 
     private String query;
     private ResponseProcessor responseProcessor;
     private String organizationName;
+    private RequestType requestType;
 
     public RepositoryIDRequest(String organizationName, String endCursor) {
         this.organizationName = organizationName;
@@ -26,11 +28,10 @@ public class RepositoryIDRequest extends Request{
                 "}";
 
         this.responseProcessor = ResponseProcessor.REPOSITORY_ID;
+        this.requestType = RequestType.REPOSITORY_ID;
     }
 
-    public Query crawlData() {
-        Query requestQuery = new Query(this.organizationName, this.query, this.responseProcessor);
-        requestQuery.setQueryResponse(this.crawlData(requestQuery).getData());
-        return requestQuery;
+    public Query generateQuery() {
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
     }
 }

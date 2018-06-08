@@ -1,15 +1,12 @@
 package repositories;
 
-import entities.Level1.Level2.Organization;
-import org.springframework.data.annotation.Id;
+import objects.OrganizationWrapper;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * MongoRepository for storing organizations and their associated data.
+ * MongoRepository for storing organization and their crawled data.
  */
-public interface OrganizationRepository extends MongoRepository<Organization, String> {
-
-    Organization findByName(String name);
-
-    Organization findById(Id id);
+public interface OrganizationRepository extends MongoRepository<OrganizationWrapper, String> {
+    OrganizationWrapper findByOrganizationName(String organizationName);
 }
+

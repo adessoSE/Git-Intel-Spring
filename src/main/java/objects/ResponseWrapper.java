@@ -1,15 +1,35 @@
 package objects;
 
-import entities.Level1.Data;
 
 import java.util.ArrayList;
 
 public class ResponseWrapper {
 
-    private Data data;
+    private Response response;
     private MemberID memberID;
     private OrganizationDetail organizationDetail;
     private RepositoryID repositoryID;
+    private MemberPR memberPR;
+    private ArrayList<Member> members;
+    private Repositories repositories;
+
+
+    // TODO: Builder Pattern anwenden! Mehrere Constructoren mit ArrayList nicht zulässig!
+    public ResponseWrapper(Repositories repositories) {
+        this.repositories = repositories;
+    }
+
+    public ResponseWrapper(ArrayList<Member> members) {
+        this.members = members;
+    }
+
+    public ResponseWrapper(Response response) {
+        this.response = response;
+    }
+
+    public ResponseWrapper(MemberPR memberPR) {
+        this.memberPR = memberPR;
+    }
 
     public ResponseWrapper(MemberID memberID) {
         this.memberID = memberID;
@@ -19,12 +39,8 @@ public class ResponseWrapper {
         this.repositoryID = repositoryID;
     }
 
-    public ResponseWrapper(OrganizationDetail organizationDetail){
+    public ResponseWrapper(OrganizationDetail organizationDetail) {
         this.organizationDetail = organizationDetail;
-    }
-
-    public ResponseWrapper(Data data) {
-        this.data = data;
     }
 
     public MemberID getMemberID() {
@@ -39,8 +55,15 @@ public class ResponseWrapper {
         return repositoryID;
     }
 
-    public Data getData() {
-        return data;
+    public MemberPR getMemberPR() {
+        return memberPR;
     }
 
+    public ArrayList<Member> getMembers() {
+        return members;
+    }
+
+    public Repositories getRepositories() {
+        return repositories;
+    }
 }
