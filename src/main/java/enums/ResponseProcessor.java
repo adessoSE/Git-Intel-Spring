@@ -8,5 +8,7 @@ public enum ResponseProcessor {
     MEMBER_ID,
     MEMBER,
     REPOSITORY_ID,
-    MEMBER_PR
+    MEMBER_PR,
+    REPOSITORY,
+    TEAM
 }

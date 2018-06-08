@@ -19,6 +19,7 @@ public class OrganizationWrapper {
     private ArrayList<String> organizationRepoIDs = new ArrayList<>();
     private ArrayList<Member> members = new ArrayList<>();
     private ArrayList<RequestType> finishedRequests = new ArrayList<>();
+    private ArrayList<Repository> repositories = new ArrayList<>();
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -103,4 +104,12 @@ public class OrganizationWrapper {
     }
 
     public void addFinishedRequest(RequestType finishedRequest) { this.finishedRequests.add(finishedRequest); }
+
+    public void setRepositories(ArrayList<Repository> repositories) {
+        this.repositories = repositories;
+    }
+
+    public void addRepositories(ArrayList<Repository> repositories) {
+        this.repositories.addAll(repositories);
+    }
 }

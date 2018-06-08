@@ -54,8 +54,27 @@ public class ResponseProcessorTask {
             case MEMBER:
                 this.processMemberResponse(organization, responseWrapper, processingQuery);
                 break;
+            case REPOSITORY:
+                this.processRepositoryResponse(organization, responseWrapper, processingQuery);
+                break;
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
+    }
+
+    private void processRepositoryResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
+        if (organization != null) {
+            organization.addRepositories(responseWrapper.getRepositories().getRepositories());
+        } else {
+            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+            organization.setRepositories(responseWrapper.getRepositories().getRepositories());
+        }
+        organizationRepository.save(organization);
+        if (responseWrapper.getRepositories().isHasNextPage()) {
+            requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor()).generateRequest(RequestType.REPOSITORY));
+        } else {
+            organization.addFinishedRequest(RequestType.REPOSITORY);
+            organizationRepository.save(organization);
+        }
     }
 
     private void processOrganizationDetailResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {

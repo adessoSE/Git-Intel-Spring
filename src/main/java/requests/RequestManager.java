@@ -2,6 +2,8 @@ package requests;
 
 import enums.RequestType;
 import objects.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import repositories.RequestRepository;
 
 import java.util.List;
 
@@ -10,6 +12,9 @@ public class RequestManager {
     private String organizationName;
     private String endCursor = null;
     private List<String> memberIDs;
+
+    @Autowired
+    RequestRepository requestRepository;
 
     /**
      * Declaration of different constructors to fit different request structures.
@@ -45,7 +50,9 @@ public class RequestManager {
             case REPOSITORY_ID:
                 return new RepositoryIDRequest(organizationName, endCursor).generateQuery();
             case MEMBER:
-                return new MemberRequest(organizationName,this.memberIDs).generateQuery();
+                return new MemberRequest(organizationName, memberIDs).generateQuery();
+            case REPOSITORY:
+                return new RepositoryRequest(organizationName, endCursor).generateQuery();
             default:
                 return null;
         }

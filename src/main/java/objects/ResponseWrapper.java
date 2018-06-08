@@ -11,8 +11,17 @@ public class ResponseWrapper {
     private RepositoryID repositoryID;
     private MemberPR memberPR;
     private ArrayList<Member> members;
+    private Repositories repositories;
 
-    public ResponseWrapper(ArrayList<Member> members) { this.members = members; }
+
+    // TODO: Builder Pattern anwenden! Mehrere Constructoren mit ArrayList nicht zulässig!
+    public ResponseWrapper(Repositories repositories) {
+        this.repositories = repositories;
+    }
+
+    public ResponseWrapper(ArrayList<Member> members) {
+        this.members = members;
+    }
 
     public ResponseWrapper(Response response) {
         this.response = response;
@@ -52,5 +61,9 @@ public class ResponseWrapper {
 
     public ArrayList<Member> getMembers() {
         return members;
+    }
+
+    public Repositories getRepositories() {
+        return repositories;
     }
 }

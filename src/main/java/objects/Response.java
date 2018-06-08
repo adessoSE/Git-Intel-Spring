@@ -5,6 +5,7 @@ import resources.memberPR_Resources.ResponseMemberPR;
 import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
 import resources.repositoryID_Resources.ResponseOrganRepoID;
+import resources.repository_Resources.ResponseRepository;
 
 public class Response {
 
@@ -13,8 +14,13 @@ public class Response {
     private ResponseOrganization responseOrganization;
     private ResponseOrganRepoID responseOrganRepoID;
     private ResponseMember responseMember;
+    private ResponseRepository responseRepository;
 
     public Response() {
+    }
+
+    public Response(ResponseRepository responseRepository) {
+        this.responseRepository = responseRepository;
     }
 
     public Response(ResponseMember responseMember) {
@@ -56,5 +62,9 @@ public class Response {
 
     public ResponseMember getResponseMember() {
         return responseMember;
+    }
+
+    public ResponseRepository getResponseRepository() {
+        return responseRepository;
     }
 }
