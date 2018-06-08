@@ -20,8 +20,6 @@ public class Application {
     @Autowired
     RequestRepository requestRepository;
 
-    String name = "adessoAG";
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -33,7 +31,7 @@ public class Application {
      */
     @Bean
     public OrganizationUpdateTask organisationUpdateTask() {
-        return new OrganizationUpdateTask(this.name);
+        return new OrganizationUpdateTask();
     }
 
     /**
