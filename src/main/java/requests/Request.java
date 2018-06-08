@@ -13,6 +13,7 @@ import resources.memberPR_Resources.ResponseMemberPR;
 import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
 import resources.repositoryID_Resources.ResponseOrganRepoID;
+import resources.repository_Resources.ResponseRepository;
 
 
 public abstract class Request {
@@ -65,9 +66,24 @@ public abstract class Request {
                 break;
             case MEMBER:
                 processMemberRequest(requestQuery, restTemplate, entity);
+                break;
+            case REPOSITORY:
+                processRespositoriesDetail(requestQuery, restTemplate, entity);
+                break;
 
         }
         requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
+    }
+
+    /**
+     * Processing of the request for the repositories detail of the organization. Usage of the Response class for the repositories.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processRespositoriesDetail(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseRepository.class)));
     }
 
     /**

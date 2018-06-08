@@ -8,5 +8,7 @@ public enum RequestType {
     MEMBER_ID,
     MEMBER,
     REPOSITORY_ID,
-    MEMBER_PR
+    MEMBER_PR,
+    REPOSITORY,
+    TEAM
 }
