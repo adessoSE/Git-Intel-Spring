@@ -2,7 +2,11 @@ package requests;
 
 import enums.RequestType;
 import objects.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import repositories.RequestRepository;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RequestManager {
@@ -10,6 +14,9 @@ public class RequestManager {
     private String organizationName;
     private String endCursor = null;
     private List<String> memberIDs;
+
+    @Autowired
+    RequestRepository requestRepository;
 
     /**
      * Declaration of different constructors to fit different request structures.
@@ -49,5 +56,20 @@ public class RequestManager {
             default:
                 return null;
         }
+    }
+
+    public ArrayList<Query> generateAllRequests(){
+        ArrayList<RequestType> startRequests = new ArrayList<>();
+        startRequests.add(RequestType.ORGANIZATION_DETAIL);
+        startRequests.add(RequestType.MEMBER_PR);
+        startRequests.add(RequestType.REPOSITORY_ID);
+        startRequests.add(RequestType.MEMBER_ID);
+
+        ArrayList<Query> allRequestQuerys = new ArrayList<>();
+        for (RequestType startRequest : startRequests) {
+                    allRequestQuerys.add(this.generateRequest(startRequest));
+        }
+
+        return allRequestQuerys;
     }
 }
