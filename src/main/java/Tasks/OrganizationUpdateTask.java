@@ -12,12 +12,6 @@ public class OrganizationUpdateTask {
     @Autowired
     RequestRepository requestRepository;
 
-    String name;
-
-    public OrganizationUpdateTask(String name) {
-        this.name = name;
-    }
-
     /**
      * Scheduled task for generating queries in order to update saved organisation.
      * Currently used for debugging the requests.
