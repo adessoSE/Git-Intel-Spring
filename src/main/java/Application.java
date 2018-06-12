@@ -29,10 +29,10 @@ public class Application {
      *
      * @return OrganizationUpdateTask
      */
-    @Bean
-    public OrganizationUpdateTask organisationUpdateTask() {
-        return new OrganizationUpdateTask();
-    }
+//    @Bean
+//    public OrganizationUpdateTask organisationUpdateTask() {
+//        return new OrganizationUpdateTask();
+//    }
 
     /**
      * Initialization of the Request Task for crawling the data according to the saved queries.

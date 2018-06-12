@@ -1,8 +1,7 @@
 package REST;
 
 
-import enums.RequestType;
-import objects.OrganizationWrapper;
+import objects.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import requests.RequestManager;
+
+import java.util.ArrayList;
 
 @RestController
 public class OrganizationController {
@@ -22,21 +23,34 @@ public class OrganizationController {
 
     /**
      * Check if organization is already stored in data base. If not, initiate GitHub crawl for requested organization.
-     *
+     * <p>
      * TODO If organization exists, check if all requests are processed.
      * TODO Check if organization is valid before generating requests.
      *
      * @param name
      * @return
      */
-    @RequestMapping("/organizations")
-    public OrganizationWrapper organizations(@RequestParam(value = "name", defaultValue = "Google") String name) {
+    @RequestMapping("/organization")
+    public OrganizationDetail organization(@RequestParam(value = "name") String name) {
         if (organizationRepository.findByOrganizationName(name) == null && requestRepository.findByOrganizationName(name).isEmpty()) {
             requestRepository.saveAll(new RequestManager(name).generateAllRequests());
-        } else {
-            return this.organizationRepository.findByOrganizationName(name);
+            System.out.println("Organization data is being gathered");
+        } else if (requestRepository.findByOrganizationName(name).isEmpty()) {
+            return this.organizationRepository.findByOrganizationName(name).getOrganizationDetail();
         }
-        System.out.println("Response is null");
+        return null;
+    }
+
+    @RequestMapping("/members")
+    public ArrayList<Member> members(@RequestParam(value = "name") String name) {
+        if (requestRepository.findByOrganizationName(name).isEmpty()) {
+            if (organizationRepository.findByOrganizationName(name) == null) {
+                requestRepository.saveAll(new RequestManager(name).generateAllRequests());
+                System.out.println("Organization data is being gathered");
+            } else {
+                return this.organizationRepository.findByOrganizationName(name).getMembers();
+            }
+        }
         return null;
     }
 }
