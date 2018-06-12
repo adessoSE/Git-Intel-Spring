@@ -46,6 +46,12 @@ public class MemberProcessor {
                 }
             }
 
+            // Make lists comparable and sort them
+            Comparator<Date> byDate = (Date d1, Date d2) -> d1.compareTo(d2);
+            Collections.sort(pullRequestDates, byDate);
+            Collections.sort(issuesDates, byDate);
+            Collections.sort(commitsDates, byDate);
+
             members.add(new Member(singleMember.getName(),singleMember.getLogin(),singleMember.getAvatarUrl(),singleMember.getUrl(), generateChartJSData(commitsDates), generateChartJSData(issuesDates), generateChartJSData(pullRequestDates)));
         }
 
