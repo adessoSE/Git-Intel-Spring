@@ -4,6 +4,7 @@ package REST;
 import objects.ChartJSData;
 import objects.Member;
 import objects.OrganizationDetail;
+import objects.OrganizationWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,23 +36,31 @@ public class OrganizationController {
      * @param name
      * @return
      */
-    @RequestMapping("/organization")
-    public OrganizationDetail organization(@RequestParam(value = "name") String name) {
+    @RequestMapping("/organizationdetail")
+    public OrganizationDetail retrieveOrganizationDetail(@RequestParam(value = "name") String name) {
         if (organizationRepository.findByOrganizationName(name) == null && requestRepository.findByOrganizationName(name).isEmpty()) {
-            requestRepository.saveAll(new RequestManager(name).generateAllRequests());
-            System.out.println("Organization data is being gathered");
+            this.gatherData(name);
         } else if (requestRepository.findByOrganizationName(name).isEmpty()) {
             return this.organizationRepository.findByOrganizationName(name).getOrganizationDetail();
         }
         return null;
     }
 
+    @RequestMapping("/organizationobject")
+    public OrganizationWrapper retrieveOrganizationObject(@RequestParam(value = "name") String name) {
+        if (organizationRepository.findByOrganizationName(name) == null && requestRepository.findByOrganizationName(name).isEmpty()) {
+            this.gatherData(name);
+        } else if (requestRepository.findByOrganizationName(name).isEmpty()) {
+            return this.organizationRepository.findByOrganizationName(name);
+        }
+        return null;
+    }
+
     @RequestMapping("/members")
-    public ArrayList<Member> members(@RequestParam(value = "name") String name) {
+    public ArrayList<Member> retrieveMembers(@RequestParam(value = "name") String name) {
         if (requestRepository.findByOrganizationName(name).isEmpty()) {
             if (organizationRepository.findByOrganizationName(name) == null) {
-                requestRepository.saveAll(new RequestManager(name).generateAllRequests());
-                System.out.println("Organization data is being gathered");
+                this.gatherData(name);
             } else {
                 return this.organizationRepository.findByOrganizationName(name).getMembers();
             }
@@ -63,8 +72,7 @@ public class OrganizationController {
     public Map<String, ArrayList<Integer>> retrieveCommitHistory(@RequestParam(value = "name") String name) {
         if (requestRepository.findByOrganizationName(name).isEmpty()) {
             if (organizationRepository.findByOrganizationName(name) == null) {
-                requestRepository.saveAll(new RequestManager(name).generateAllRequests());
-                System.out.println("Organization data is being gathered. Try again in a few moments");
+                this.gatherData(name);
             } else {
                 return this.packageData(name, Type.COMMITS);
             }
@@ -78,8 +86,7 @@ public class OrganizationController {
     public Map<String, ArrayList<Integer>> retrievePullRequestHistory(@RequestParam(value = "name") String name) {
         if (requestRepository.findByOrganizationName(name).isEmpty()) {
             if (organizationRepository.findByOrganizationName(name) == null) {
-                requestRepository.saveAll(new RequestManager(name).generateAllRequests());
-                System.out.println("Organization data is being gathered. Try again in a few moments");
+                this.gatherData(name);
             } else {
                 return this.packageData(name, Type.PRS);
             }
@@ -93,8 +100,7 @@ public class OrganizationController {
     public Map<String, ArrayList<Integer>> retrieveIssueHistory(@RequestParam(value = "name") String name) {
         if (requestRepository.findByOrganizationName(name).isEmpty()) {
             if (organizationRepository.findByOrganizationName(name) == null) {
-                requestRepository.saveAll(new RequestManager(name).generateAllRequests());
-                System.out.println("Organization data is being gathered. Try again in a few moments");
+                this.gatherData(name);
             } else {
                 return this.packageData(name, Type.ISSUES);
             }
@@ -104,6 +110,18 @@ public class OrganizationController {
         return null;
     }
 
+    public void gatherData(String organizationName) {
+        requestRepository.saveAll(new RequestManager(organizationName).generateAllRequests());
+        System.out.println("Organization data is being gathered. Try again in a few moments");
+    }
+
+    /**
+     * Pick commit, issue or pull reuquest data according to passed on parameter.
+     * Package data as map with dates/labels as keys and commits/issues/prs as values - {Date-of-commit, [value1, value2, ...]}
+     * @param organizationName
+     * @param type
+     * @return
+     */
     public Map<String, ArrayList<Integer>> packageData(String organizationName, Type type) {
         Map<String, ArrayList<Integer>> data = new HashMap<>();
         for (Member member : organizationRepository.findByOrganizationName(organizationName).getMembers()) {
