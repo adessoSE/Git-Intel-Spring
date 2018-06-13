@@ -21,8 +21,6 @@ public class OrganizationController {
 
     public enum Type {COMMITS, ISSUES, PRS}
 
-    ;
-
     @Autowired
     OrganizationRepository organizationRepository;
 
@@ -32,7 +30,6 @@ public class OrganizationController {
     /**
      * Check if organization is already stored in data base. If not, initiate GitHub crawl for requested organization.
      * <p>
-     * TODO If organization exists, check if all requests are processed.
      * TODO Check if organization is valid before generating requests.
      *
      * @param name
