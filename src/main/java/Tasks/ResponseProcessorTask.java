@@ -57,8 +57,27 @@ public class ResponseProcessorTask {
             case REPOSITORY:
                 this.processRepositoryResponse(organization, responseWrapper, processingQuery);
                 break;
+            case TEAM:
+                this.processOrganizationTeams(organization, responseWrapper, processingQuery);
+                break;
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
+    }
+
+    private void processOrganizationTeams(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
+        if (organization != null) {
+            organization.addTeams(responseWrapper.getTeams().getTeams());
+        } else {
+            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+            organization.setTeams(responseWrapper.getTeams().getTeams());
+        }
+        organizationRepository.save(organization);
+        if (responseWrapper.getTeams().isHasNextPage()) {
+            requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor()).generateRequest(RequestType.TEAM));
+        } else {
+            organization.addFinishedRequest(RequestType.TEAM);
+            organizationRepository.save(organization);
+        }
     }
 
     private void processRepositoryResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
