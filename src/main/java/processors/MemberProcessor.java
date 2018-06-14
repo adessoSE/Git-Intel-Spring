@@ -7,9 +7,8 @@ import objects.ResponseWrapper;
 import resources.member_Resources.*;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class MemberProcessor {
@@ -46,13 +45,7 @@ public class MemberProcessor {
                 }
             }
 
-            // Make lists comparable and sort them
-            Comparator<Date> byDate = (Date d1, Date d2) -> d1.compareTo(d2);
-            Collections.sort(pullRequestDates, byDate);
-            Collections.sort(issuesDates, byDate);
-            Collections.sort(commitsDates, byDate);
-
-            members.add(new Member(singleMember.getName(),singleMember.getLogin(),singleMember.getAvatarUrl(),singleMember.getUrl(), generateChartJSData(commitsDates), generateChartJSData(issuesDates), generateChartJSData(pullRequestDates)));
+            members.add(new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), generateChartJSData(commitsDates), generateChartJSData(issuesDates), generateChartJSData(pullRequestDates)));
         }
 
         return new ResponseWrapper(members);
@@ -61,18 +54,41 @@ public class MemberProcessor {
     private ChartJSData generateChartJSData(ArrayList<Date> arrayOfDates) {
         ArrayList<String> chartJSLabels = new ArrayList<>();
         ArrayList<Integer> chartJSDataset = new ArrayList<>();
+        long DAY_IN_MS = 1000 * 60 * 60 * 24;
 
-        for(Date date : arrayOfDates){
+        // Make lists comparable and sort them
+        Comparator<Date> byDate = (Date d1, Date d2) -> d1.compareTo(d2);
+        Collections.sort(arrayOfDates, byDate);
+
+        for (Date date : arrayOfDates) {
+
+            if(arrayOfDates.size() != arrayOfDates.indexOf(date) + 1){
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                Date selectedDate = date;
+                Date followingDateInArray = arrayOfDates.get(arrayOfDates.indexOf(date) + 1);
+                try {
+                    selectedDate = formatter.parse(formatter.format(selectedDate));
+                    followingDateInArray = formatter.parse(formatter.format(followingDateInArray));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (int x = 1; x < (((followingDateInArray.getTime() - selectedDate.getTime()) / DAY_IN_MS)); x++) {
+                    chartJSLabels.add(this.getFormattedDate(new Date(date.getTime() +  DAY_IN_MS*x)));
+                    chartJSDataset.add(0);
+                }
+            }
+
             String formattedDate = this.getFormattedDate(date);
-            if(!chartJSLabels.contains(formattedDate)){
+            if (!chartJSLabels.contains(formattedDate)) {
                 chartJSLabels.add(formattedDate);
                 chartJSDataset.add(1);
             } else {
-                chartJSDataset.set(chartJSLabels.indexOf(formattedDate),chartJSDataset.get(chartJSLabels.indexOf(formattedDate))+1);
+                chartJSDataset.set(chartJSLabels.indexOf(formattedDate), chartJSDataset.get(chartJSLabels.indexOf(formattedDate)) + 1);
             }
         }
 
-        return new ChartJSData(chartJSLabels,chartJSDataset);
+        return new ChartJSData(chartJSLabels, chartJSDataset);
     }
 
     private String getFormattedDate(Date date) {
