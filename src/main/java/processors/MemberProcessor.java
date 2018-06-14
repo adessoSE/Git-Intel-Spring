@@ -54,6 +54,7 @@ public class MemberProcessor {
     private ChartJSData generateChartJSData(ArrayList<Date> arrayOfDates) {
         ArrayList<String> chartJSLabels = new ArrayList<>();
         ArrayList<Integer> chartJSDataset = new ArrayList<>();
+        Boolean initalizeStartDate = true;
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
 
         // Make lists comparable and sort them
@@ -61,6 +62,25 @@ public class MemberProcessor {
         Collections.sort(arrayOfDates, byDate);
 
         for (Date date : arrayOfDates) {
+            Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
+            Date currentDate = new Date(System.currentTimeMillis());
+
+            //TODO: Teilweise wird ignoriert der 07 wenn 08 vorhanden ist
+            if(oneWeekAgo.getTime() < date.getTime() && initalizeStartDate){
+                for (int x = 0; x < (((date.getTime() - oneWeekAgo.getTime()) / DAY_IN_MS)); x++) {
+                    chartJSLabels.add(this.getFormattedDate(new Date(oneWeekAgo.getTime() +  DAY_IN_MS*x)));
+                    chartJSDataset.add(0);
+                }
+                initalizeStartDate = false;
+            }
+
+            String formattedDate = this.getFormattedDate(date);
+            if (!chartJSLabels.contains(formattedDate)) {
+                chartJSLabels.add(formattedDate);
+                chartJSDataset.add(1);
+            } else {
+                chartJSDataset.set(chartJSLabels.indexOf(formattedDate), chartJSDataset.get(chartJSLabels.indexOf(formattedDate)) + 1);
+            }
 
             if(arrayOfDates.size() != arrayOfDates.indexOf(date) + 1){
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -79,12 +99,11 @@ public class MemberProcessor {
                 }
             }
 
-            String formattedDate = this.getFormattedDate(date);
-            if (!chartJSLabels.contains(formattedDate)) {
-                chartJSLabels.add(formattedDate);
-                chartJSDataset.add(1);
-            } else {
-                chartJSDataset.set(chartJSLabels.indexOf(formattedDate), chartJSDataset.get(chartJSLabels.indexOf(formattedDate)) + 1);
+            if(arrayOfDates.size()-1 == arrayOfDates.indexOf(date) && currentDate.getTime() > date.getTime()){
+                for (long x = (((currentDate.getTime() - date.getTime()) / DAY_IN_MS)); x >= 0; x--) {
+                    chartJSLabels.add(this.getFormattedDate(new Date(currentDate.getTime() -  DAY_IN_MS*x)));
+                    chartJSDataset.add(0);
+                }
             }
         }
 
