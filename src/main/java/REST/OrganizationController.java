@@ -38,79 +38,63 @@ public class OrganizationController {
      */
     @RequestMapping("/organizationdetail")
     public OrganizationDetail retrieveOrganizationDetail(@RequestParam(value = "name") String name) {
-        if (organizationRepository.findByOrganizationName(name) == null && requestRepository.findByOrganizationName(name).isEmpty()) {
-            this.gatherData(name);
-        } else if (requestRepository.findByOrganizationName(name).isEmpty()) {
+        if(this.checkIfDataAvailable(name)){
             return this.organizationRepository.findByOrganizationName(name).getOrganizationDetail();
-        }
-        return null;
+        } else return null;
     }
 
     @RequestMapping("/organizationobject")
     public OrganizationWrapper retrieveOrganizationObject(@RequestParam(value = "name") String name) {
-        if (organizationRepository.findByOrganizationName(name) == null && requestRepository.findByOrganizationName(name).isEmpty()) {
-            this.gatherData(name);
-        } else if (requestRepository.findByOrganizationName(name).isEmpty()) {
+        if(this.checkIfDataAvailable(name)){
             return this.organizationRepository.findByOrganizationName(name);
-        }
-        return null;
+        } else return null;
     }
 
     @RequestMapping("/members")
     public ArrayList<Member> retrieveMembers(@RequestParam(value = "name") String name) {
-        if (requestRepository.findByOrganizationName(name).isEmpty()) {
-            if (organizationRepository.findByOrganizationName(name) == null) {
-                this.gatherData(name);
-            } else {
-                return this.organizationRepository.findByOrganizationName(name).getMembers();
-            }
-        }
-        return null;
+        if(this.checkIfDataAvailable(name)){
+            return this.organizationRepository.findByOrganizationName(name).getMembers();
+        } else return null;
     }
 
     @RequestMapping("/commithistory")
     public Map<String, ArrayList<Integer>> retrieveCommitHistory(@RequestParam(value = "name") String name) {
-        if (requestRepository.findByOrganizationName(name).isEmpty()) {
-            if (organizationRepository.findByOrganizationName(name) == null) {
-                this.gatherData(name);
-            } else {
-                return this.packageData(name, Type.COMMITS);
-            }
-        } else {
-            System.out.println("Data is still being gathered for this organization");
-        }
-        return null;
+        if(this.checkIfDataAvailable(name)){
+            return this.packageData(name, Type.COMMITS);
+        } else return null;
     }
 
     @RequestMapping("/prhistory")
     public Map<String, ArrayList<Integer>> retrievePullRequestHistory(@RequestParam(value = "name") String name) {
-        if (requestRepository.findByOrganizationName(name).isEmpty()) {
-            if (organizationRepository.findByOrganizationName(name) == null) {
-                this.gatherData(name);
-            } else {
-                return this.packageData(name, Type.PRS);
-            }
-        } else {
-            System.out.println("Data is still being gathered for this organization");
-        }
-        return null;
+        if(this.checkIfDataAvailable(name)){
+            return this.packageData(name, Type.PRS);
+        } else return null;
     }
 
     @RequestMapping("/issuehistory")
     public Map<String, ArrayList<Integer>> retrieveIssueHistory(@RequestParam(value = "name") String name) {
-        if (requestRepository.findByOrganizationName(name).isEmpty()) {
-            if (organizationRepository.findByOrganizationName(name) == null) {
-                this.gatherData(name);
-            } else {
-                return this.packageData(name, Type.ISSUES);
-            }
+        if(this.checkIfDataAvailable(name)){
+            return this.packageData(name, Type.ISSUES);
+        } else return null;
+    }
+
+    /**
+     * Method used to check if there is already requested information available. If there are no requests running for the requested organization then the requests are generated.
+     * @param organizationName Request organization name
+     * @return boolean if there is data available
+     */
+    private boolean checkIfDataAvailable(String organizationName) {
+        if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
+            if (organizationRepository.findByOrganizationName(organizationName) != null) {
+                return true;
+            } else this.gatherData(organizationName);
         } else {
             System.out.println("Data is still being gathered for this organization");
         }
-        return null;
+        return false;
     }
 
-    public void gatherData(String organizationName) {
+    private void gatherData(String organizationName) {
         requestRepository.saveAll(new RequestManager(organizationName).generateAllRequests());
         System.out.println("Organization data is being gathered. Try again in a few moments");
     }
@@ -118,6 +102,7 @@ public class OrganizationController {
     /**
      * Pick commit, issue or pull reuquest data according to passed on parameter.
      * Package data as map with dates/labels as keys and commits/issues/prs as values - {Date-of-commit, [value1, value2, ...]}
+     *
      * @param organizationName
      * @param type
      * @return
