@@ -26,6 +26,7 @@ public class RepositoryRequest {
                 "endCursor\n" +
                 "}\n" +
                 "nodes {\n" +
+                "url\n" +
                 "name\n" +
                 "description\n" +
                 "forkCount\n" +
