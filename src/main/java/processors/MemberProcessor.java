@@ -45,6 +45,10 @@ public class MemberProcessor {
                 }
             }
 
+            System.out.println("Member Name: " + singleMember.getName());
+            System.out.println("Issue Array empty: " + issuesDates.isEmpty());
+            System.out.println("Issue Array size: " + issuesDates.size());
+
             members.add(new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), generateChartJSData(commitsDates), generateChartJSData(issuesDates), generateChartJSData(pullRequestDates)));
         }
 
@@ -56,18 +60,36 @@ public class MemberProcessor {
         ArrayList<Integer> chartJSDataset = new ArrayList<>();
         Boolean initalizeStartDate = true;
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
-
+        Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
+        System.out.println("Array Empty: " + arrayOfDates.isEmpty());
+        System.out.println("Array Size: " + arrayOfDates.size());
+        System.out.println("Array Inhalt: " + arrayOfDates);
         // Make lists comparable and sort them
         Comparator<Date> byDate = (Date d1, Date d2) -> d1.compareTo(d2);
         Collections.sort(arrayOfDates, byDate);
 
-        for (Date date : arrayOfDates) {
-            Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
-            Date currentDate = new Date(System.currentTimeMillis());
+        if(arrayOfDates.isEmpty()){
+            for (int x = 0; x != 8; x++){
+                chartJSLabels.add(this.getFormattedDate(new Date(oneWeekAgo.getTime() +  DAY_IN_MS*x)));
+                chartJSDataset.add(0);
+            }
+            return new ChartJSData(chartJSLabels, chartJSDataset);
+        }
 
-            //TODO: Teilweise wird ignoriert der 07 wenn 08 vorhanden ist
-            if(oneWeekAgo.getTime() < date.getTime() && initalizeStartDate){
-                for (int x = 0; x < (((date.getTime() - oneWeekAgo.getTime()) / DAY_IN_MS)); x++) {
+        for (Date date : arrayOfDates) {
+            Date selectedDateFormatted = null;
+            Date currentDate = new Date(System.currentTimeMillis());
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+            try {
+                selectedDateFormatted = formatter.parse(formatter.format(date));
+                oneWeekAgo = formatter.parse(formatter.format(oneWeekAgo));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if(oneWeekAgo.getTime() < selectedDateFormatted.getTime() && initalizeStartDate){
+                for (int x = 0; x < (((selectedDateFormatted.getTime() - oneWeekAgo.getTime()) / DAY_IN_MS)); x++) {
                     chartJSLabels.add(this.getFormattedDate(new Date(oneWeekAgo.getTime() +  DAY_IN_MS*x)));
                     chartJSDataset.add(0);
                 }
@@ -83,7 +105,6 @@ public class MemberProcessor {
             }
 
             if(arrayOfDates.size() != arrayOfDates.indexOf(date) + 1){
-                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                 Date selectedDate = date;
                 Date followingDateInArray = arrayOfDates.get(arrayOfDates.indexOf(date) + 1);
                 try {
@@ -94,7 +115,7 @@ public class MemberProcessor {
                 }
 
                 for (int x = 1; x < (((followingDateInArray.getTime() - selectedDate.getTime()) / DAY_IN_MS)); x++) {
-                    chartJSLabels.add(this.getFormattedDate(new Date(date.getTime() +  DAY_IN_MS*x)));
+                    chartJSLabels.add(this.getFormattedDate(new Date(selectedDate.getTime() +  DAY_IN_MS*x)));
                     chartJSDataset.add(0);
                 }
             }
@@ -111,9 +132,7 @@ public class MemberProcessor {
     }
 
     private String getFormattedDate(Date date) {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        df.setTimeZone(tz);
         return df.format(date);
     }
 }
