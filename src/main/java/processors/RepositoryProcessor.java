@@ -1,18 +1,14 @@
 package processors;
 
-import objects.ChartJSData;
 import objects.Query;
 import objects.Repository;
 import objects.ResponseWrapper;
 import resources.repository_Resources.*;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimeZone;
 
-public class RepositoryProcessor {
+public class RepositoryProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
@@ -28,24 +24,12 @@ public class RepositoryProcessor {
         ArrayList<Date> issuesDates = new ArrayList<>();
         ArrayList<Date> commitsDates = new ArrayList<>();
 
-        //TODO: Seperate in various methods!
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             int stars = repo.getStargazers().getTotalCount();
             int forks = repo.getForkCount();
-
-            String url = repo.getUrl();
-            String license;
-            if (repo.getLicenseInfo() == null) license = "";
-            else license = repo.getLicenseInfo().getName();
-
-            String programmingLanguage;
-            if (repo.getPrimaryLanguage() == null) programmingLanguage = "";
-            else programmingLanguage = repo.getPrimaryLanguage().getName();
-
-            String description;
-            if (repo.getDescription() == null) description = "";
-            else description = repo.getDescription();
-
+            String license = getLicense(repo);
+            String programmingLanguage = getProgrammingLanguage(repo);
+            String description = getDescription(repo);
             String name = repo.getName();
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
@@ -58,38 +42,28 @@ public class RepositoryProcessor {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
-            if(repo.getDefaultBranchRef() != null) {
+            if (repo.getDefaultBranchRef() != null) {
                 for (NodesHistory nodesHistory : repo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
-            repositories.add(new Repository(name, url, description, programmingLanguage, license, forks, stars, generateChartJSData(commitsDates), generateChartJSData(issuesDates), generateChartJSData(pullRequestDates)));
+            repositories.add(new Repository(name, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
-
         return new ResponseWrapper(new objects.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
     }
 
-    private ChartJSData generateChartJSData(ArrayList<Date> arrayOfDates) {
-        ArrayList<String> chartJSLabels = new ArrayList<>();
-        ArrayList<Integer> chartJSDataset = new ArrayList<>();
-
-        for (Date date : arrayOfDates) {
-            String formattedDate = this.getFormattedDate(date);
-            if (!chartJSLabels.contains(formattedDate)) {
-                chartJSLabels.add(formattedDate);
-                chartJSDataset.add(1);
-            } else {
-                chartJSDataset.set(chartJSLabels.indexOf(formattedDate), chartJSDataset.get(chartJSLabels.indexOf(formattedDate)) + 1);
-            }
-        }
-
-        return new ChartJSData(chartJSLabels, chartJSDataset);
+    private String getLicense(NodesRepositories repo) {
+        if (repo.getLicenseInfo() == null) return "";
+        else return repo.getLicenseInfo().getName();
     }
 
-    private String getFormattedDate(Date date) {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        df.setTimeZone(tz);
-        return df.format(date);
+    private String getProgrammingLanguage(NodesRepositories repo) {
+        if (repo.getPrimaryLanguage() == null) return "";
+        else return repo.getPrimaryLanguage().getName();
+    }
+
+    private String getDescription(NodesRepositories repo) {
+        if (repo.getDescription() == null) return "";
+        else return repo.getDescription();
     }
 }
