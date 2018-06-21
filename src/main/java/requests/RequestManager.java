@@ -53,6 +53,8 @@ public class RequestManager {
                 return new MemberRequest(organizationName, memberIDs).generateQuery();
             case REPOSITORY:
                 return new RepositoryRequest(organizationName, endCursor).generateQuery();
+            case TEAM:
+                return new TeamRequest(organizationName,endCursor).generateQuery();
             default:
                 return null;
         }

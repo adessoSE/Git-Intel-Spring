@@ -33,6 +33,8 @@ public class ResponseProcessorManager {
                 return new RepositoryIDProcessor(this.requestQuery).processResponse();
             case REPOSITORY:
                 return new RepositoryProcessor(this.requestQuery).processResponse();
+            case TEAM:
+                return new TeamProcessor(this.requestQuery).processResponse();
             default:
                 return new ResponseWrapper(this.requestQuery.getQueryResponse());
         }
