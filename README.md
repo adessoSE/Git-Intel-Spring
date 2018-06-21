@@ -1,5 +1,8 @@
 # GitStalker-Spring
 
-GitStalker Back-End programmed in Spring to crawl information from the GraphQL API of GitHub. Suitable Front-End is the GitStalkerBootstrap.
+The GitStalker will be used to crawl information from Github and process the data to access more detailed informationen about everything on Github. 
+The Stalker uses the current GraphQL API of Github. 
 
-### Currently under development!
+The suitable Front-End is the GitStalkerBootstrapUI.
+
+Currently under development..
