@@ -21,6 +21,7 @@ public class OrganizationWrapper {
     private ArrayList<Member> members = new ArrayList<>();
     private ArrayList<RequestType> finishedRequests = new ArrayList<>();
     private ArrayList<Repository> repositories = new ArrayList<>();
+    private ArrayList<Integer> memberAmount = new ArrayList<>();
     private ArrayList<Team> teams = new ArrayList<>();
 
     /**
@@ -115,6 +116,13 @@ public class OrganizationWrapper {
         this.repositories.addAll(repositories);
     }
 
+    public ArrayList<Integer> getMemberAmount() {
+        return memberAmount;
+    }
+
+    public void addMemberAmount(Integer memberAmount) {
+        this.memberAmount.add(memberAmount);
+      
     public ArrayList<Team> getTeams() {
         return teams;
     }

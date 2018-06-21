@@ -99,9 +99,11 @@ public class ResponseProcessorTask {
     private void processOrganizationDetailResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
         if (organization != null) {
             organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
+            organization.addMemberAmount(responseWrapper.getOrganizationDetail().getNumOfMembers());
         } else {
             organization = new OrganizationWrapper(processingQuery.getOrganizationName());
             organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
+            organization.addMemberAmount(responseWrapper.getOrganizationDetail().getNumOfMembers());
         }
         organization.addFinishedRequest(RequestType.ORGANIZATION_DETAIL);
         organizationRepository.save(organization);
