@@ -33,6 +33,7 @@ public class RepositoryProcessor {
             int stars = repo.getStargazers().getTotalCount();
             int forks = repo.getForkCount();
 
+            String url = repo.getUrl();
             String license;
             if (repo.getLicenseInfo() == null) license = "";
             else license = repo.getLicenseInfo().getName();
@@ -62,10 +63,9 @@ public class RepositoryProcessor {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
-            repositories.add(new Repository(name, description, programmingLanguage, license, forks, stars, generateChartJSData(commitsDates), generateChartJSData(issuesDates), generateChartJSData(pullRequestDates)));
+            repositories.add(new Repository(name, url, description, programmingLanguage, license, forks, stars, generateChartJSData(commitsDates), generateChartJSData(issuesDates), generateChartJSData(pullRequestDates)));
         }
-        System.out.println(repositoriesData.getPageInfo().getEndCursor());
-        System.out.println(repositoriesData.getPageInfo().isHasNextPage());
+
         return new ResponseWrapper(new objects.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
     }
 
