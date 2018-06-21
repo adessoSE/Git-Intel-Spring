@@ -9,64 +9,52 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class RepositoryRequest {
+public class TeamRequest extends Request {
 
     private String query;
     private ResponseProcessor responseProcessor;
-    private String organizationName;
     private RequestType requestType;
+    private String organizationName;
 
-    public RepositoryRequest(String organizationName, String endCursor) {
+    public TeamRequest(String organizationName, String endCursor) {
         this.organizationName = organizationName;
         this.query = "query {\n" +
                 "organization(login: \"" + organizationName + "\") {\n" +
-                "repositories(first: 100 after: " + endCursor + ") {\n" +
+                "teams(first: 50, after: " + endCursor + ") {\n" +
                 "pageInfo {\n" +
                 "hasNextPage\n" +
                 "endCursor\n" +
                 "}\n" +
+                "totalCount\n" +
                 "nodes {\n" +
-                "url\n" +
                 "name\n" +
                 "description\n" +
-                "forkCount\n" +
-                "stargazers {\n" +
+                "avatarUrl\n" +
+                "repositories(first: 10) {\n" +
                 "totalCount\n" +
-                "}\n" +
-                "licenseInfo {\n" +
+                "nodes {\n" +
                 "name\n" +
-                "}\n" +
-                "primaryLanguage {\n" +
-                "name\n" +
-                "}\n" +
                 "defaultBranchRef {\n" +
                 "target {\n" +
                 "... on Commit {\n" +
-                "history(first: 50, since: \"" + this.getDateWeekAgoInISO8601UTC() + "\") {\n" +
-                "nodes {\n" +
-                "committedDate\n" +
+                "history(first: 25, since: \"" + getDateWeekAgoInISO8601UTC() + "\") {\n" +
+                "totalCount\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
-                "pullRequests(last: 50) {\n" +
-                "nodes {\n" +
-                "createdAt\n" +
                 "}\n" +
-                "}\n" +
-                "issues(last: 50) {\n" +
-                "nodes {\n" +
-                "createdAt\n" +
-                "}\n" +
+                "members {\n" +
+                "totalCount\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
                 "}";
 
-        this.responseProcessor = ResponseProcessor.REPOSITORY;
-        this.requestType = RequestType.REPOSITORY;
+        this.responseProcessor = ResponseProcessor.TEAM;
+        this.requestType = RequestType.TEAM;
     }
 
     public Query generateQuery() {

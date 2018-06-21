@@ -1,6 +1,8 @@
 package objects;
 
 
+import objects.Team.Teams;
+
 import java.util.ArrayList;
 
 public class ResponseWrapper {
@@ -12,9 +14,14 @@ public class ResponseWrapper {
     private MemberPR memberPR;
     private ArrayList<Member> members;
     private Repositories repositories;
+    private Teams teams;
 
 
     // TODO: Builder Pattern anwenden! Mehrere Constructoren mit ArrayList nicht zulässig!
+    public ResponseWrapper(Teams teams) {
+        this.teams = teams;
+    }
+
     public ResponseWrapper(Repositories repositories) {
         this.repositories = repositories;
     }
@@ -65,5 +72,9 @@ public class ResponseWrapper {
 
     public Repositories getRepositories() {
         return repositories;
+    }
+
+    public Teams getTeams() {
+        return teams;
     }
 }
