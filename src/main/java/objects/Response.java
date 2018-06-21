@@ -6,6 +6,7 @@ import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
 import resources.repositoryID_Resources.ResponseOrganRepoID;
 import resources.repository_Resources.ResponseRepository;
+import resources.team_Resources.ResponseTeam;
 
 public class Response {
 
@@ -15,9 +16,12 @@ public class Response {
     private ResponseOrganRepoID responseOrganRepoID;
     private ResponseMember responseMember;
     private ResponseRepository responseRepository;
+    private ResponseTeam responseTeam;
 
     public Response() {
     }
+
+    public Response(ResponseTeam responseTeam){ this.responseTeam = responseTeam; }
 
     public Response(ResponseRepository responseRepository) {
         this.responseRepository = responseRepository;
@@ -43,6 +47,10 @@ public class Response {
         this.responseOrganization = responseOrganization;
     }
 
+
+    public ResponseTeam getResponseTeam() {
+        return responseTeam;
+    }
 
     public ResponseOrganRepoID getResponseOrganRepoID() {
         return responseOrganRepoID;

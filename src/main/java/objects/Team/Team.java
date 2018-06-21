@@ -1,0 +1,40 @@
+package objects.Team;
+
+import java.util.ArrayList;
+
+public class Team {
+
+    private String name;
+    private String description;
+    private String avatarURL;
+    private int numOfMembers;
+    private ArrayList<TeamRepository> teamRepositories;
+
+    public Team(String name, String description, String avatarURL, int numOfMembers, ArrayList<TeamRepository> teamRepositories) {
+        this.name = name;
+        this.description = description;
+        this.avatarURL = avatarURL;
+        this.numOfMembers = numOfMembers;
+        this.teamRepositories = teamRepositories;
+    }
+
+    public ArrayList<TeamRepository> getTeamRepositories() {
+        return teamRepositories;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getAvatarURL() {
+        return avatarURL;
+    }
+
+    public int getNumOfMembers() {
+        return numOfMembers;
+    }
+}
