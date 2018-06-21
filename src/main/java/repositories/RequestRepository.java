@@ -12,6 +12,8 @@ import java.util.ArrayList;
  */
 public interface RequestRepository extends MongoRepository<Query, String> {
 
+    ArrayList<Query> findByOrganizationName(String organizationName);
+
     ArrayList<Query> findByQueryStatus(RequestStatus status);
 
     ArrayList<Query> findByQueryRequestTypeAndOrganizationName(RequestType requestType, String organizationName);
