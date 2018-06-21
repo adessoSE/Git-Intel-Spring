@@ -5,6 +5,7 @@ import objects.Team.Team;
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public class OrganizationWrapper {
     private String organizationName;
     private OrganizationDetail organizationDetail;
     private ArrayList<String> memberIDs = new ArrayList<>();
-    private Set<String> memberPRRepoIDs = new HashSet<>();
+    private HashMap<String,ArrayList<String>> memberPRRepoIDs = new HashMap<>();
     private ArrayList<String> organizationRepoIDs = new ArrayList<>();
     private ArrayList<Member> members = new ArrayList<>();
     private ArrayList<RequestType> finishedRequests = new ArrayList<>();
@@ -66,16 +67,16 @@ public class OrganizationWrapper {
         this.memberIDs.addAll(memberIDs);
     }
 
-    public Set<String> getMemberPRRepoIDs() {
+    public HashMap<String,ArrayList<String>> getMemberPRRepoIDs() {
         return memberPRRepoIDs;
     }
 
-    public void setMemberPRRepoIDs(Set<String> memberPRRepoIDs) {
+    public void setMemberPRRepoIDs(HashMap<String,ArrayList<String>> memberPRRepoIDs) {
         this.memberPRRepoIDs = memberPRRepoIDs;
     }
 
-    public void addMemberPRs(Set<String> memberPRRepoIDs) {
-        this.memberPRRepoIDs.addAll(memberPRRepoIDs);
+    public void addMemberPRs(HashMap<String,ArrayList<String>> memberPRRepoIDs) {
+        this.memberPRRepoIDs.putAll(memberPRRepoIDs);
     }
 
     public ArrayList<String> getOrganizationRepoIDs() {
