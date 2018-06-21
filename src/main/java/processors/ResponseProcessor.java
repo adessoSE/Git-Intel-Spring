@@ -66,6 +66,8 @@ public abstract class ResponseProcessor {
 
     private void processEndDateChartJSData(ArrayList<String> chartJSLabels, ArrayList<Integer> chartJSDataset, ArrayList<Date> arrayOfDates, Date selectedDate) {
         Date currentDate = new Date(System.currentTimeMillis());
+        currentDate.setMinutes(0);
+        currentDate.setHours(0);
 
         if (arrayOfDates.size() - 1 == arrayOfDates.indexOf(selectedDate) && currentDate.getTime() > selectedDate.getTime()) {
             for (long x = (((currentDate.getTime() - selectedDate.getTime()) / DAY_IN_MS)); x >= 0; x--) {
