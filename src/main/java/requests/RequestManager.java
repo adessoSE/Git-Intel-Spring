@@ -5,6 +5,8 @@ import objects.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import repositories.RequestRepository;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RequestManager {
@@ -53,8 +55,25 @@ public class RequestManager {
                 return new MemberRequest(organizationName, memberIDs).generateQuery();
             case REPOSITORY:
                 return new RepositoryRequest(organizationName, endCursor).generateQuery();
+            case TEAM:
+                return new TeamRequest(organizationName,endCursor).generateQuery();
             default:
                 return null;
         }
+    }
+
+    public ArrayList<Query> generateAllRequests(){
+        ArrayList<RequestType> startRequests = new ArrayList<>();
+        startRequests.add(RequestType.ORGANIZATION_DETAIL);
+        startRequests.add(RequestType.MEMBER_PR);
+        startRequests.add(RequestType.REPOSITORY_ID);
+        startRequests.add(RequestType.MEMBER_ID);
+
+        ArrayList<Query> allRequestQuerys = new ArrayList<>();
+        for (RequestType startRequest : startRequests) {
+                    allRequestQuerys.add(this.generateRequest(startRequest));
+        }
+
+        return allRequestQuerys;
     }
 }

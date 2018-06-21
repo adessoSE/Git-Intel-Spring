@@ -1,6 +1,7 @@
 package objects;
 
 import enums.RequestType;
+import objects.Team.Team;
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class OrganizationWrapper {
     private ArrayList<Member> members = new ArrayList<>();
     private ArrayList<RequestType> finishedRequests = new ArrayList<>();
     private ArrayList<Repository> repositories = new ArrayList<>();
+    private ArrayList<Integer> memberAmount = new ArrayList<>();
+    private ArrayList<Team> teams = new ArrayList<>();
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -111,5 +114,24 @@ public class OrganizationWrapper {
 
     public void addRepositories(ArrayList<Repository> repositories) {
         this.repositories.addAll(repositories);
+    }
+
+    public ArrayList<Integer> getMemberAmount() {
+        return memberAmount;
+    }
+
+    public void addMemberAmount(Integer memberAmount) {
+        this.memberAmount.add(memberAmount);
+      
+    public ArrayList<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(ArrayList<Team> teams) {
+        this.teams = teams;
+    }
+
+    public void addTeams(ArrayList<Team> teams) {
+        this.teams.addAll(teams);
     }
 }
