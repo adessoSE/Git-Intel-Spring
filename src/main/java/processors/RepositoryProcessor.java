@@ -27,6 +27,7 @@ public class RepositoryProcessor extends ResponseProcessor {
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             int stars = repo.getStargazers().getTotalCount();
             int forks = repo.getForkCount();
+            String url = repo.getUrl();
             String license = getLicense(repo);
             String programmingLanguage = getProgrammingLanguage(repo);
             String description = getDescription(repo);
@@ -47,7 +48,7 @@ public class RepositoryProcessor extends ResponseProcessor {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
-            repositories.add(new Repository(name, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+            repositories.add(new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
         return new ResponseWrapper(new objects.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
     }

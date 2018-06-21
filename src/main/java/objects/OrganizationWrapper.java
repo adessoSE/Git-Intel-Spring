@@ -122,7 +122,8 @@ public class OrganizationWrapper {
 
     public void addMemberAmount(Integer memberAmount) {
         this.memberAmount.add(memberAmount);
-      
+    }
+
     public ArrayList<Team> getTeams() {
         return teams;
     }
