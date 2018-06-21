@@ -3,6 +3,7 @@ package resources.repository_Resources;
 public class NodesRepositories {
 
     private String name;
+    private String url;
     private String description;
     private int forkCount;
     private Stargazers stargazers;
@@ -48,5 +49,9 @@ public class NodesRepositories {
 
     public Issues getIssues() {
         return issues;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

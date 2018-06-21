@@ -2,6 +2,7 @@ package objects;
 
 public class Repository {
     private String name;
+    private String url;
     private String description;
     private String programmingLanguage;
     private String license;
@@ -11,8 +12,9 @@ public class Repository {
     private ChartJSData previousIssues;
     private ChartJSData previousPullRequests;
 
-    public Repository(String name, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests){
+    public Repository(String name, String url, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
         this.name = name;
+        this.url = url;
         this.description = description;
         this.programmingLanguage = programmingLanguage;
         this.license = license;
@@ -57,5 +59,9 @@ public class Repository {
 
     public ChartJSData getPreviousPullRequests() {
         return previousPullRequests;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }
