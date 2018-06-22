@@ -77,5 +77,4 @@ public class OrganizationController {
         requestRepository.saveAll(new RequestManager(organizationName).generateAllRequests());
         System.out.println("Organization data is being gathered. Try again in a few moments");
     }
-
 }

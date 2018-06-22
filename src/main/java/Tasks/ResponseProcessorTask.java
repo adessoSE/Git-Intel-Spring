@@ -62,8 +62,7 @@ public class ResponseProcessorTask {
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
     }
-
-    private void processExternalRepo(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
+    private void processExternalRepo(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
         if (organization != null) {
             organization.addExternalRepos(responseWrapper.getRepositories().getRepositories());
         } else {
@@ -85,6 +84,7 @@ public class ResponseProcessorTask {
                             }
                         }
                     }
+                }
             }
             organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
         }
@@ -107,7 +107,7 @@ public class ResponseProcessorTask {
         }
     }
 
-    private void processRepositoryResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
+    private void processRepositoryResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
         if (organization != null) {
             organization.addRepositories(responseWrapper.getRepositories().getRepositories());
         } else {
@@ -177,14 +177,13 @@ public class ResponseProcessorTask {
             while (!repoIDs.isEmpty()) {
                 Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
                 List<String> targetList = new ArrayList<>(subSet);
-                requestRepository.save(new RequestManager(targetList,processingQuery.getOrganizationName()).generateRequest(RequestType.EXTERNAL_REPO));
+                requestRepository.save(new RequestManager(targetList, processingQuery.getOrganizationName()).generateRequest(RequestType.EXTERNAL_REPO));
                 repoIDs.removeAll(subSet);
             }
             organization.addFinishedRequest(RequestType.MEMBER_PR);
         }
         organizationRepository.save(organization);
     }
-
     private void processMemberResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
         if (organization != null) {
             organization.addMembers(responseWrapper.getMembers());
@@ -193,13 +192,43 @@ public class ResponseProcessorTask {
             organization.setMembers(responseWrapper.getMembers());
         }
         if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, processingQuery.getOrganizationName()).size() == 1) {
+            this.calculateOrganizationChartJSData(organization);
             organization.addFinishedRequest(RequestType.MEMBER);
         }
         organizationRepository.save(organization);
     }
 
-    private HashMap<String,ArrayList<String>> calculateExternalRepoContributions(OrganizationWrapper organization){
-        HashMap<String,ArrayList<String>> externalContributions = new HashMap<>();
+    /**
+     * Add up every member's ChartJSData for commits, issues and pull requests to save numbers for the whole organization
+     * @param organization
+     */
+    private void calculateOrganizationChartJSData(OrganizationWrapper organization) {
+        // Instantiate ArrayLists to save final values in and initialize them "empty" to be able to access and add up values
+        ArrayList<String> chartJSLabels = organization.getMembers().get(0).getPreviousCommits().getChartJSLabels();
+        ArrayList<Integer> chartJSCommitData = new ArrayList<>();
+        ArrayList<Integer> chartJSIssueData = new ArrayList<>();
+        ArrayList<Integer> chartJSPRData = new ArrayList<>();
+        for (int x = 0; x < 8; x++) {
+            chartJSCommitData.add(0);
+            chartJSIssueData.add(0);
+            chartJSPRData.add(0);
+        }
+        // Walk through members and add up values for commits, issues and pull requests
+        for (Member member : organization.getMembers()) {
+            for (int i = 0; i <= member.getPreviousCommits().getChartJSDataset().size() - 1; i++) {
+                chartJSCommitData.set(i, chartJSCommitData.get(i) + member.getPreviousCommits().getChartJSDataset().get(i));
+                chartJSIssueData.set(i, chartJSIssueData.get(i) + member.getPreviousIssues().getChartJSDataset().get(i));
+                chartJSPRData.set(i, chartJSPRData.get(i) + member.getPreviousPullRequests().getChartJSDataset().get(i));
+            }
+        }
+        // Add commits, issues and pull requests to OrganizationDetail object
+        organization.getOrganizationDetail().setPreviousCommits(new ChartJSData(chartJSLabels, chartJSCommitData));
+        organization.getOrganizationDetail().setPreviousIssues(new ChartJSData(chartJSLabels, chartJSIssueData));
+        organization.getOrganizationDetail().setPreviousPullRequests(new ChartJSData(chartJSLabels, chartJSPRData));
+    }
+
+    private HashMap<String, ArrayList<String>> calculateExternalRepoContributions(OrganizationWrapper organization) {
+        HashMap<String, ArrayList<String>> externalContributions = new HashMap<>();
         externalContributions.putAll(organization.getMemberPRRepoIDs());
         externalContributions.keySet().removeAll(organization.getRepositories().keySet());
         return externalContributions;
