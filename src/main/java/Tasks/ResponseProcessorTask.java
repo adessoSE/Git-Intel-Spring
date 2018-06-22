@@ -87,7 +87,6 @@ public class ResponseProcessorTask {
                 }
             }
             organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
-        }
         organizationRepository.save(organization);
     }
 
@@ -204,7 +203,8 @@ public class ResponseProcessorTask {
      */
     private void calculateOrganizationChartJSData(OrganizationWrapper organization) {
         // Instantiate ArrayLists to save final values in and initialize them "empty" to be able to access and add up values
-        ArrayList<String> chartJSLabels = organization.getMembers().get(0).getPreviousCommits().getChartJSLabels();
+        String firstMember = organization.getMemberIDs().get(0);
+        ArrayList<String> chartJSLabels = organization.getMembers().get(firstMember).getPreviousCommits().getChartJSLabels();
         ArrayList<Integer> chartJSCommitData = new ArrayList<>();
         ArrayList<Integer> chartJSIssueData = new ArrayList<>();
         ArrayList<Integer> chartJSPRData = new ArrayList<>();
@@ -214,7 +214,7 @@ public class ResponseProcessorTask {
             chartJSPRData.add(0);
         }
         // Walk through members and add up values for commits, issues and pull requests
-        for (Member member : organization.getMembers()) {
+        for (Member member : organization.getMembers().values()) {
             for (int i = 0; i <= member.getPreviousCommits().getChartJSDataset().size() - 1; i++) {
                 chartJSCommitData.set(i, chartJSCommitData.get(i) + member.getPreviousCommits().getChartJSDataset().get(i));
                 chartJSIssueData.set(i, chartJSIssueData.get(i) + member.getPreviousIssues().getChartJSDataset().get(i));
