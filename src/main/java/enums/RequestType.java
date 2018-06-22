@@ -10,5 +10,6 @@ public enum RequestType {
     REPOSITORY_ID,
     MEMBER_PR,
     REPOSITORY,
-    TEAM
+    TEAM,
+    EXTERNAL_REPO
 }

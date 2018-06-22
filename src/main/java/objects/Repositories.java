@@ -8,6 +8,10 @@ public class Repositories {
     private String endCursor;
     private boolean hasNextPage;
 
+    public Repositories(ArrayList<Repository> repositories){
+        this.repositories = repositories;
+    }
+
     public Repositories(ArrayList<Repository> repositories, String endCursor, boolean hasNextPage) {
         this.repositories = repositories;
         this.endCursor = endCursor;

@@ -4,6 +4,7 @@ package resources.member_Resources;
 public class NodesMember {
 
     private String name;
+    private String id;
     private String login;
     private String url;
     private String avatarUrl;
@@ -11,9 +12,9 @@ public class NodesMember {
     private Issues issues;
     private PullRequests pullRequests;
 
-    public NodesMember() {
+    public String getId() {
+        return id;
     }
-
 
     public String getName() {
         return name;

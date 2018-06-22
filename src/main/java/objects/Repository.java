@@ -1,7 +1,10 @@
 package objects;
 
+import java.util.ArrayList;
+
 public class Repository {
     private String name;
+    private String id;
     private String url;
     private String description;
     private String programmingLanguage;
@@ -11,9 +14,12 @@ public class Repository {
     private ChartJSData previousCommits;
     private ChartJSData previousIssues;
     private ChartJSData previousPullRequests;
+    //Optional for external Repos
+    private ArrayList<Member> contributors;
 
-    public Repository(String name, String url, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
+    public Repository(String name, String id, String url, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
         this.name = name;
+        this.id = id;
         this.url = url;
         this.description = description;
         this.programmingLanguage = programmingLanguage;
@@ -63,5 +69,21 @@ public class Repository {
 
     public String getUrl() {
         return url;
+    }
+
+    public ArrayList<Member> getContributor() {
+        return contributors;
+    }
+
+    public void setContributor(ArrayList<Member> contributors) {
+        this.contributors = contributors;
+    }
+
+    public void addContributor(Member contributor) {
+        this.contributors.add(contributor);
+    }
+
+    public String getId() {
+        return id;
     }
 }

@@ -21,6 +21,7 @@ public class MemberPRRequest {
                 "endCursor\n" +
                 "}\n" +
                 "nodes {\n" +
+                "id\n" +
                 "pullRequests(last: 25, states: [MERGED, OPEN]) {\n" +
                 "nodes {\n" +
                 "repository {\n" +

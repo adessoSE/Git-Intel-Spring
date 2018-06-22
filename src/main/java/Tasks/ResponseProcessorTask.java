@@ -2,9 +2,7 @@ package Tasks;
 
 import enums.RequestStatus;
 import enums.RequestType;
-import objects.OrganizationWrapper;
-import objects.Query;
-import objects.ResponseWrapper;
+import objects.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import processors.ResponseProcessorManager;
@@ -12,7 +10,8 @@ import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import requests.RequestManager;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class ResponseProcessorTask {
 
@@ -60,8 +59,58 @@ public class ResponseProcessorTask {
             case TEAM:
                 this.processOrganizationTeams(organization, responseWrapper, processingQuery);
                 break;
+            case EXTERNAL_REPO:
+                this.processExternalRepo(organization, responseWrapper, processingQuery);
+                break;
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
+    }
+
+    //TODO: Filterung der internen Repos der Organisation
+    private void processExternalRepo(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
+        if (organization != null) {
+            organization.addExternalRepos(responseWrapper.getRepositories().getRepositories());
+        } else {
+            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+            organization.setExternalRepos(responseWrapper.getRepositories().getRepositories());
+        }
+        if(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, organization.getOrganizationName()).size() == 1){
+            HashMap<String,ArrayList<String>> externalRepos = this.calculateExternalRepoContributions(organization);
+            for (String externalRepoID : externalRepos.keySet()){
+                    for(String contributorID : externalRepos.get(externalRepoID)){
+                        Repository suitableExternalRepo = findSuitableExternalRepo(organization,externalRepoID);
+                        if(suitableExternalRepo != null){
+                            if(suitableExternalRepo.getContributor() != null){
+                                suitableExternalRepo.addContributor(findSuitableMember(organization,contributorID));
+                            } else {
+                                ArrayList<Member> contributors = new ArrayList<>();
+                                contributors.add(findSuitableMember(organization,contributorID));
+                                suitableExternalRepo.setContributor(contributors);
+                            }
+                        }
+                    }
+            }
+            organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
+        }
+        organizationRepository.save(organization);
+    }
+
+    private Repository findSuitableExternalRepo(OrganizationWrapper organization, String id){
+            for(Repository repository : organization.getExternalRepos()) {
+                if(repository.getId().equals(id)) {
+                    return repository;
+                }
+            }
+            return null;
+        }
+
+    private Member findSuitableMember(OrganizationWrapper organization, String id){
+        for(Member member : organization.getMembers()) {
+            if(member.getId().equals(id)) {
+                return member;
+            }
+        }
+        return null;
     }
 
     private void processOrganizationTeams(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
@@ -139,7 +188,19 @@ public class ResponseProcessorTask {
         }
         if (responseWrapper.getMemberPR().isHasNextPage()) {
             requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor()).generateRequest(RequestType.MEMBER_PR));
-        } else organization.addFinishedRequest(RequestType.MEMBER_PR);
+        } else {
+            if(organization.getFinishedRequests().contains(RequestType.REPOSITORY_ID)){
+                organization.getOrganizationDetail().setNumOfExternalRepoContributions(calculateExternalRepoContributions(organization).size());
+            }
+            Set<String> repoIDs = calculateExternalRepoContributions(organization).keySet();
+            while (!repoIDs.isEmpty()) {
+                Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
+                List<String> targetList = new ArrayList<>(subSet);
+                requestRepository.save(new RequestManager(targetList,processingQuery.getOrganizationName()).generateRequest(RequestType.EXTERNAL_REPO));
+                repoIDs.removeAll(subSet);
+            }
+            organization.addFinishedRequest(RequestType.MEMBER_PR);
+        }
         organizationRepository.save(organization);
     }
 
@@ -152,7 +213,12 @@ public class ResponseProcessorTask {
         }
         if (responseWrapper.getRepositoryID().isHasNextPage()) {
             requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositoryID().getEndCursor()).generateRequest(RequestType.REPOSITORY_ID));
-        } else organization.addFinishedRequest(RequestType.REPOSITORY_ID);
+        } else {
+            if(organization.getFinishedRequests().contains(RequestType.MEMBER_PR)){
+                organization.getOrganizationDetail().setNumOfExternalRepoContributions(calculateExternalRepoContributions(organization).size());
+            }
+            organization.addFinishedRequest(RequestType.REPOSITORY_ID);
+        }
         organizationRepository.save(organization);
     }
 
@@ -167,5 +233,12 @@ public class ResponseProcessorTask {
             organization.addFinishedRequest(RequestType.MEMBER);
         }
         organizationRepository.save(organization);
+    }
+
+    private HashMap<String,ArrayList<String>> calculateExternalRepoContributions(OrganizationWrapper organization){
+        HashMap<String,ArrayList<String>> externalContributions = new HashMap<>();
+        externalContributions.putAll(organization.getMemberPRRepoIDs());
+        externalContributions.keySet().removeAll(organization.getOrganizationRepoIDs());
+        return externalContributions;
     }
 }

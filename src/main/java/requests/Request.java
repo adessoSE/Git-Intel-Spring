@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import resources.externalRepo_Resources.ResponseExternalRepository;
 import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
 import resources.member_Resources.ResponseMember;
@@ -74,8 +75,22 @@ public abstract class Request {
             case TEAM:
                 processOrganizationTeams(requestQuery, restTemplate, entity);
                 break;
+            case EXTERNAL_REPO:
+                processExternalRepos(requestQuery, restTemplate, entity);
+                break;
         }
         requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
+    }
+
+    /**
+     * Processing of the request for the external repos with contribution by the members. Usage of the Response class for the external repos.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processExternalRepos(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseExternalRepository.class)));
     }
 
     /**

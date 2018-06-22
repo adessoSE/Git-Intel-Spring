@@ -1,24 +1,25 @@
 package processors;
 
 import objects.Query;
+import objects.Repositories;
 import objects.Repository;
 import objects.ResponseWrapper;
-import resources.repository_Resources.*;
+import resources.externalRepo_Resources.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class RepositoryProcessor extends ResponseProcessor {
+public class ExternalRepoProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
-    public RepositoryProcessor(Query requestQuery) {
+    public ExternalRepoProcessor(Query requestQuery) {
         this.requestQuery = requestQuery;
     }
 
     public ResponseWrapper processResponse() {
         ArrayList<Repository> repositories = new ArrayList<>();
-        Repositories repositoriesData = this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories();
+        Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
 
         ArrayList<Date> pullRequestDates = new ArrayList<>();
         ArrayList<Date> issuesDates = new ArrayList<>();
@@ -51,7 +52,7 @@ public class RepositoryProcessor extends ResponseProcessor {
             }
             repositories.add(new Repository(name, id, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
-        return new ResponseWrapper(new objects.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
+        return new ResponseWrapper(new Repositories(repositories));
     }
 
     private String getLicense(NodesRepositories repo) {

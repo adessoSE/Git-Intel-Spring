@@ -1,4 +1,4 @@
-package resources.repository_Resources;
+package resources.externalRepo_Resources;
 
 public class NodesRepositories {
 
@@ -18,6 +18,10 @@ public class NodesRepositories {
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getDescription() {
@@ -54,9 +58,5 @@ public class NodesRepositories {
 
     public String getUrl() {
         return url;
-    }
-
-    public String getId() {
-        return id;
     }
 }

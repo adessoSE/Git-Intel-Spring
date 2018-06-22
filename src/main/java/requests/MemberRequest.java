@@ -23,6 +23,7 @@ public class MemberRequest {
                 "nodes(ids: [" + formatMemberIDs(memberIDs) + "]) {\n" +
                 "... on User {\n" +
                 "name \n" +
+                "id \n" +
                 "login\n" +
                 "url\n" +
                 "avatarUrl\n" +
