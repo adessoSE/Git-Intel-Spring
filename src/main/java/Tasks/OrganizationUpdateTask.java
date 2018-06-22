@@ -23,6 +23,7 @@ public class OrganizationUpdateTask {
         requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.ORGANIZATION_DETAIL));
         requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.REPOSITORY));
         requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.MEMBER_PR));
+        requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.MEMBER_ID));
         requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.TEAM));
     }
 }
