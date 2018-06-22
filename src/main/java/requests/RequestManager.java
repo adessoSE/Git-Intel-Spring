@@ -23,21 +23,21 @@ public class RequestManager {
      * Declaration of different constructors to fit different request structures.
      */
     public RequestManager(String organizationName) {
-        this.organizationName = organizationName.replaceAll("\\s+","").toLowerCase();
+        this.organizationName = this.formatInput(organizationName);
     }
 
     public RequestManager(String organizationName, String endCursor) {
-        this.organizationName = organizationName;
+        this.organizationName = this.formatInput(organizationName);
         this.endCursor = "\"" + endCursor + "\"";
     }
 
     public RequestManager(String organizationName, List<String> memberIDs) {
-        this.organizationName = organizationName;
+        this.organizationName = this.formatInput(organizationName);
         this.memberIDs = memberIDs;
     }
 
     public RequestManager(List<String> repoIDs, String organizationName) {
-        this.organizationName = organizationName;
+        this.organizationName = this.formatInput(organizationName);
         this.repoIDs = repoIDs;
     }
 
@@ -83,5 +83,9 @@ public class RequestManager {
         }
 
         return allRequestQuerys;
+    }
+
+    private String formatInput (String input) {
+        return input.replaceAll("\\s+","").toLowerCase();
     }
 }
