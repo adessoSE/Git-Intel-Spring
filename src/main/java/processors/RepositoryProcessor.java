@@ -7,6 +7,7 @@ import resources.repository_Resources.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class RepositoryProcessor extends ResponseProcessor {
 
@@ -17,7 +18,7 @@ public class RepositoryProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        ArrayList<Repository> repositories = new ArrayList<>();
+        HashMap<String, Repository> repositories = new HashMap<>();
         Repositories repositoriesData = this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories();
 
         ArrayList<Date> pullRequestDates = new ArrayList<>();
@@ -32,7 +33,6 @@ public class RepositoryProcessor extends ResponseProcessor {
             String programmingLanguage = getProgrammingLanguage(repo);
             String description = getDescription(repo);
             String name = repo.getName();
-            String id = repo.getId();
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
                 if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
@@ -49,7 +49,7 @@ public class RepositoryProcessor extends ResponseProcessor {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
-            repositories.add(new Repository(name, id, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+            repositories.put(repo.getId(), new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
         return new ResponseWrapper(new objects.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
     }

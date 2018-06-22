@@ -23,21 +23,21 @@ public class RequestManager {
      * Declaration of different constructors to fit different request structures.
      */
     public RequestManager(String organizationName) {
-        this.organizationName = organizationName;
+        this.organizationName = this.formatInput(organizationName);
     }
 
     public RequestManager(String organizationName, String endCursor) {
-        this.organizationName = organizationName;
+        this.organizationName = this.formatInput(organizationName);
         this.endCursor = "\"" + endCursor + "\"";
     }
 
     public RequestManager(String organizationName, List<String> memberIDs) {
-        this.organizationName = organizationName;
+        this.organizationName = this.formatInput(organizationName);
         this.memberIDs = memberIDs;
     }
 
     public RequestManager(List<String> repoIDs, String organizationName) {
-        this.organizationName = organizationName;
+        this.organizationName = this.formatInput(organizationName);
         this.repoIDs = repoIDs;
     }
 
@@ -55,33 +55,34 @@ public class RequestManager {
                 return new MemberIDRequest(organizationName, endCursor).generateQuery();
             case MEMBER_PR:
                 return new MemberPRRequest(organizationName, endCursor).generateQuery();
-            case REPOSITORY_ID:
-                return new RepositoryIDRequest(organizationName, endCursor).generateQuery();
             case MEMBER:
                 return new MemberRequest(organizationName, memberIDs).generateQuery();
             case REPOSITORY:
                 return new RepositoryRequest(organizationName, endCursor).generateQuery();
             case TEAM:
-                return new TeamRequest(organizationName,endCursor).generateQuery();
+                return new TeamRequest(organizationName, endCursor).generateQuery();
             case EXTERNAL_REPO:
-                return new ExternalRepoRequest(organizationName,repoIDs).generateQuery();
+                return new ExternalRepoRequest(organizationName, repoIDs).generateQuery();
             default:
                 return null;
         }
     }
 
-    public ArrayList<Query> generateAllRequests(){
+    public ArrayList<Query> generateAllRequests() {
         ArrayList<RequestType> startRequests = new ArrayList<>();
         startRequests.add(RequestType.ORGANIZATION_DETAIL);
         startRequests.add(RequestType.MEMBER_PR);
-        startRequests.add(RequestType.REPOSITORY_ID);
         startRequests.add(RequestType.MEMBER_ID);
 
         ArrayList<Query> allRequestQuerys = new ArrayList<>();
         for (RequestType startRequest : startRequests) {
-                    allRequestQuerys.add(this.generateRequest(startRequest));
+            allRequestQuerys.add(this.generateRequest(startRequest));
         }
 
         return allRequestQuerys;
+    }
+
+    private String formatInput (String input) {
+        return input.replaceAll("\\s+","").toLowerCase();
     }
 }

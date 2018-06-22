@@ -27,6 +27,7 @@ public class RepositoryRequest {
                 "}\n" +
                 "nodes {\n" +
                 "url\n" +
+                "id\n" +
                 "name\n" +
                 "description\n" +
                 "forkCount\n" +
