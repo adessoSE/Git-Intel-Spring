@@ -5,6 +5,7 @@ import objects.ChartJSData;
 import objects.Member;
 import objects.OrganizationDetail;
 import objects.OrganizationWrapper;
+import objects.Team.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,6 +55,19 @@ public class OrganizationController {
     public ArrayList<Member> retrieveMembers(@RequestParam(value = "name") String name) {
         if(this.checkIfDataAvailable(name)){
             return this.organizationRepository.findByOrganizationName(name).getMembers();
+        } else return null;
+    }
+    //    @RequestMapping("/repositories")
+    //    public ArrayList<Repository> retrieveRepositories(@RequestParam(value = "name") String name) {
+    //        if (this.checkIfDataAvailable(name)) {
+    //            return this.organizationRepository.findByOrganizationName(name)
+    //        }
+    //    }
+
+    @RequestMapping("/teams")
+    public ArrayList<Team> retrieveTeams(@RequestParam(value = "name") String name) {
+        if (this.checkIfDataAvailable(name)) {
+            return this.organizationRepository.findByOrganizationName(name).getTeams();
         } else return null;
     }
 
