@@ -24,6 +24,7 @@ public class OrganizationWrapper {
     private ArrayList<Repository> repositories = new ArrayList<>();
     private ArrayList<Integer> memberAmount = new ArrayList<>();
     private ArrayList<Team> teams = new ArrayList<>();
+    private ArrayList<Repository> externalRepos = new ArrayList<>();
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -135,5 +136,17 @@ public class OrganizationWrapper {
 
     public void addTeams(ArrayList<Team> teams) {
         this.teams.addAll(teams);
+    }
+
+    public ArrayList<Repository> getExternalRepos() {
+        return externalRepos;
+    }
+
+    public void setExternalRepos(ArrayList<Repository> externalRepos) {
+        this.externalRepos = externalRepos;
+    }
+
+    public void addExternalRepos(ArrayList<Repository> externalRepos) {
+        this.externalRepos.addAll(externalRepos);
     }
 }

@@ -3,6 +3,7 @@ package objects;
 public class Member {
 
     private String name;
+    private String id;
     private String username;
     private String avatarURL;
     private String githubURL;
@@ -10,8 +11,9 @@ public class Member {
     private ChartJSData previousIssues;
     private ChartJSData previousPullRequests;
 
-    public Member(String name, String username, String avatarURL, String githubURL, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
+    public Member(String name, String id, String username, String avatarURL, String githubURL, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
         this.name = name;
+        this.id = id;
         this.username = username;
         this.avatarURL = avatarURL;
         this.githubURL = githubURL;
@@ -22,6 +24,10 @@ public class Member {
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getUsername() {

@@ -1,5 +1,6 @@
 package objects;
 
+import resources.externalRepo_Resources.ResponseExternalRepository;
 import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
 import resources.member_Resources.ResponseMember;
@@ -17,9 +18,11 @@ public class Response {
     private ResponseMember responseMember;
     private ResponseRepository responseRepository;
     private ResponseTeam responseTeam;
+    private ResponseExternalRepository responseExternalRepository;
 
-    public Response() {
-    }
+    public Response() {}
+
+    public Response (ResponseExternalRepository responseExternalRepository) { this.responseExternalRepository = responseExternalRepository; }
 
     public Response(ResponseTeam responseTeam){ this.responseTeam = responseTeam; }
 
@@ -74,5 +77,9 @@ public class Response {
 
     public ResponseRepository getResponseRepository() {
         return responseRepository;
+    }
+
+    public ResponseExternalRepository getResponseExternalRepository() {
+        return responseExternalRepository;
     }
 }

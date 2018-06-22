@@ -14,6 +14,7 @@ public class RequestManager {
     private String organizationName;
     private String endCursor = null;
     private List<String> memberIDs;
+    private List<String> repoIDs;
 
     @Autowired
     RequestRepository requestRepository;
@@ -33,6 +34,11 @@ public class RequestManager {
     public RequestManager(String organizationName, List<String> memberIDs) {
         this.organizationName = organizationName;
         this.memberIDs = memberIDs;
+    }
+
+    public RequestManager(List<String> repoIDs, String organizationName) {
+        this.organizationName = organizationName;
+        this.repoIDs = repoIDs;
     }
 
     /**
@@ -57,6 +63,8 @@ public class RequestManager {
                 return new RepositoryRequest(organizationName, endCursor).generateQuery();
             case TEAM:
                 return new TeamRequest(organizationName,endCursor).generateQuery();
+            case EXTERNAL_REPO:
+                return new ExternalRepoRequest(organizationName,repoIDs).generateQuery();
             default:
                 return null;
         }

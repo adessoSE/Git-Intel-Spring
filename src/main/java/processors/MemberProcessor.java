@@ -41,7 +41,7 @@ public class MemberProcessor extends ResponseProcessor {
                 }
             }
 
-            members.add(new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+            members.add(new Member(singleMember.getName(), singleMember.getId(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
 
         return new ResponseWrapper(members);
