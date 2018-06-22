@@ -11,6 +11,9 @@ public class OrganizationDetail {
     private int numOfTeams;
     private int numOfRepositories;
     private int numOfExternalRepoContributions;
+    private ChartJSData previousCommits;
+    private ChartJSData previousIssues;
+    private ChartJSData previousPullRequests;
 
     public OrganizationDetail(String name, String description, String websiteURL, String githubURL, String location, int numOfMembers, int numOfRepositories, int numOfTeams) {
         this.name = name;
@@ -57,6 +60,30 @@ public class OrganizationDetail {
 
     public int getNumOfExternalRepoContributions() {
         return numOfExternalRepoContributions;
+    }
+
+    public ChartJSData getPreviousCommits() {
+        return previousCommits;
+    }
+
+    public void setPreviousCommits(ChartJSData previousCommits) {
+        this.previousCommits = previousCommits;
+    }
+
+    public ChartJSData getPreviousIssues() {
+        return previousIssues;
+    }
+
+    public void setPreviousIssues(ChartJSData previousIssues) {
+        this.previousIssues = previousIssues;
+    }
+
+    public ChartJSData getPreviousPullRequests() {
+        return previousPullRequests;
+    }
+
+    public void setPreviousPullRequests(ChartJSData previousPullRequests) {
+        this.previousPullRequests = previousPullRequests;
     }
 
     public void setNumOfExternalRepoContributions(int numOfExternalRepoContributions) {

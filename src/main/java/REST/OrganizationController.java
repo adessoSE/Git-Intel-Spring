@@ -57,27 +57,6 @@ public class OrganizationController {
         } else return null;
     }
 
-    @RequestMapping("/commithistory")
-    public Map<String, ArrayList<Integer>> retrieveCommitHistory(@RequestParam(value = "name") String name) {
-        if(this.checkIfDataAvailable(name)){
-            return this.packageData(name, Type.COMMITS);
-        } else return null;
-    }
-
-    @RequestMapping("/prhistory")
-    public Map<String, ArrayList<Integer>> retrievePullRequestHistory(@RequestParam(value = "name") String name) {
-        if(this.checkIfDataAvailable(name)){
-            return this.packageData(name, Type.PRS);
-        } else return null;
-    }
-
-    @RequestMapping("/issuehistory")
-    public Map<String, ArrayList<Integer>> retrieveIssueHistory(@RequestParam(value = "name") String name) {
-        if(this.checkIfDataAvailable(name)){
-            return this.packageData(name, Type.ISSUES);
-        } else return null;
-    }
-
     /**
      * Method used to check if there is already requested information available. If there are no requests running for the requested organization then the requests are generated.
      * @param organizationName Request organization name
@@ -97,47 +76,5 @@ public class OrganizationController {
     private void gatherData(String organizationName) {
         requestRepository.saveAll(new RequestManager(organizationName).generateAllRequests());
         System.out.println("Organization data is being gathered. Try again in a few moments");
-    }
-
-    /**
-     * Pick commit, issue or pull reuquest data according to passed on parameter.
-     * Package data as map with dates/labels as keys and commits/issues/prs as values - {Date-of-commit, [value1, value2, ...]}
-     *
-     * @param organizationName
-     * @param type
-     * @return
-     */
-    public Map<String, ArrayList<Integer>> packageData(String organizationName, Type type) {
-        Map<String, ArrayList<Integer>> data = new HashMap<>();
-        for (Member member : organizationRepository.findByOrganizationName(organizationName).getMembers()) {
-            ChartJSData memberData;
-            switch (type) {
-                case COMMITS: {
-                    memberData = member.getPreviousCommits();
-                    break;
-                }
-                case PRS: {
-                    memberData = member.getPreviousPullRequests();
-                    break;
-                }
-                case ISSUES: {
-                    memberData = member.getPreviousIssues();
-                    break;
-                }
-                default: {
-                    memberData = null;
-                }
-            }
-            for (int i = 0; i < memberData.getChartJSLabels().size(); i++) {
-                String key = memberData.getChartJSLabels().get(i);
-                int value = memberData.getChartJSDataset().get(i);
-                if (!data.containsKey(key)) {
-                    data.put(key, new ArrayList<>(value));
-                } else {
-                    data.get(key).add(value);
-                }
-            }
-        }
-        return data;
     }
 }
