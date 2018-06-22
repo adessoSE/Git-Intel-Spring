@@ -3,19 +3,17 @@ package objects;
 
 import objects.Team.Teams;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ResponseWrapper {
 
     private Response response;
     private MemberID memberID;
     private OrganizationDetail organizationDetail;
-    private RepositoryID repositoryID;
     private MemberPR memberPR;
-    private ArrayList<Member> members;
+    private HashMap<String, Member> members;
     private Repositories repositories;
     private Teams teams;
-
 
     // TODO: Builder Pattern anwenden! Mehrere Constructoren mit ArrayList nicht zulässig!
     public ResponseWrapper(Teams teams) {
@@ -26,7 +24,7 @@ public class ResponseWrapper {
         this.repositories = repositories;
     }
 
-    public ResponseWrapper(ArrayList<Member> members) {
+    public ResponseWrapper(HashMap<String, Member> members) {
         this.members = members;
     }
 
@@ -42,10 +40,6 @@ public class ResponseWrapper {
         this.memberID = memberID;
     }
 
-    public ResponseWrapper(RepositoryID repositoryID) {
-        this.repositoryID = repositoryID;
-    }
-
     public ResponseWrapper(OrganizationDetail organizationDetail) {
         this.organizationDetail = organizationDetail;
     }
@@ -58,15 +52,11 @@ public class ResponseWrapper {
         return organizationDetail;
     }
 
-    public RepositoryID getRepositoryID() {
-        return repositoryID;
-    }
-
     public MemberPR getMemberPR() {
         return memberPR;
     }
 
-    public ArrayList<Member> getMembers() {
+    public HashMap<String, Member> getMembers() {
         return members;
     }
 

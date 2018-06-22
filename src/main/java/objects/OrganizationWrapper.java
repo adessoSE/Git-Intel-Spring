@@ -5,9 +5,8 @@ import objects.Team.Team;
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class OrganizationWrapper {
 
@@ -17,14 +16,14 @@ public class OrganizationWrapper {
     private String organizationName;
     private OrganizationDetail organizationDetail;
     private ArrayList<String> memberIDs = new ArrayList<>();
-    private HashMap<String,ArrayList<String>> memberPRRepoIDs = new HashMap<>();
+    private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
     private ArrayList<String> organizationRepoIDs = new ArrayList<>();
-    private ArrayList<Member> members = new ArrayList<>();
+    private HashMap<String, Member> members = new HashMap<>();
     private ArrayList<RequestType> finishedRequests = new ArrayList<>();
-    private ArrayList<Repository> repositories = new ArrayList<>();
-    private ArrayList<Integer> memberAmount = new ArrayList<>();
-    private ArrayList<Team> teams = new ArrayList<>();
-    private ArrayList<Repository> externalRepos = new ArrayList<>();
+    private HashMap<String, Repository> repositories = new HashMap<>();
+    private HashMap<String, Integer> memberAmount = new HashMap<>();
+    private HashMap<String, Team> teams = new HashMap<>();
+    private HashMap<String, Repository> externalRepos = new HashMap<>();
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -68,15 +67,15 @@ public class OrganizationWrapper {
         this.memberIDs.addAll(memberIDs);
     }
 
-    public HashMap<String,ArrayList<String>> getMemberPRRepoIDs() {
+    public HashMap<String, ArrayList<String>> getMemberPRRepoIDs() {
         return memberPRRepoIDs;
     }
 
-    public void setMemberPRRepoIDs(HashMap<String,ArrayList<String>> memberPRRepoIDs) {
+    public void setMemberPRRepoIDs(HashMap<String, ArrayList<String>> memberPRRepoIDs) {
         this.memberPRRepoIDs = memberPRRepoIDs;
     }
 
-    public void addMemberPRs(HashMap<String,ArrayList<String>> memberPRRepoIDs) {
+    public void addMemberPRs(HashMap<String, ArrayList<String>> memberPRRepoIDs) {
         this.memberPRRepoIDs.putAll(memberPRRepoIDs);
     }
 
@@ -92,61 +91,67 @@ public class OrganizationWrapper {
         this.organizationRepoIDs.addAll(organizationRepoIDs);
     }
 
-    public ArrayList<Member> getMembers() {
+    public HashMap<String, Member> getMembers() {
         return members;
     }
 
-    public void setMembers(ArrayList<Member> members) {
+    public void setMembers(HashMap<String, Member> members) {
         this.members = members;
     }
 
-    public void addMembers(ArrayList<Member> members) {
-        this.members.addAll(members);
+    public void addMembers(HashMap<String, Member> members) {
+        this.members.putAll(members);
     }
 
     public ArrayList<RequestType> getFinishedRequests() {
         return finishedRequests;
     }
 
-    public void addFinishedRequest(RequestType finishedRequest) { this.finishedRequests.add(finishedRequest); }
+    public void addFinishedRequest(RequestType finishedRequest) {
+        this.finishedRequests.add(finishedRequest);
+    }
 
-    public void setRepositories(ArrayList<Repository> repositories) {
+    public void setRepositories(HashMap<String, Repository> repositories) {
         this.repositories = repositories;
     }
 
-    public void addRepositories(ArrayList<Repository> repositories) {
-        this.repositories.addAll(repositories);
+    public HashMap<String, Repository> getRepositories() {
+        return repositories;
     }
 
-    public ArrayList<Integer> getMemberAmount() {
+    public void addRepositories(HashMap<String, Repository> repositories) {
+        this.repositories.putAll(repositories);
+    }
+
+    public HashMap<String, Integer> getMemberAmount() {
         return memberAmount;
     }
 
     public void addMemberAmount(Integer memberAmount) {
-        this.memberAmount.add(memberAmount);
+        this.memberAmount.put(new Date().toString(), memberAmount);
     }
 
-    public ArrayList<Team> getTeams() {
+    public HashMap<String, Team> getTeams() {
         return teams;
     }
 
-    public void setTeams(ArrayList<Team> teams) {
+    public void setTeams(HashMap<String, Team> teams) {
         this.teams = teams;
     }
 
-    public void addTeams(ArrayList<Team> teams) {
-        this.teams.addAll(teams);
+    public void addTeams(HashMap<String,Team> teams) {
+        this.teams.putAll(teams);
     }
 
-    public ArrayList<Repository> getExternalRepos() {
+    public HashMap<String, Repository> getExternalRepos() {
         return externalRepos;
     }
 
-    public void setExternalRepos(ArrayList<Repository> externalRepos) {
+    public void setExternalRepos(HashMap<String, Repository> externalRepos) {
         this.externalRepos = externalRepos;
     }
 
-    public void addExternalRepos(ArrayList<Repository> externalRepos) {
-        this.externalRepos.addAll(externalRepos);
+    public void addExternalRepos(HashMap<String, Repository> externalRepos) {
+        this.externalRepos.putAll(externalRepos);
     }
 }

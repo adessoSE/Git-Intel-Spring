@@ -13,7 +13,6 @@ import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
 import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
-import resources.repositoryID_Resources.ResponseOrganRepoID;
 import resources.repository_Resources.ResponseRepository;
 import resources.team_Resources.ResponseTeam;
 
@@ -63,9 +62,6 @@ public abstract class Request {
             case MEMBER_PR:
                 processMemberPRRequest(requestQuery, restTemplate, entity);
                 break;
-            case REPOSITORY_ID:
-                processOrganizationRepoIDs(requestQuery, restTemplate, entity);
-                break;
             case MEMBER:
                 processMemberRequest(requestQuery, restTemplate, entity);
                 break;
@@ -113,17 +109,6 @@ public abstract class Request {
      */
     private void processRespositoriesDetail(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseRepository.class)));
-    }
-
-    /**
-     * Processing of the request for the organization detail. Usage of the Response class for the organization.
-     *
-     * @param requestQuery Query used for the request
-     * @param restTemplate RestTemplate created for the request
-     * @param entity       Configuration for the request
-     */
-    private void processOrganizationRepoIDs(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        requestQuery.setQueryResponse(new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseOrganRepoID.class)));
     }
 
     /**

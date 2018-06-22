@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Repository {
     private String name;
-    private String id;
     private String url;
     private String description;
     private String programmingLanguage;
@@ -17,9 +16,8 @@ public class Repository {
     //Optional for external Repos
     private ArrayList<Member> contributors;
 
-    public Repository(String name, String id, String url, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
+    public Repository(String name, String url, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
         this.name = name;
-        this.id = id;
         this.url = url;
         this.description = description;
         this.programmingLanguage = programmingLanguage;
@@ -83,7 +81,4 @@ public class Repository {
         this.contributors.add(contributor);
     }
 
-    public String getId() {
-        return id;
-    }
 }

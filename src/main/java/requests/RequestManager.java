@@ -55,8 +55,6 @@ public class RequestManager {
                 return new MemberIDRequest(organizationName, endCursor).generateQuery();
             case MEMBER_PR:
                 return new MemberPRRequest(organizationName, endCursor).generateQuery();
-            case REPOSITORY_ID:
-                return new RepositoryIDRequest(organizationName, endCursor).generateQuery();
             case MEMBER:
                 return new MemberRequest(organizationName, memberIDs).generateQuery();
             case REPOSITORY:
@@ -74,7 +72,6 @@ public class RequestManager {
         ArrayList<RequestType> startRequests = new ArrayList<>();
         startRequests.add(RequestType.ORGANIZATION_DETAIL);
         startRequests.add(RequestType.MEMBER_PR);
-        startRequests.add(RequestType.REPOSITORY_ID);
         startRequests.add(RequestType.MEMBER_ID);
 
         ArrayList<Query> allRequestQuerys = new ArrayList<>();

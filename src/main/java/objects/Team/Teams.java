@@ -1,20 +1,20 @@
 package objects.Team;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Teams {
 
-    private ArrayList<Team> teams;
+    private HashMap<String, Team> teams;
     private String endCursor;
     private boolean hasNextPage;
 
-    public Teams(ArrayList<Team> teams, String endCursor, boolean hasNextPage) {
+    public Teams(HashMap<String, Team> teams, String endCursor, boolean hasNextPage) {
         this.teams = teams;
         this.endCursor = endCursor;
         this.hasNextPage = hasNextPage;
     }
 
-    public ArrayList<Team> getTeams() {
+    public HashMap<String, Team> getTeams() {
         return teams;
     }
 
