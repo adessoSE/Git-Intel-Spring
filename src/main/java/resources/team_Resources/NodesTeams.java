@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class NodesTeams {
 
     private String name;
+    private String id;
     private String description;
     private String avatarURL;
     private Repositories repositories;
@@ -18,6 +19,10 @@ public class NodesTeams {
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getDescription() {

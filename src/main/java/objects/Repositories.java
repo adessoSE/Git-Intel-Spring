@@ -1,24 +1,25 @@
 package objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Repositories {
 
-    private ArrayList<Repository> repositories;
+    private HashMap<String,Repository> repositories;
     private String endCursor;
     private boolean hasNextPage;
 
-    public Repositories(ArrayList<Repository> repositories){
+    public Repositories(HashMap<String,Repository> repositories){
         this.repositories = repositories;
     }
 
-    public Repositories(ArrayList<Repository> repositories, String endCursor, boolean hasNextPage) {
+    public Repositories(HashMap<String,Repository> repositories, String endCursor, boolean hasNextPage) {
         this.repositories = repositories;
         this.endCursor = endCursor;
         this.hasNextPage = hasNextPage;
     }
 
-    public ArrayList<Repository> getRepositories() {
+    public HashMap<String,Repository> getRepositories() {
         return repositories;
     }
 

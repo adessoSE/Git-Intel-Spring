@@ -51,7 +51,7 @@ public class OrganizationController {
     }
 
     @RequestMapping("/members")
-    public ArrayList<Member> retrieveMembers(@RequestParam(value = "name") String name) {
+    public HashMap<String, Member> retrieveMembers(@RequestParam(value = "name") String name) {
         if(this.checkIfDataAvailable(name)){
             return this.organizationRepository.findByOrganizationName(name).getMembers();
         } else return null;

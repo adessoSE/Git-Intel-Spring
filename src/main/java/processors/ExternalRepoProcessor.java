@@ -8,6 +8,7 @@ import resources.externalRepo_Resources.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class ExternalRepoProcessor extends ResponseProcessor {
 
@@ -18,7 +19,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        ArrayList<Repository> repositories = new ArrayList<>();
+        HashMap<String,Repository> repositoriesMap = new HashMap<>();
         Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
 
         ArrayList<Date> pullRequestDates = new ArrayList<>();
@@ -50,9 +51,9 @@ public class ExternalRepoProcessor extends ResponseProcessor {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
-            repositories.add(new Repository(name, id, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+            repositoriesMap.put(id, new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
-        return new ResponseWrapper(new Repositories(repositories));
+        return new ResponseWrapper(new Repositories(repositoriesMap));
     }
 
     private String getLicense(NodesRepositories repo) {
