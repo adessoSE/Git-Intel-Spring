@@ -8,9 +8,9 @@ import resources.memberPR_Resources.NodesMember;
 import resources.memberPR_Resources.NodesPR;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MemberPRProcessor {
 
@@ -27,22 +27,31 @@ public class MemberPRProcessor {
      * @return ResponseWrapper containing the MemberPR object.
      */
     public ResponseWrapper processResponse() {
-        HashMap<String,ArrayList<String>> memberPRRepoIDs = new HashMap<>();
+        HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
         Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
-            for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
-                if(memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())){
-                    if(!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())){
-                        memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
+            for (NodesPR pullRequest : nodes.getPullRequests().getNodes()) {
+                if (checkIfPullRequestIsActiveSinceOneYear(pullRequest.getUpdatedAt())) {
+                    if (memberPRRepoIDs.containsKey(pullRequest.getRepository().getId())) {
+                        if (!memberPRRepoIDs.get(pullRequest.getRepository().getId()).contains(nodes.getId())) {
+                            memberPRRepoIDs.get(pullRequest.getRepository().getId()).add(nodes.getId());
+                        }
+                    } else {
+                        ArrayList<String> contributorIDs = new ArrayList<>();
+                        contributorIDs.add(nodes.getId());
+                        memberPRRepoIDs.put(pullRequest.getRepository().getId(), contributorIDs);
                     }
-                } else {
-                    ArrayList<String> contributorIDs = new ArrayList<>();
-                    contributorIDs.add(nodes.getId());
-                    memberPRRepoIDs.put(pullRequests.getRepository().getId(),contributorIDs);
                 }
-
             }
         }
         return new ResponseWrapper(new MemberPR(memberPRRepoIDs, members.getPageInfo().getEndCursor(), members.getPageInfo().isHasNextPage()));
+    }
+
+    private boolean checkIfPullRequestIsActiveSinceOneYear(Date updatedDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, -1);
+        Date oneYearAgo = calendar.getTime();
+
+        return oneYearAgo.getTime() < updatedDate.getTime();
     }
 }
