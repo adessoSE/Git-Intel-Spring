@@ -12,4 +12,5 @@ public class NodesPullRequests {
     public Date getCreatedAt() {
         return createdAt;
     }
+
 }

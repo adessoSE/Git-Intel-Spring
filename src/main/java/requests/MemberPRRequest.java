@@ -24,6 +24,7 @@ public class MemberPRRequest {
                 "id\n" +
                 "pullRequests(last: 25, states: [MERGED, OPEN]) {\n" +
                 "nodes {\n" +
+                "updatedAt \n" +
                 "repository {\n" +
                 "id\n" +
                 "}\n" +

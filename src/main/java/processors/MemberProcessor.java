@@ -6,6 +6,7 @@ import objects.ResponseWrapper;
 import resources.member_Resources.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -25,9 +26,12 @@ public class MemberProcessor extends ResponseProcessor {
         ArrayList<Date> issuesDates = new ArrayList<>();
         ArrayList<Date> commitsDates = new ArrayList<>();
 
+        HashMap<String,ArrayList<Date>> committedRepos = new HashMap<>();
+
         for (NodesMember singleMember : membersData) {
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
                 if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
                 }
             }
@@ -37,7 +41,12 @@ public class MemberProcessor extends ResponseProcessor {
                 }
             }
             for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
+                String committedRepoID = nodesRepoContributedTo.getId();
                 for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
+                    if(committedRepos.containsKey(committedRepoID)){
+                        committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
+                    } else committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
+
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
@@ -45,6 +54,6 @@ public class MemberProcessor extends ResponseProcessor {
             members.put(singleMember.getId(), new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
 
-        return new ResponseWrapper(members);
+        return new ResponseWrapper(members, committedRepos);
     }
 }

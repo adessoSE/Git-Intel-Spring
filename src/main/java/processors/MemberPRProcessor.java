@@ -7,10 +7,7 @@ import resources.memberPR_Resources.Members;
 import resources.memberPR_Resources.NodesMember;
 import resources.memberPR_Resources.NodesPR;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class MemberPRProcessor {
 
@@ -28,13 +25,22 @@ public class MemberPRProcessor {
      */
     public ResponseWrapper processResponse() {
         HashMap<String,ArrayList<String>> memberPRRepoIDs = new HashMap<>();
+        HashMap<String,ArrayList<Date>> pullRequestsDates = new HashMap<>();
         Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
                 if(memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())){
+                    //TODO: Change to Set!
                     if(!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())){
                         memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
                     }
+                    if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < pullRequests.getUpdatedAt().getTime()) {
+                        if(pullRequestsDates.containsKey(pullRequests.getRepository().getId())){
+                            pullRequestsDates.get(pullRequests.getRepository().getId()).add(pullRequests.getUpdatedAt());
+                        } else pullRequestsDates.put(pullRequests.getRepository().getId(),new ArrayList<>(Arrays.asList(pullRequests.getUpdatedAt())));
+                    }
+
+
                 } else {
                     ArrayList<String> contributorIDs = new ArrayList<>();
                     contributorIDs.add(nodes.getId());
@@ -43,6 +49,6 @@ public class MemberPRProcessor {
 
             }
         }
-        return new ResponseWrapper(new MemberPR(memberPRRepoIDs, members.getPageInfo().getEndCursor(), members.getPageInfo().isHasNextPage()));
+        return new ResponseWrapper(new MemberPR(memberPRRepoIDs, members.getPageInfo().getEndCursor(), members.getPageInfo().isHasNextPage()), pullRequestsDates);
     }
 }
