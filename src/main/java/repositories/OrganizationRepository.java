@@ -1,6 +1,6 @@
 package repositories;
 
-import objects.OrganizationWrapper;
+import objects.Organization.OrganizationWrapper;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**

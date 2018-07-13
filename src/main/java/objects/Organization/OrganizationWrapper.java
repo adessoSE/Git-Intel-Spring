@@ -1,6 +1,8 @@
-package objects;
+package objects.Organization;
 
 import enums.RequestType;
+import objects.Member.Member;
+import objects.Repository.Repository;
 import objects.Team.Team;
 import org.springframework.data.annotation.Id;
 
@@ -8,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ * Wrapper-Object of a complete organization. Sums up all generated data out of the queries.
+ */
 public class OrganizationWrapper {
 
     @Id
@@ -33,7 +38,6 @@ public class OrganizationWrapper {
     public OrganizationWrapper(String organizationName) {
         this.organizationName = organizationName;
     }
-
 
     public String getId() {
         return id;

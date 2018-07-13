@@ -1,8 +1,8 @@
 package processors;
 
 import objects.Query;
-import objects.Repositories;
-import objects.Repository;
+import objects.Repository.Repositories;
+import objects.Repository.Repository;
 import objects.ResponseWrapper;
 import resources.externalRepo_Resources.*;
 

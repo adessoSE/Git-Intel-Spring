@@ -1,4 +1,7 @@
-package objects;
+package objects.Repository;
+
+import objects.ChartJSData;
+import objects.Member.Member;
 
 import java.util.ArrayList;
 

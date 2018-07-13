@@ -1,6 +1,6 @@
 package processors;
 
-import objects.OrganizationDetail;
+import objects.Organization.OrganizationDetail;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.organisation_Resources.Organization;

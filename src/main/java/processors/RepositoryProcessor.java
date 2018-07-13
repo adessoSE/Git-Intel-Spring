@@ -1,7 +1,7 @@
 package processors;
 
 import objects.Query;
-import objects.Repository;
+import objects.Repository.Repository;
 import objects.ResponseWrapper;
 import resources.repository_Resources.*;
 
@@ -51,7 +51,7 @@ public class RepositoryProcessor extends ResponseProcessor {
             }
             repositories.put(repo.getId(), new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
-        return new ResponseWrapper(new objects.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
+        return new ResponseWrapper(new objects.Repository.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
     }
 
     private String getLicense(NodesRepositories repo) {

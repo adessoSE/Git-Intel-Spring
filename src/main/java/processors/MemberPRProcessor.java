@@ -1,6 +1,6 @@
 package processors;
 
-import objects.MemberPR;
+import objects.Member.MemberPR;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.memberPR_Resources.Members;
@@ -9,8 +9,6 @@ import resources.memberPR_Resources.NodesPR;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MemberPRProcessor {
 

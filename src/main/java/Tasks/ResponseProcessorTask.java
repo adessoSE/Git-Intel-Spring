@@ -3,6 +3,9 @@ package Tasks;
 import enums.RequestStatus;
 import enums.RequestType;
 import objects.*;
+import objects.Member.Member;
+import objects.Organization.OrganizationWrapper;
+import objects.Repository.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import processors.ResponseProcessorManager;
@@ -10,7 +13,6 @@ import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import requests.RequestManager;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class ResponseProcessorTask {

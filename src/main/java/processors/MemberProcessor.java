@@ -1,6 +1,6 @@
 package processors;
 
-import objects.Member;
+import objects.Member.Member;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.member_Resources.*;

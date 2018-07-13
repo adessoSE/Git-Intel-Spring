@@ -1,6 +1,11 @@
 package objects;
 
 
+import objects.Member.Member;
+import objects.Member.MemberID;
+import objects.Member.MemberPR;
+import objects.Organization.OrganizationDetail;
+import objects.Repository.Repositories;
 import objects.Team.Teams;
 
 import java.util.HashMap;
