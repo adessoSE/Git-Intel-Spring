@@ -86,7 +86,9 @@ public class ResponseProcessorTask {
                     }
                 }
             }
+        if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, processingQuery.getOrganizationName()).size() == 1) {
             organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
+        }
         organizationRepository.save(organization);
     }
 
