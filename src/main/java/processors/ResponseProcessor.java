@@ -3,6 +3,7 @@ package processors;
 import objects.ChartJSData;
 import objects.ResponseWrapper;
 
+import java.nio.channels.CancelledKeyException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,7 +12,7 @@ import java.util.*;
 public abstract class ResponseProcessor {
 
     private long DAY_IN_MS = 1000 * 60 * 60 * 24;
-    private Date oneWeekAgo = Calendar.getInstance().set;
+    private Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
 
     public abstract ResponseWrapper processResponse();
 
