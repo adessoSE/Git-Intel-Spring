@@ -6,6 +6,7 @@ import objects.ResponseWrapper;
 import resources.member_Resources.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -21,18 +22,21 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String,Member> members = new HashMap<>();
         ArrayList<NodesMember> membersData = this.requestQuery.getQueryResponse().getResponseMember().getData().getNodes();
 
-        ArrayList<Date> pullRequestDates = new ArrayList<>();
-        ArrayList<Date> issuesDates = new ArrayList<>();
-        ArrayList<Date> commitsDates = new ArrayList<>();
+        ArrayList<Calendar> pullRequestDates = new ArrayList<>();
+        ArrayList<Calendar> issuesDates = new ArrayList<>();
+        ArrayList<Calendar> commitsDates = new ArrayList<>();
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
 
         for (NodesMember singleMember : membersData) {
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+                if (cal.before(nodesPullRequests.getCreatedAt())) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
                 }
             }
             for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
+                if (cal.before(nodesIssues.getCreatedAt())) {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
