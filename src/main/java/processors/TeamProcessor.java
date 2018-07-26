@@ -30,7 +30,7 @@ public class TeamProcessor {
 
         HashMap<String, Team> teams = new HashMap<>();
         for (NodesTeams team : organizationTeams.getNodes()) {
-            teams.put(team.getId(),new Team(team.getName(), team.getDescription(), team.getAvatarURL(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
+            teams.put(team.getId(),new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
         }
         return new ResponseWrapper(new objects.Team.Teams(teams, organizationTeams.getPageInfo().getEndCursor(), organizationTeams.getPageInfo().isHasNextPage()));
     }

@@ -8,7 +8,7 @@ public class NodesTeams {
     private String name;
     private String id;
     private String description;
-    private String avatarURL;
+    private String avatarUrl;
     private Repositories repositories;
     private Members members;
 
@@ -29,8 +29,8 @@ public class NodesTeams {
         return description;
     }
 
-    public String getAvatarURL() {
-        return avatarURL;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
     public Members getMembers() {
