@@ -5,6 +5,7 @@ import enums.RequestType;
 import objects.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import processors.ResponseProcessor;
 import processors.ResponseProcessorManager;
 import repositories.OrganizationRepository;
 import repositories.RequestRepository;
@@ -13,7 +14,7 @@ import requests.RequestManager;
 import java.lang.reflect.Array;
 import java.util.*;
 
-public class ResponseProcessorTask {
+public class ResponseProcessorTask extends ResponseProcessor {
 
     @Autowired
     RequestRepository requestRepository;
@@ -172,8 +173,11 @@ public class ResponseProcessorTask {
             requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor()).generateRequest(RequestType.MEMBER_PR));
         } else {
             if(organization.getFinishedRequests().contains(RequestType.REPOSITORY)){
+                System.out.println(responseWrapper.getPullRequestsDates().size());
+                calculateExternalOrganizationPullRequestsChartJSData(organization,responseWrapper.getPullRequestsDates());
                 organization.getOrganizationDetail().setNumOfExternalRepoContributions(calculateExternalRepoContributions(organization).size());
             }
+
             Set<String> repoIDs = calculateExternalRepoContributions(organization).keySet();
             while (!repoIDs.isEmpty()) {
                 Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
@@ -193,40 +197,45 @@ public class ResponseProcessorTask {
             organization.setMembers(responseWrapper.getMembers());
         }
         if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, processingQuery.getOrganizationName()).size() == 1) {
-            this.calculateOrganizationChartJSData(organization);
+            this.calculateInternalOrganizationCommitsChartJSData(organization, responseWrapper.getComittedRepos());
             organization.addFinishedRequest(RequestType.MEMBER);
         }
         organizationRepository.save(organization);
     }
 
     /**
-     * Add up every member's ChartJSData for commits, issues and pull requests to save numbers for the whole organization
+     * Calculates the internal commits of the members in the own organization repositories. Generated as ChartJSData and saved in OrganizationDetail.
      * @param organization
      */
-    private void calculateOrganizationChartJSData(OrganizationWrapper organization) {
-        // Instantiate ArrayLists to save final values in and initialize them "empty" to be able to access and add up values
-        String firstMember = organization.getMemberIDs().get(0);
-        ArrayList<String> chartJSLabels = organization.getMembers().get(firstMember).getPreviousCommits().getChartJSLabels();
-        ArrayList<Integer> chartJSCommitData = new ArrayList<>();
-        ArrayList<Integer> chartJSIssueData = new ArrayList<>();
-        ArrayList<Integer> chartJSPRData = new ArrayList<>();
-        for (int x = 0; x < 8; x++) {
-            chartJSCommitData.add(0);
-            chartJSIssueData.add(0);
-            chartJSPRData.add(0);
-        }
-        // Walk through members and add up values for commits, issues and pull requests
-        for (Member member : organization.getMembers().values()) {
-            for (int i = 0; i <= member.getPreviousCommits().getChartJSDataset().size() - 1; i++) {
-                chartJSCommitData.set(i, chartJSCommitData.get(i) + member.getPreviousCommits().getChartJSDataset().get(i));
-                chartJSIssueData.set(i, chartJSIssueData.get(i) + member.getPreviousIssues().getChartJSDataset().get(i));
-                chartJSPRData.set(i, chartJSPRData.get(i) + member.getPreviousPullRequests().getChartJSDataset().get(i));
+    private void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Date>> comittedRepo) {
+        Set<String> organizationRepoIDs = organization.getRepositories().keySet();
+        ArrayList<Date> internalCommitsDates = new ArrayList<>();
+        for(String id : organizationRepoIDs){
+            if (comittedRepo.containsKey(id)){
+                System.out.println("Contains!");
+                internalCommitsDates.addAll(comittedRepo.get(id));
             }
         }
-        // Add commits, issues and pull requests to OrganizationDetail object
-        organization.getOrganizationDetail().setPreviousCommits(new ChartJSData(chartJSLabels, chartJSCommitData));
-        organization.getOrganizationDetail().setPreviousIssues(new ChartJSData(chartJSLabels, chartJSIssueData));
-        organization.getOrganizationDetail().setPreviousPullRequests(new ChartJSData(chartJSLabels, chartJSPRData));
+
+        organization.getOrganizationDetail().setInternalRepositoriesCommits(this.generateChartJSData(internalCommitsDates));
+
+    }
+
+    /**
+     * Calculates the external pull requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
+     * @param organization
+     */
+    private void calculateExternalOrganizationPullRequestsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Date>> contributedRepos) {
+        Set<String> organizationRepoIDs = organization.getRepositories().keySet();
+        ArrayList<Date> externalPullRequestsDates = new ArrayList<>();
+        contributedRepos.keySet().removeAll(organizationRepoIDs);
+        for(ArrayList<Date> date : contributedRepos.values()){
+                externalPullRequestsDates.addAll(date);
+        }
+
+        System.out.println();
+
+        organization.getOrganizationDetail().setExternalRepositoriesPullRequests(this.generateChartJSData(externalPullRequestsDates));
     }
 
     private HashMap<String, ArrayList<String>> calculateExternalRepoContributions(OrganizationWrapper organization) {
@@ -235,4 +244,5 @@ public class ResponseProcessorTask {
         externalContributions.keySet().removeAll(organization.getRepositories().keySet());
         return externalContributions;
     }
+
 }

@@ -29,6 +29,7 @@ public class MemberRequest {
                 "avatarUrl\n" +
                 "repositoriesContributedTo(last: 25, includeUserRepositories: true, contributionTypes: COMMIT) {\n" +
                 "nodes {\n" +
+                "id \n" +
                 "defaultBranchRef {\n" +
                 "target {\n" +
                 "... on Commit {\n" +

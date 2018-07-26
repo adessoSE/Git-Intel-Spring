@@ -17,7 +17,6 @@ public class OrganizationWrapper {
     private OrganizationDetail organizationDetail;
     private ArrayList<String> memberIDs = new ArrayList<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
-    private ArrayList<String> organizationRepoIDs = new ArrayList<>();
     private HashMap<String, Member> members = new HashMap<>();
     private ArrayList<RequestType> finishedRequests = new ArrayList<>();
     private HashMap<String, Repository> repositories = new HashMap<>();
@@ -77,18 +76,6 @@ public class OrganizationWrapper {
 
     public void addMemberPRs(HashMap<String, ArrayList<String>> memberPRRepoIDs) {
         this.memberPRRepoIDs.putAll(memberPRRepoIDs);
-    }
-
-    public ArrayList<String> getOrganizationRepoIDs() {
-        return organizationRepoIDs;
-    }
-
-    public void setOrganizationRepoIDs(ArrayList<String> organizationRepoIDs) {
-        this.organizationRepoIDs = organizationRepoIDs;
-    }
-
-    public void addOrganizationRepoIDs(ArrayList<String> organizationRepoIDs) {
-        this.organizationRepoIDs.addAll(organizationRepoIDs);
     }
 
     public HashMap<String, Member> getMembers() {
