@@ -20,7 +20,6 @@ public class MemberProcessor extends ResponseProcessor {
 
     public ResponseWrapper processResponse() {
         HashMap<String,Member> members = new HashMap<>();
-        System.out.println(this.requestQuery.getQueryResponse().getResponseMember().getData());
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
         ArrayList<Date> pullRequestDates = new ArrayList<>();
