@@ -1,14 +1,13 @@
 package resources.member_Resources;
 
-import java.util.ArrayList;
 
 public class Data {
 
-    private ArrayList<NodesMember> nodes;
+    private User node;
 
     public Data() {}
 
-    public ArrayList<NodesMember> getNodes() {
-        return nodes;
+    public User getNode() {
+        return node;
     }
 }
