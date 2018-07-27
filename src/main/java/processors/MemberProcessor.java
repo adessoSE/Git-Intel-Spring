@@ -1,5 +1,6 @@
 package processors;
 
+import objects.ChartJSData;
 import objects.Member;
 import objects.Query;
 import objects.ResponseWrapper;
@@ -19,38 +20,53 @@ public class MemberProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        HashMap<String,Member> members = new HashMap<>();
+        HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
         ArrayList<Date> pullRequestDates = new ArrayList<>();
         ArrayList<Date> issuesDates = new ArrayList<>();
         ArrayList<Date> commitsDates = new ArrayList<>();
 
-        HashMap<String,ArrayList<Date>> committedRepos = new HashMap<>();
+        int amountPreviousCommits;
+        int amountPreviousIssues;
+        int amountPreviousPRs;
 
-            for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+        HashMap<String, ArrayList<Date>> committedRepos = new HashMap<>();
 
-                    pullRequestDates.add(nodesPullRequests.getCreatedAt());
-                }
+        for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
+            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+
+                pullRequestDates.add(nodesPullRequests.getCreatedAt());
             }
-            for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
-                    issuesDates.add(nodesIssues.getCreatedAt());
-                }
+        }
+        for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
+            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
+                issuesDates.add(nodesIssues.getCreatedAt());
             }
-            for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
-                String committedRepoID = nodesRepoContributedTo.getId();
-                for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
-                    if(committedRepos.containsKey(committedRepoID)){
-                        committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
-                    } else committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
+        }
+        for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
+            String committedRepoID = nodesRepoContributedTo.getId();
+            for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
+                if (committedRepos.containsKey(committedRepoID)) {
+                    committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
+                } else
+                    committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
 
-                    commitsDates.add(nodesHistory.getCommittedDate());
-                }
+                commitsDates.add(nodesHistory.getCommittedDate());
             }
+        }
 
-            members.put(singleMember.getId(), new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+        members.put(singleMember.getId(), new Member(
+                singleMember.getName(),
+                singleMember.getLogin(),
+                singleMember.getAvatarUrl(),
+                singleMember.getUrl(),
+                commitsDates.size(),
+                issuesDates.size(),
+                pullRequestDates.size(),
+                this.generateChartJSData(commitsDates),
+                this.generateChartJSData(issuesDates),
+                this.generateChartJSData(pullRequestDates)));
 
         return new ResponseWrapper(members, committedRepos);
     }
