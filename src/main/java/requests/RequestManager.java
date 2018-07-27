@@ -13,11 +13,8 @@ public class RequestManager {
 
     private String organizationName;
     private String endCursor = null;
-    private List<String> memberIDs;
+    private String memberID;
     private List<String> repoIDs;
-
-    @Autowired
-    RequestRepository requestRepository;
 
     /**
      * Declaration of different constructors to fit different request structures.
@@ -31,9 +28,9 @@ public class RequestManager {
         this.endCursor = "\"" + endCursor + "\"";
     }
 
-    public RequestManager(String organizationName, List<String> memberIDs) {
+    public RequestManager(String organizationName, String memberID, RequestType requestType) {
         this.organizationName = this.formatInput(organizationName);
-        this.memberIDs = memberIDs;
+        this.memberID = memberID;
     }
 
     public RequestManager(List<String> repoIDs, String organizationName) {
@@ -56,7 +53,7 @@ public class RequestManager {
             case MEMBER_PR:
                 return new MemberPRRequest(organizationName, endCursor).generateQuery();
             case MEMBER:
-                return new MemberRequest(organizationName, memberIDs).generateQuery();
+                return new MemberRequest(organizationName, memberID).generateQuery();
             case REPOSITORY:
                 return new RepositoryRequest(organizationName, endCursor).generateQuery();
             case TEAM:
