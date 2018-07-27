@@ -21,13 +21,14 @@ import java.util.Map;
 @CrossOrigin
 public class OrganizationController {
 
-    public enum Type {COMMITS, ISSUES, PRS}
-
-    @Autowired
     OrganizationRepository organizationRepository;
+    RequestRepository requestRepository;
 
     @Autowired
-    RequestRepository requestRepository;
+    public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository) {
+        this.organizationRepository = organizationRepository;
+        this.requestRepository = requestRepository;
+    }
 
     /**
      * Check if organization is already stored in data base. If not, initiate GitHub crawl for requested organization.
