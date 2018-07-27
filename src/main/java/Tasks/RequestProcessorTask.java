@@ -18,7 +18,7 @@ public class RequestProcessorTask {
      * Scheduled task checking for queries without crawled information.
      * After picking one query the request starts with the specified information out of the selected query. After the request the query is saved in the repository with the additional response data.
      */
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 500)
     private void crawlQueryData() {
         ArrayList<Query> processingQuerys = requestRepository.findByQueryStatus(RequestStatus.CREATED);
         if (!processingQuerys.isEmpty()) {

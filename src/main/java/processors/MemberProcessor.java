@@ -20,7 +20,7 @@ public class MemberProcessor extends ResponseProcessor {
 
     public ResponseWrapper processResponse() {
         HashMap<String,Member> members = new HashMap<>();
-        ArrayList<NodesMember> membersData = this.requestQuery.getQueryResponse().getResponseMember().getData().getNodes();
+        User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
         ArrayList<Date> pullRequestDates = new ArrayList<>();
         ArrayList<Date> issuesDates = new ArrayList<>();
@@ -28,7 +28,6 @@ public class MemberProcessor extends ResponseProcessor {
 
         HashMap<String,ArrayList<Date>> committedRepos = new HashMap<>();
 
-        for (NodesMember singleMember : membersData) {
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
                 if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
 
@@ -52,7 +51,6 @@ public class MemberProcessor extends ResponseProcessor {
             }
 
             members.put(singleMember.getId(), new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
-        }
 
         return new ResponseWrapper(members, committedRepos);
     }

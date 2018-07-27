@@ -26,7 +26,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
      * Scheduled task for checking all the saved queries response status. If there is a valid response the response processing begins.
      * The selected query is processed in the ProcessorManager which selects the suitable response processor. After successful processing the query is deleted.
      */
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 500)
     private void processCrawledQueryData() {
         if (!requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).isEmpty()) {
             Query processingQuery = requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).get(0);
@@ -156,8 +156,8 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organizationRepository.save(organization);
             ArrayList<String> memberIDs = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName()).getMemberIDs();
             while (!memberIDs.isEmpty()) {
-                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.subList(0, Math.min(9, memberIDs.size()))).generateRequest(RequestType.MEMBER));
-                memberIDs.removeAll(memberIDs.subList(0, Math.min(9, memberIDs.size())));
+                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.get(0), RequestType.MEMBER).generateRequest(RequestType.MEMBER));
+                memberIDs.removeAll(Arrays.asList(memberIDs.get(0)));
             }
         }
     }
@@ -173,7 +173,6 @@ public class ResponseProcessorTask extends ResponseProcessor {
             requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor()).generateRequest(RequestType.MEMBER_PR));
         } else {
             if(organization.getFinishedRequests().contains(RequestType.REPOSITORY)){
-                System.out.println(responseWrapper.getPullRequestsDates().size());
                 calculateExternalOrganizationPullRequestsChartJSData(organization,responseWrapper.getPullRequestsDates());
                 organization.getOrganizationDetail().setNumOfExternalRepoContributions(calculateExternalRepoContributions(organization).size());
             }
@@ -212,7 +211,6 @@ public class ResponseProcessorTask extends ResponseProcessor {
         ArrayList<Date> internalCommitsDates = new ArrayList<>();
         for(String id : organizationRepoIDs){
             if (comittedRepo.containsKey(id)){
-                System.out.println("Contains!");
                 internalCommitsDates.addAll(comittedRepo.get(id));
             }
         }
@@ -232,8 +230,6 @@ public class ResponseProcessorTask extends ResponseProcessor {
         for(ArrayList<Date> date : contributedRepos.values()){
                 externalPullRequestsDates.addAll(date);
         }
-
-        System.out.println();
 
         organization.getOrganizationDetail().setExternalRepositoriesPullRequests(this.generateChartJSData(externalPullRequestsDates));
     }

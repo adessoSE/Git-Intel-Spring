@@ -31,6 +31,7 @@ public class TeamRequest extends Request {
                 "id\n" +
                 "description\n" +
                 "avatarUrl\n" +
+                "url\n" +
                 "repositories(first: 10) {\n" +
                 "totalCount\n" +
                 "nodes {\n" +

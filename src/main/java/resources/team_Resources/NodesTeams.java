@@ -9,9 +9,13 @@ public class NodesTeams {
     private String id;
     private String description;
     private String avatarUrl;
+    private String url;
     private Repositories repositories;
     private Members members;
 
+    public String getUrl() {
+        return url;
+    }
 
     public Repositories getRepositories() {
         return repositories;
