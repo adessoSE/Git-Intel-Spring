@@ -23,6 +23,7 @@ public class OrganizationWrapper {
     private HashMap<String, Integer> memberAmount = new HashMap<>();
     private HashMap<String, Team> teams = new HashMap<>();
     private HashMap<String, Repository> externalRepos = new HashMap<>();
+    private Date lastUpdateTimestamp;
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -33,6 +34,14 @@ public class OrganizationWrapper {
         this.organizationName = organizationName;
     }
 
+
+    public Date getLastUpdateTimestamp() {
+        return lastUpdateTimestamp;
+    }
+
+    public void setLastUpdateTimestamp(Date lastUpdateTimestamp) {
+        this.lastUpdateTimestamp = lastUpdateTimestamp;
+    }
 
     public String getId() {
         return id;
