@@ -17,7 +17,7 @@ public class Query extends Request {
     private Response queryResponse;
     private RequestType queryRequestType;
     private ResponseProcessor queryResponseProcessorType;
-    private String queryError;
+    private Exception queryError;
 
     public Query(String organizationName, String queryContent, ResponseProcessor queryResponseProcessorType, RequestType queryRequestType) {
         this.setOrganizationName(organizationName);
@@ -55,11 +55,11 @@ public class Query extends Request {
         this.crawlData(this);
     }
 
-    public String getQueryError() {
+    public Exception getQueryError() {
         return queryError;
     }
 
-    public void setQueryError(String queryError) {
+    public void setQueryError(Exception queryError) {
         this.queryError = queryError;
     }
 

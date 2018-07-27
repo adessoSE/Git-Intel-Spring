@@ -1,5 +1,6 @@
 package processors;
 
+import objects.ChartJSData;
 import objects.Member;
 import objects.Query;
 import objects.ResponseWrapper;
@@ -19,8 +20,8 @@ public class MemberProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        HashMap<String,Member> members = new HashMap<>();
-        ArrayList<NodesMember> membersData = this.requestQuery.getQueryResponse().getResponseMember().getData().getNodes();
+        HashMap<String, Member> members = new HashMap<>();
+        User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
@@ -40,15 +41,36 @@ public class MemberProcessor extends ResponseProcessor {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
-            for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
-                for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
-                    commitsDates.add(nodesHistory.getCommittedDate());
-                }
+        }
+        for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
+            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
+                issuesDates.add(nodesIssues.getCreatedAt());
             }
+        }
+        for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
+            String committedRepoID = nodesRepoContributedTo.getId();
+            for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
+                if (committedRepos.containsKey(committedRepoID)) {
+                    committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
+                } else
+                    committedRepos.put(committedRepoID, new A.asList(nodesHistory.getCommittedDate())));
 
-            members.put(singleMember.getId(), new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+                commitsDates.add(nodesHistory.getCommittedDate());
+            }
         }
 
-        return new ResponseWrapper(members);
+        members.put(singleMember.getId(), new Member(
+                singleMember.getName(),
+                singleMember.getLogin(),
+                singleMember.getAvatarUrl(),
+                singleMember.getUrl(),
+                commitsDates.size(),
+                issuesDates.size(),
+                pullRequestDates.size(),
+                this.generateChartJSData(commitsDates),
+                this.generateChartJSData(issuesDates),
+                this.generateChartJSData(pullRequestDates)));
+
+        return new ResponseWrapper(members, committedRepos);
     }
 }

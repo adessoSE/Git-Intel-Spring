@@ -3,6 +3,8 @@ package objects;
 
 import objects.Team.Teams;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class ResponseWrapper {
@@ -12,6 +14,8 @@ public class ResponseWrapper {
     private OrganizationDetail organizationDetail;
     private MemberPR memberPR;
     private HashMap<String, Member> members;
+    private HashMap<String,ArrayList<Date>> comittedRepos;
+    private HashMap<String,ArrayList<Date>> pullRequestsDates;
     private Repositories repositories;
     private Teams teams;
 
@@ -24,16 +28,18 @@ public class ResponseWrapper {
         this.repositories = repositories;
     }
 
-    public ResponseWrapper(HashMap<String, Member> members) {
+    public ResponseWrapper(HashMap<String, Member> members, HashMap<String,ArrayList<Date>> committedRepos) {
         this.members = members;
+        this.comittedRepos = committedRepos;
     }
 
     public ResponseWrapper(Response response) {
         this.response = response;
     }
 
-    public ResponseWrapper(MemberPR memberPR) {
+    public ResponseWrapper(MemberPR memberPR, HashMap<String,ArrayList<Date>> pullRequestsDates) {
         this.memberPR = memberPR;
+        this.pullRequestsDates = pullRequestsDates;
     }
 
     public ResponseWrapper(MemberID memberID) {
@@ -66,5 +72,13 @@ public class ResponseWrapper {
 
     public Teams getTeams() {
         return teams;
+    }
+
+    public HashMap<String, ArrayList<Date>> getComittedRepos() {
+        return comittedRepos;
+    }
+
+    public HashMap<String, ArrayList<Date>> getPullRequestsDates() {
+        return pullRequestsDates;
     }
 }

@@ -17,22 +17,23 @@ public class MemberRequest {
     private String organizationName;
     private RequestType requestType;
 
-    public MemberRequest(String organizationName, List<String> memberIDs) {
+    public MemberRequest(String organizationName, String memberID) {
         this.organizationName = organizationName;
         this.query = "{\n" +
-                "nodes(ids: [" + formatMemberIDs(memberIDs) + "]) {\n" +
+                "node(id: \"" + memberID + "\") {\n" +
                 "... on User {\n" +
-                "name \n" +
-                "id \n" +
+                "name\n" +
+                "id\n" +
                 "login\n" +
                 "url\n" +
                 "avatarUrl\n" +
-                "repositoriesContributedTo(last: 25, includeUserRepositories: true, contributionTypes: COMMIT) {\n" +
+                "repositoriesContributedTo(first: 100, contributionTypes: COMMIT, includeUserRepositories: true) {\n" +
                 "nodes {\n" +
+                "id\n" +
                 "defaultBranchRef {\n" +
                 "target {\n" +
                 "... on Commit {\n" +
-                "history(first: 25, since: \"" + getDateWeekAgoInISO8601UTC() + "\") {\n" +
+                "history(first: 100, since: \"" + getDateWeekAgoInISO8601UTC() + "\"  ,author: {id: \"" + memberID + "\"}) {\n" +
                 "nodes {\n" +
                 "committedDate\n" +
                 "}\n" +

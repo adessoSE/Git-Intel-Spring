@@ -1,7 +1,7 @@
 package resources.member_Resources;
 
 
-public class NodesMember {
+public class User {
 
     private String name;
     private String id;

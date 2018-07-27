@@ -31,8 +31,6 @@ public abstract class ResponseProcessor {
     }
 
     private void sortArrayOfDatesAscendingOrder(ArrayList<Calendar> arrayOfCalendars) {
-//        Comparator<Date> byDate = (Date d1, Date d2) -> d1.compareTo(d2);
-//        Collections.sort(arrayOfDates, byDate);
         Collections.sort(arrayOfCalendars, Comparator.naturalOrder());
     }
 

@@ -12,4 +12,5 @@ public class NodesPullRequests {
     public Calendar getCreatedAt() {
         return createdAt;
     }
+
 }

@@ -4,6 +4,7 @@ package REST;
 import objects.*;
 import objects.Team.Team;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,15 +18,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 public class OrganizationController {
 
-    public enum Type {COMMITS, ISSUES, PRS}
-
-    @Autowired
     OrganizationRepository organizationRepository;
+    RequestRepository requestRepository;
 
     @Autowired
-    RequestRepository requestRepository;
+    public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository) {
+        this.organizationRepository = organizationRepository;
+        this.requestRepository = requestRepository;
+    }
 
     /**
      * Check if organization is already stored in data base. If not, initiate GitHub crawl for requested organization.

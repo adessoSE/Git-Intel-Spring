@@ -17,13 +17,13 @@ public class OrganizationWrapper {
     private OrganizationDetail organizationDetail;
     private ArrayList<String> memberIDs = new ArrayList<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
-    private ArrayList<String> organizationRepoIDs = new ArrayList<>();
     private HashMap<String, Member> members = new HashMap<>();
     private ArrayList<RequestType> finishedRequests = new ArrayList<>();
     private HashMap<String, Repository> repositories = new HashMap<>();
     private HashMap<String, Integer> memberAmount = new HashMap<>();
     private HashMap<String, Team> teams = new HashMap<>();
     private HashMap<String, Repository> externalRepos = new HashMap<>();
+    private Date lastUpdateTimestamp;
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -34,6 +34,14 @@ public class OrganizationWrapper {
         this.organizationName = organizationName;
     }
 
+
+    public Date getLastUpdateTimestamp() {
+        return lastUpdateTimestamp;
+    }
+
+    public void setLastUpdateTimestamp(Date lastUpdateTimestamp) {
+        this.lastUpdateTimestamp = lastUpdateTimestamp;
+    }
 
     public String getId() {
         return id;
@@ -77,18 +85,6 @@ public class OrganizationWrapper {
 
     public void addMemberPRs(HashMap<String, ArrayList<String>> memberPRRepoIDs) {
         this.memberPRRepoIDs.putAll(memberPRRepoIDs);
-    }
-
-    public ArrayList<String> getOrganizationRepoIDs() {
-        return organizationRepoIDs;
-    }
-
-    public void setOrganizationRepoIDs(ArrayList<String> organizationRepoIDs) {
-        this.organizationRepoIDs = organizationRepoIDs;
-    }
-
-    public void addOrganizationRepoIDs(ArrayList<String> organizationRepoIDs) {
-        this.organizationRepoIDs.addAll(organizationRepoIDs);
     }
 
     public HashMap<String, Member> getMembers() {

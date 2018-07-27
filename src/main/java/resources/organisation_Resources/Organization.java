@@ -6,12 +6,17 @@ public class Organization {
     private String location;
     private String websiteUrl;
     private String url;
+    private String avatarUrl;
     private String description;
     private Members members;
     private Teams teams;
     private Repositories repositories;
 
     public Organization() {}
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
 
     public String getName() {
         return name;

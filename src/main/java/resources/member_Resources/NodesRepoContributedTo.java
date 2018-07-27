@@ -3,12 +3,15 @@ package resources.member_Resources;
 public class NodesRepoContributedTo {
 
     private DefaultBranchRef defaultBranchRef;
+    private String id;
 
-    public NodesRepoContributedTo() {
-    }
 
     public DefaultBranchRef getDefaultBranchRef() {
         return defaultBranchRef;
+    }
+
+    public String getId() {
+        return id;
     }
 
 }

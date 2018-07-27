@@ -7,20 +7,21 @@ public class OrganizationDetail {
     private String websiteURL;
     private String githubURL;
     private String location;
+    private String avatarURL;
     private int numOfMembers;
     private int numOfTeams;
     private int numOfRepositories;
     private int numOfExternalRepoContributions;
-    private ChartJSData previousCommits;
-    private ChartJSData previousIssues;
-    private ChartJSData previousPullRequests;
+    private ChartJSData internalRepositoriesCommits;
+    private ChartJSData externalRepositoriesPullRequests;
 
-    public OrganizationDetail(String name, String description, String websiteURL, String githubURL, String location, int numOfMembers, int numOfRepositories, int numOfTeams) {
+    public OrganizationDetail(String name, String description, String websiteURL, String githubURL, String location, String avatarURL, int numOfMembers, int numOfRepositories, int numOfTeams) {
         this.name = name;
         this.description = description;
         this.websiteURL = websiteURL;
         this.githubURL = githubURL;
         this.location = location;
+        this.avatarURL = avatarURL;
         this.numOfMembers = numOfMembers;
         this.numOfRepositories = numOfRepositories;
         this.numOfTeams = numOfTeams;
@@ -46,6 +47,10 @@ public class OrganizationDetail {
         return location;
     }
 
+    public String getAvatarURL() {
+        return avatarURL;
+    }
+
     public int getNumOfMembers() {
         return numOfMembers;
     }
@@ -62,31 +67,23 @@ public class OrganizationDetail {
         return numOfExternalRepoContributions;
     }
 
-    public ChartJSData getPreviousCommits() {
-        return previousCommits;
+    public ChartJSData getInternalRepositoriesCommits() {
+        return internalRepositoriesCommits;
     }
 
-    public void setPreviousCommits(ChartJSData previousCommits) {
-        this.previousCommits = previousCommits;
-    }
-
-    public ChartJSData getPreviousIssues() {
-        return previousIssues;
-    }
-
-    public void setPreviousIssues(ChartJSData previousIssues) {
-        this.previousIssues = previousIssues;
-    }
-
-    public ChartJSData getPreviousPullRequests() {
-        return previousPullRequests;
-    }
-
-    public void setPreviousPullRequests(ChartJSData previousPullRequests) {
-        this.previousPullRequests = previousPullRequests;
+    public void setInternalRepositoriesCommits(ChartJSData internalRepositoriesCommits) {
+        this.internalRepositoriesCommits = internalRepositoriesCommits;
     }
 
     public void setNumOfExternalRepoContributions(int numOfExternalRepoContributions) {
         this.numOfExternalRepoContributions = numOfExternalRepoContributions;
+    }
+
+    public ChartJSData getExternalRepositoriesPullRequests() {
+        return externalRepositoriesPullRequests;
+    }
+
+    public void setExternalRepositoriesPullRequests(ChartJSData externalRepositoriesPullRequests) {
+        this.externalRepositoriesPullRequests = externalRepositoriesPullRequests;
     }
 }
