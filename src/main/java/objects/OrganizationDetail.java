@@ -47,6 +47,10 @@ public class OrganizationDetail {
         return location;
     }
 
+    public String getAvatarURL() {
+        return avatarURL;
+    }
+
     public int getNumOfMembers() {
         return numOfMembers;
     }

@@ -1,5 +1,6 @@
 package processors;
 
+import objects.ChartJSData;
 import objects.Member;
 import objects.Query;
 import objects.ResponseWrapper;
@@ -26,6 +27,10 @@ public class MemberProcessor extends ResponseProcessor {
         ArrayList<Date> issuesDates = new ArrayList<>();
         ArrayList<Date> commitsDates = new ArrayList<>();
 
+        int amountPreviousCommits;
+        int amountPreviousIssues;
+        int amountPreviousPRs;
+
         HashMap<String,ArrayList<Date>> committedRepos = new HashMap<>();
 
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
@@ -50,8 +55,20 @@ public class MemberProcessor extends ResponseProcessor {
                 }
             }
 
-            members.put(singleMember.getId(), new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+            // Extract the sum of the previous commits/issues/prs from ChartJSData
+            amountPreviousCommits = this.sumOfValues(this.generateChartJSData(commitsDates));
+            amountPreviousIssues = this.sumOfValues(this.generateChartJSData(issuesDates));
+            amountPreviousPRs = this.sumOfValues(this.generateChartJSData(pullRequestDates));
+
+            members.put(singleMember.getId(), new Member(singleMember.getName(), singleMember.getLogin(), singleMember.getAvatarUrl(), singleMember.getUrl(), amountPreviousCommits , amountPreviousIssues, amountPreviousPRs, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
 
         return new ResponseWrapper(members, committedRepos);
+    }
+
+    private int sumOfValues(ChartJSData data) {
+        int sum = 0;
+        for(int value : data.getChartJSDataset())
+            sum += value;
+        return sum;
     }
 }
