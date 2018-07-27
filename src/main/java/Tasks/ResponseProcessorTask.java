@@ -11,7 +11,6 @@ import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import requests.RequestManager;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class ResponseProcessorTask extends ResponseProcessor {
@@ -91,6 +90,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
         }
         organizationRepository.save(organization);
+        this.checkIfUpdateIsFinished(organization);
     }
 
     private void processOrganizationTeams(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
@@ -107,6 +107,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization.addFinishedRequest(RequestType.TEAM);
             organizationRepository.save(organization);
         }
+        this.checkIfUpdateIsFinished(organization);
     }
 
     private void processRepositoryResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
@@ -126,6 +127,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization.addFinishedRequest(RequestType.REPOSITORY);
             organizationRepository.save(organization);
         }
+        this.checkIfUpdateIsFinished(organization);
     }
 
     private void processOrganizationDetailResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
@@ -139,6 +141,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
         }
         organization.addFinishedRequest(RequestType.ORGANIZATION_DETAIL);
         organizationRepository.save(organization);
+        this.checkIfUpdateIsFinished(organization);
     }
 
     private void processMemberIDResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
@@ -160,6 +163,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
                 memberIDs.removeAll(Arrays.asList(memberIDs.get(0)));
             }
         }
+        this.checkIfUpdateIsFinished(organization);
     }
 
     private void processMemberPRResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
@@ -187,6 +191,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization.addFinishedRequest(RequestType.MEMBER_PR);
         }
         organizationRepository.save(organization);
+        this.checkIfUpdateIsFinished(organization);
     }
     private void processMemberResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
         if (organization != null) {
@@ -200,6 +205,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization.addFinishedRequest(RequestType.MEMBER);
         }
         organizationRepository.save(organization);
+        this.checkIfUpdateIsFinished(organization);
     }
 
     /**
@@ -239,6 +245,13 @@ public class ResponseProcessorTask extends ResponseProcessor {
         externalContributions.putAll(organization.getMemberPRRepoIDs());
         externalContributions.keySet().removeAll(organization.getRepositories().keySet());
         return externalContributions;
+    }
+
+    private void checkIfUpdateIsFinished(OrganizationWrapper organization){
+        if (organization.getFinishedRequests().size() == RequestType.values().length){
+            organization.setLastUpdateTimestamp(new Date());
+            organizationRepository.save(organization);
+        }
     }
 
 }
