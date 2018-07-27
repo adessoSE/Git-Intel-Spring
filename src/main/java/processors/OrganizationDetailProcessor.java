@@ -21,11 +21,13 @@ public class OrganizationDetailProcessor {
      */
     public ResponseWrapper processResponse() {
         Organization organization = this.requestQuery.getQueryResponse().getResponseOrganization().getData().getOrganization();
-        return new ResponseWrapper(new OrganizationDetail(organization.getName(),
+        return new ResponseWrapper(new OrganizationDetail(
+                organization.getName(),
                 organization.getDescription(),
                 organization.getWebsiteUrl(),
                 organization.getUrl(),
                 organization.getLocation(),
+                organization.getAvatarUrl(),
                 organization.getMembers().getTotalCount(),
                 organization.getRepositories().getTotalCount(),
                 organization.getTeams().getTotalCount()));

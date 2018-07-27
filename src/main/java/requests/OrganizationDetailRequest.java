@@ -19,6 +19,7 @@ public class OrganizationDetailRequest {
                 " location \n" +
                 " websiteUrl \n" +
                 " url \n" +
+                " avatarUrl \n" +
                 " description \n" +
                 "    members(first: 1) {\n" +
                 "      totalCount\n" +
