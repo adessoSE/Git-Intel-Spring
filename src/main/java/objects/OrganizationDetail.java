@@ -7,6 +7,7 @@ public class OrganizationDetail {
     private String websiteURL;
     private String githubURL;
     private String location;
+    private String avatarURL;
     private int numOfMembers;
     private int numOfTeams;
     private int numOfRepositories;
@@ -14,12 +15,13 @@ public class OrganizationDetail {
     private ChartJSData internalRepositoriesCommits;
     private ChartJSData externalRepositoriesPullRequests;
 
-    public OrganizationDetail(String name, String description, String websiteURL, String githubURL, String location, int numOfMembers, int numOfRepositories, int numOfTeams) {
+    public OrganizationDetail(String name, String description, String websiteURL, String githubURL, String location, String avatarURL, int numOfMembers, int numOfRepositories, int numOfTeams) {
         this.name = name;
         this.description = description;
         this.websiteURL = websiteURL;
         this.githubURL = githubURL;
         this.location = location;
+        this.avatarURL = avatarURL;
         this.numOfMembers = numOfMembers;
         this.numOfRepositories = numOfRepositories;
         this.numOfTeams = numOfTeams;
