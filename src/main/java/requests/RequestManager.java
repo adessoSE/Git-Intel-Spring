@@ -2,10 +2,7 @@ package requests;
 
 import enums.RequestType;
 import objects.Query;
-import org.springframework.beans.factory.annotation.Autowired;
-import repositories.RequestRepository;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +23,12 @@ public class RequestManager {
     public RequestManager(String organizationName, String endCursor) {
         this.organizationName = this.formatInput(organizationName);
         this.endCursor = "\"" + endCursor + "\"";
+    }
+
+    public RequestManager(String organizationName, String memberID, String endCursor){
+        this. organizationName = this.formatInput(organizationName);
+        this.endCursor = "\"" + endCursor + "\"";
+        this.memberID = memberID;
     }
 
     public RequestManager(String organizationName, String memberID, RequestType requestType) {
@@ -60,6 +63,8 @@ public class RequestManager {
                 return new TeamRequest(organizationName, endCursor).generateQuery();
             case EXTERNAL_REPO:
                 return new ExternalRepoRequest(organizationName, repoIDs).generateQuery();
+            case CREATED_REPOS_BY_MEMBERS:
+                return new CreatedReposByMembersRequest(organizationName, memberID, endCursor).generateQuery();
             default:
                 return null;
         }
@@ -81,7 +86,7 @@ public class RequestManager {
         return allRequestQuerys;
     }
 
-    private String formatInput (String input) {
-        return input.replaceAll("\\s+","").toLowerCase();
+    private String formatInput(String input) {
+        return input.replaceAll("\\s+", "").toLowerCase();
     }
 }

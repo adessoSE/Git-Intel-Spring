@@ -18,6 +18,7 @@ public class ResponseWrapper {
     private HashMap<String,ArrayList<Date>> pullRequestsDates;
     private Repositories repositories;
     private Teams teams;
+    private CreatedRepositoriesByMembers createdRepositoriesByMembers;
 
     // TODO: Builder Pattern anwenden! Mehrere Constructoren mit ArrayList nicht zulässig!
     public ResponseWrapper(Teams teams) {
@@ -26,6 +27,10 @@ public class ResponseWrapper {
 
     public ResponseWrapper(Repositories repositories) {
         this.repositories = repositories;
+    }
+
+    public ResponseWrapper(CreatedRepositoriesByMembers createdRepositoriesByMembers){
+        this.createdRepositoriesByMembers = createdRepositoriesByMembers;
     }
 
     public ResponseWrapper(HashMap<String, Member> members, HashMap<String,ArrayList<Date>> committedRepos) {
@@ -80,5 +85,9 @@ public class ResponseWrapper {
 
     public HashMap<String, ArrayList<Date>> getPullRequestsDates() {
         return pullRequestsDates;
+    }
+
+    public CreatedRepositoriesByMembers getCreatedRepositoriesByMembers() {
+        return createdRepositoriesByMembers;
     }
 }
