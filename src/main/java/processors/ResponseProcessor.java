@@ -14,8 +14,6 @@ public abstract class ResponseProcessor {
     private long DAY_IN_MS = 1000 * 60 * 60 * 24;
     private Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
 
-    public abstract ResponseWrapper processResponse();
-
     public ChartJSData generateChartJSData(ArrayList<Calendar> arrayOfDates) {
         this.sortArrayOfDatesAscendingOrder(arrayOfDates);
 

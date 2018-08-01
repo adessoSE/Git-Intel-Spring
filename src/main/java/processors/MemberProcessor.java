@@ -6,10 +6,7 @@ import objects.Query;
 import objects.ResponseWrapper;
 import resources.member_Resources.*;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class MemberProcessor extends ResponseProcessor {
 
@@ -27,10 +24,11 @@ public class MemberProcessor extends ResponseProcessor {
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
 
+        HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
+
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
 
-        for (NodesMember singleMember : membersData) {
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
@@ -41,19 +39,13 @@ public class MemberProcessor extends ResponseProcessor {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
-        }
-        for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
-            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
-                issuesDates.add(nodesIssues.getCreatedAt());
-            }
-        }
+
         for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
             String committedRepoID = nodesRepoContributedTo.getId();
             for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
                 if (committedRepos.containsKey(committedRepoID)) {
                     committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
-                } else
-                    committedRepos.put(committedRepoID, new A.asList(nodesHistory.getCommittedDate())));
+                } else committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
 
                 commitsDates.add(nodesHistory.getCommittedDate());
             }
