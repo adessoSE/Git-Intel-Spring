@@ -29,23 +29,26 @@ public class MemberPRProcessor {
         Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
-                if(memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())){
-                    //TODO: Change to Set!
-                    if(!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())){
-                        memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
-                    }
-                    if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < pullRequests.getUpdatedAt().getTime()) {
-                        if(pullRequestsDates.containsKey(pullRequests.getRepository().getId())){
-                            pullRequestsDates.get(pullRequests.getRepository().getId()).add(pullRequests.getUpdatedAt());
-                        } else pullRequestsDates.put(pullRequests.getRepository().getId(),new ArrayList<>(Arrays.asList(pullRequests.getUpdatedAt())));
-                    }
+                if(!pullRequests.getRepository().isFork()){
+                    if(memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())){
+                        //TODO: Change to Set!
+                        if(!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())){
+                            memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
+                        }
+                        if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < pullRequests.getUpdatedAt().getTime()) {
+                            if(pullRequestsDates.containsKey(pullRequests.getRepository().getId())){
+                                pullRequestsDates.get(pullRequests.getRepository().getId()).add(pullRequests.getUpdatedAt());
+                            } else pullRequestsDates.put(pullRequests.getRepository().getId(),new ArrayList<>(Arrays.asList(pullRequests.getUpdatedAt())));
+                        }
 
 
-                } else {
-                    ArrayList<String> contributorIDs = new ArrayList<>();
-                    contributorIDs.add(nodes.getId());
-                    memberPRRepoIDs.put(pullRequests.getRepository().getId(),contributorIDs);
+                    } else {
+                        ArrayList<String> contributorIDs = new ArrayList<>();
+                        contributorIDs.add(nodes.getId());
+                        memberPRRepoIDs.put(pullRequests.getRepository().getId(),contributorIDs);
+                    }
                 }
+
             }
         }
         return new ResponseWrapper(new MemberPR(memberPRRepoIDs, members.getPageInfo().getEndCursor(), members.getPageInfo().isHasNextPage()), pullRequestsDates);
