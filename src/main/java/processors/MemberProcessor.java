@@ -23,25 +23,26 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
-        ArrayList<Date> pullRequestDates = new ArrayList<>();
-        ArrayList<Date> issuesDates = new ArrayList<>();
-        ArrayList<Date> commitsDates = new ArrayList<>();
+        ArrayList<Date> previousCommits = new ArrayList<>();
+        ArrayList<Date> previousIssues = new ArrayList<>();
+        ArrayList<Date> previousPullRequests = new ArrayList<>();
 
-        int amountPreviousCommits;
-        int amountPreviousIssues;
-        int amountPreviousPRs;
+        HashMap<String, String> previousCommitsWithLink = new HashMap<>();
+        HashMap<String, String> previousIssuesWithLink = new HashMap<>();
+        HashMap<String, String> previousPullRequestsWithLink = new HashMap<>();
 
         HashMap<String, ArrayList<Date>> committedRepos = new HashMap<>();
 
         for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
             if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
-
-                pullRequestDates.add(nodesPullRequests.getCreatedAt());
+                previousPullRequests.add(nodesPullRequests.getCreatedAt());
+                previousPullRequestsWithLink.put(nodesPullRequests.getCreatedAt().toString(), nodesPullRequests.getUrl());
             }
         }
         for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
             if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
-                issuesDates.add(nodesIssues.getCreatedAt());
+                previousCommits.add(nodesIssues.getCreatedAt());
+                previousIssuesWithLink.put(nodesIssues.getCreatedAt().toString(), nodesIssues.getUrl());
             }
         }
         for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
@@ -51,8 +52,8 @@ public class MemberProcessor extends ResponseProcessor {
                     committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
                 } else
                     committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
-
-                commitsDates.add(nodesHistory.getCommittedDate());
+                previousCommits.add(nodesHistory.getCommittedDate());
+                previousCommitsWithLink.put(nodesHistory.getCommittedDate().toString(), nodesHistory.getUrl());
             }
         }
 
@@ -61,12 +62,12 @@ public class MemberProcessor extends ResponseProcessor {
                 singleMember.getLogin(),
                 singleMember.getAvatarUrl(),
                 singleMember.getUrl(),
-                commitsDates.size(),
-                issuesDates.size(),
-                pullRequestDates.size(),
-                this.generateChartJSData(commitsDates),
-                this.generateChartJSData(issuesDates),
-                this.generateChartJSData(pullRequestDates)));
+                previousCommitsWithLink,
+                previousIssuesWithLink,
+                previousPullRequestsWithLink,
+                this.generateChartJSData(previousCommits),
+                this.generateChartJSData(previousIssues),
+                this.generateChartJSData(previousPullRequests)));
 
         return new ResponseWrapper(members, committedRepos);
     }

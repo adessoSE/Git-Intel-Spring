@@ -5,6 +5,7 @@ import java.util.Date;
 public class NodesPullRequests {
 
     private Date createdAt;
+    private String url;
 
     public NodesPullRequests() {
     }
@@ -13,4 +14,7 @@ public class NodesPullRequests {
         return createdAt;
     }
 
+    public String getUrl() {
+        return url;
+    }
 }
