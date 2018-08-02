@@ -35,13 +35,13 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, ArrayList<Date>> committedRepos = new HashMap<>();
 
         for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
-            if (new Date(System.currentTimeMillis() - (Config.PAST_DAYS_AMOUNT_TO_CRAWL * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+            if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
 
                 pullRequestDates.add(nodesPullRequests.getCreatedAt());
             }
         }
         for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
-            if (new Date(System.currentTimeMillis() - (Config.PAST_DAYS_AMOUNT_TO_CRAWL * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
+            if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesIssues.getCreatedAt().getTime()) {
                 issuesDates.add(nodesIssues.getCreatedAt());
             }
         }

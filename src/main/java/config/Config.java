@@ -8,8 +8,11 @@ public class Config {
      */
 
     // API Configuration
-    public static final String API_TOKEN = "INSERT_API_TOKEN";
+    public static final String API_TOKEN = "542e0f7e566f4e137697eba078b7f424afbc2bb6";
     public static final String API_URL = "https://api.github.com/graphql";
 
-    public static final int PAST_DAYS_AMOUNT_TO_CRAWL = 7;
+    // Range of days for evaluation
+    public static final int PAST_DAYS_AMOUNT_TO_CRAWL = 50;
+    public static final long DAY_IN_MS = 1000 * 60 * 60 * 24;
+    public static final long PAST_DAYS_TO_CRAWL_IN_MS = PAST_DAYS_AMOUNT_TO_CRAWL * DAY_IN_MS;
 }

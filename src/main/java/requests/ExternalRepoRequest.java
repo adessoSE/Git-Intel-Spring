@@ -75,11 +75,10 @@ public class ExternalRepoRequest {
     }
 
     private String getDateToStartCrawlingInISO8601UTC() {
-        long DAY_IN_MS = 1000 * 60 * 60 * 24;
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(tz);
-        return df.format(new Date(System.currentTimeMillis() - (Config.PAST_DAYS_AMOUNT_TO_CRAWL * DAY_IN_MS)));
+        return df.format(new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS));
     }
 
     public Query generateQuery() {

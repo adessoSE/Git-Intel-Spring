@@ -13,8 +13,7 @@ import java.util.Date;
 
 public abstract class ResponseProcessor {
 
-    private long DAY_IN_MS = 1000 * 60 * 60 * 24;
-    private Date dateToStartCrawling = new Date(System.currentTimeMillis() - (Config.PAST_DAYS_AMOUNT_TO_CRAWL * DAY_IN_MS));
+    private Date dateToStartCrawling = new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS);
 
     public ChartJSData generateChartJSData(ArrayList<Date> arrayOfDates) {
         this.sortArrayOfDatesAscendingOrder(arrayOfDates);
@@ -40,7 +39,7 @@ public abstract class ResponseProcessor {
         ArrayList<Integer> chartJSDataset = new ArrayList<>();
 
         for (int x = 0; x != Config.PAST_DAYS_AMOUNT_TO_CRAWL+1; x++) {
-            chartJSLabels.add(this.getFormattedDate(new Date(dateToStartCrawling.getTime() + DAY_IN_MS * x)));
+            chartJSLabels.add(this.getFormattedDate(new Date(dateToStartCrawling.getTime() + Config.DAY_IN_MS * x)));
             chartJSDataset.add(0);
         }
         return new ChartJSData(chartJSLabels, chartJSDataset);
@@ -68,8 +67,8 @@ public abstract class ResponseProcessor {
         currentDate.setHours(0);
 
         if (arrayOfDates.size() - 1 == arrayOfDates.indexOf(selectedDate) && currentDate.getTime() > selectedDate.getTime()) {
-            for (long x = (((currentDate.getTime() - selectedDate.getTime()) / DAY_IN_MS)); x >= 0; x--) {
-                chartJSLabels.add(this.getFormattedDate(new Date(currentDate.getTime() - DAY_IN_MS * x)));
+            for (long x = (((currentDate.getTime() - selectedDate.getTime()) / Config.DAY_IN_MS)); x >= 0; x--) {
+                chartJSLabels.add(this.getFormattedDate(new Date(currentDate.getTime() - Config.DAY_IN_MS * x)));
                 chartJSDataset.add(0);
             }
         }
@@ -87,8 +86,8 @@ public abstract class ResponseProcessor {
         }
 
         if (oneWeekAgoFormatted.getTime() < selectedDateFormatted.getTime() && arrayOfDates.indexOf(selectedDate) == 0) {
-            for (int x = 0; x < (((selectedDateFormatted.getTime() - oneWeekAgoFormatted.getTime()) / DAY_IN_MS)); x++) {
-                chartJSLabels.add(this.getFormattedDate(new Date(oneWeekAgoFormatted.getTime() + DAY_IN_MS * x)));
+            for (int x = 0; x < (((selectedDateFormatted.getTime() - oneWeekAgoFormatted.getTime()) / Config.DAY_IN_MS)); x++) {
+                chartJSLabels.add(this.getFormattedDate(new Date(oneWeekAgoFormatted.getTime() + Config.DAY_IN_MS * x)));
                 chartJSDataset.add(0);
             }
         }
@@ -115,8 +114,8 @@ public abstract class ResponseProcessor {
                 e.printStackTrace();
             }
 
-            for (int x = 1; x < (((followingDateInArrayFormatted.getTime() - selectedDateFormatted.getTime()) / DAY_IN_MS)); x++) {
-                chartJSLabels.add(this.getFormattedDate(new Date(selectedDateFormatted.getTime() + DAY_IN_MS * x)));
+            for (int x = 1; x < (((followingDateInArrayFormatted.getTime() - selectedDateFormatted.getTime()) / Config.DAY_IN_MS)); x++) {
+                chartJSLabels.add(this.getFormattedDate(new Date(selectedDateFormatted.getTime() + Config.DAY_IN_MS * x)));
                 chartJSDataset.add(0);
             }
         }
