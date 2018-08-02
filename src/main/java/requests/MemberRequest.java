@@ -13,6 +13,7 @@ import java.util.TimeZone;
 
 public class MemberRequest {
 
+    private final int estimatedQueryCost = 1;
     private String query;
     private ResponseProcessor responseProcessor;
     private String organizationName;
@@ -78,6 +79,6 @@ public class MemberRequest {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 }

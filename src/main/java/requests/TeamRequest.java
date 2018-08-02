@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 public class TeamRequest extends Request {
 
+    private final int estimatedQueryCost = 2;
     private String query;
     private ResponseProcessor responseProcessor;
     private RequestType requestType;
@@ -61,7 +62,7 @@ public class TeamRequest extends Request {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 
     private String getDateToStartCrawlingInISO8601UTC() {

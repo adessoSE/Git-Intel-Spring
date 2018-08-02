@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 public class RepositoryRequest {
 
+    private final int estimatedQueryCost = 3;
     private String query;
     private ResponseProcessor responseProcessor;
     private String organizationName;
@@ -72,7 +73,7 @@ public class RepositoryRequest {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 
     private String getDateToStartCrawlingInISO8601UTC() {

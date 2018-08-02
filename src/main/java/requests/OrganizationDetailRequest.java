@@ -6,6 +6,7 @@ import objects.Query;
 
 public class OrganizationDetailRequest {
 
+    private final int estimatedQueryCost = 1;
     private String query;
     private ResponseProcessor responseProcessor;
     private String organizationName;
@@ -38,6 +39,6 @@ public class OrganizationDetailRequest {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 }
