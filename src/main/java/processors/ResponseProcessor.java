@@ -1,7 +1,7 @@
 package processors;
 
+import config.Config;
 import objects.ChartJSData;
-import objects.ResponseWrapper;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,7 +14,7 @@ import java.util.Date;
 public abstract class ResponseProcessor {
 
     private long DAY_IN_MS = 1000 * 60 * 60 * 24;
-    private Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
+    private Date dateToStartCrawling = new Date(System.currentTimeMillis() - (Config.PAST_DAYS_AMOUNT_TO_CRAWL * DAY_IN_MS));
 
     public ChartJSData generateChartJSData(ArrayList<Date> arrayOfDates) {
         this.sortArrayOfDatesAscendingOrder(arrayOfDates);
@@ -39,8 +39,8 @@ public abstract class ResponseProcessor {
         ArrayList<String> chartJSLabels = new ArrayList<>();
         ArrayList<Integer> chartJSDataset = new ArrayList<>();
 
-        for (int x = 0; x != 8; x++) {
-            chartJSLabels.add(this.getFormattedDate(new Date(oneWeekAgo.getTime() + DAY_IN_MS * x)));
+        for (int x = 0; x != Config.PAST_DAYS_AMOUNT_TO_CRAWL+1; x++) {
+            chartJSLabels.add(this.getFormattedDate(new Date(dateToStartCrawling.getTime() + DAY_IN_MS * x)));
             chartJSDataset.add(0);
         }
         return new ChartJSData(chartJSLabels, chartJSDataset);
@@ -81,7 +81,7 @@ public abstract class ResponseProcessor {
 
         try {
             selectedDateFormatted = formatter.parse(formatter.format(selectedDate));
-            oneWeekAgoFormatted = formatter.parse(formatter.format(oneWeekAgo));
+            oneWeekAgoFormatted = formatter.parse(formatter.format(dateToStartCrawling));
         } catch (ParseException e) {
             e.printStackTrace();
         }

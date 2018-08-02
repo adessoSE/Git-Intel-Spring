@@ -1,5 +1,6 @@
 package requests;
 
+import config.Config;
 import enums.RequestType;
 import enums.ResponseProcessor;
 import objects.Query;
@@ -39,7 +40,7 @@ public class ExternalRepoRequest {
                         "defaultBranchRef {\n" +
                         "target {\n" +
                         "... on Commit {\n" +
-                        "history(first: 50, since: \"" + getDateWeekAgoInISO8601UTC() + "\") {\n" +
+                        "history(first: 50, since: \"" + getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
                         "nodes {\n" +
                         "committedDate\n" +
                         "}\n" +
@@ -73,12 +74,12 @@ public class ExternalRepoRequest {
         return formattedString;
     }
 
-    private String getDateWeekAgoInISO8601UTC() {
+    private String getDateToStartCrawlingInISO8601UTC() {
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(tz);
-        return df.format(new Date(System.currentTimeMillis() - (7 * DAY_IN_MS)));
+        return df.format(new Date(System.currentTimeMillis() - (Config.PAST_DAYS_AMOUNT_TO_CRAWL * DAY_IN_MS)));
     }
 
     public Query generateQuery() {
