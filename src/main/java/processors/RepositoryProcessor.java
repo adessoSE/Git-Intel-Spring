@@ -1,9 +1,11 @@
 package processors;
 
 import config.Config;
+import config.RateLimitConfig;
 import objects.Query;
 import objects.Repository;
 import objects.ResponseWrapper;
+import resources.rateLimit_Resources.RateLimit;
 import resources.repository_Resources.*;
 
 import java.util.ArrayList;
@@ -19,6 +21,16 @@ public class RepositoryProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
+        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseRepository().getData().getRateLimit();
+        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
+        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
+        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
+
+        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
+        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
+        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
+        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+
         HashMap<String, Repository> repositories = new HashMap<>();
         Repositories repositoriesData = this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories();
 

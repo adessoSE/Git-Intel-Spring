@@ -1,15 +1,17 @@
 package resources.organisation_Resources;
 
-//@JsonIgnoreProperties(ignoreUnknown = true)
+import resources.rateLimit_Resources.RateLimit;
+
 public class Data {
 
     private Organization organization;
-
-    public Data() {}
+    private RateLimit rateLimit;
 
     public Organization getOrganization() {
         return organization;
     }
 
-
+    public RateLimit getRateLimit() {
+        return rateLimit;
+    }
 }

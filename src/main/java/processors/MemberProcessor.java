@@ -1,11 +1,13 @@
 package processors;
 
 import config.Config;
+import config.RateLimitConfig;
 import objects.ChartJSData;
 import objects.Member;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.member_Resources.*;
+import resources.rateLimit_Resources.RateLimit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +23,16 @@ public class MemberProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
+        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseMember().getData().getRateLimit();
+        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
+        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
+        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
+
+        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
+        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
+        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
+        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+
         HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 

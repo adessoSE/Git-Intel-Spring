@@ -12,7 +12,7 @@ public class Config {
     public static final String API_URL = "https://api.github.com/graphql";
 
     // Range of days for evaluation
-    public static final int PAST_DAYS_AMOUNT_TO_CRAWL = 50;
+    public static final int PAST_DAYS_AMOUNT_TO_CRAWL = 5;
     public static final long DAY_IN_MS = 1000 * 60 * 60 * 24;
     public static final long PAST_DAYS_TO_CRAWL_IN_MS = PAST_DAYS_AMOUNT_TO_CRAWL * DAY_IN_MS;
 }

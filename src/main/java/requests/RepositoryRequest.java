@@ -12,7 +12,7 @@ import java.util.TimeZone;
 
 public class RepositoryRequest {
 
-    private final int estimatedQueryCost = 3;
+    private final int estimatedQueryCost = 2;
     private String query;
     private ResponseProcessor responseProcessor;
     private String organizationName;
@@ -65,6 +65,11 @@ public class RepositoryRequest {
                 "}\n" +
                 "}\n" +
                 "}\n" +
+                "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
                 "}\n" +
                 "}";
 

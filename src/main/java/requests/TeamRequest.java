@@ -12,7 +12,7 @@ import java.util.TimeZone;
 
 public class TeamRequest extends Request {
 
-    private final int estimatedQueryCost = 2;
+    private final int estimatedQueryCost = 5;
     private String query;
     private ResponseProcessor responseProcessor;
     private RequestType requestType;
@@ -54,6 +54,11 @@ public class TeamRequest extends Request {
                 "}\n" +
                 "}\n" +
                 "}\n" +
+                "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
                 "}\n" +
                 "}";
 

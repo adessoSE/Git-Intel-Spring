@@ -21,48 +21,53 @@ public class ExternalRepoRequest {
 
     public ExternalRepoRequest(String organizationName, List<String> repoIDs) {
         this.organizationName = organizationName;
-        this.query =               "{\n" +
+        this.query = "{\n" +
                 //Request for ten repositories combined
-                        "nodes(ids: [" + formatRepoIDs(repoIDs) + "]) {\n" +
-                        "... on Repository {\n" +
-                        "url\n" +
-                        "id\n" +
-                        "name\n" +
-                        "description\n" +
-                        "forkCount\n" +
-                        "stargazers {\n" +
-                        "totalCount\n" +
-                        "}\n" +
-                        "licenseInfo {\n" +
-                        "name\n" +
-                        "}\n" +
-                        "primaryLanguage {\n" +
-                        "name\n" +
-                        "}\n" +
-                        "defaultBranchRef {\n" +
-                        "target {\n" +
-                        "... on Commit {\n" +
-                        "history(first: 50, since: \"" + getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
-                        "nodes {\n" +
-                        "committedDate\n" +
-                        "}\n" +
-                        "}\n" +
-                        "}\n" +
-                        "}\n" +
-                        "}\n" +
-                        "pullRequests(last: 50) {\n" +
-                        "nodes {\n" +
-                        "createdAt\n" +
-                        "}\n" +
-                        "}\n" +
-                        "issues(last: 50) {\n" +
-                        "nodes {\n" +
-                        "createdAt\n" +
-                        "}\n" +
-                        "}\n" +
-                        "}\n" +
-                        "}\n" +
-                        "}";
+                "nodes(ids: [" + formatRepoIDs(repoIDs) + "]) {\n" +
+                "... on Repository {\n" +
+                "url\n" +
+                "id\n" +
+                "name\n" +
+                "description\n" +
+                "forkCount\n" +
+                "stargazers {\n" +
+                "totalCount\n" +
+                "}\n" +
+                "licenseInfo {\n" +
+                "name\n" +
+                "}\n" +
+                "primaryLanguage {\n" +
+                "name\n" +
+                "}\n" +
+                "defaultBranchRef {\n" +
+                "target {\n" +
+                "... on Commit {\n" +
+                "history(first: 50, since: \"" + getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
+                "nodes {\n" +
+                "committedDate\n" +
+                "}\n" +
+                "}\n" +
+                "}\n" +
+                "}\n" +
+                "}\n" +
+                "pullRequests(last: 50) {\n" +
+                "nodes {\n" +
+                "createdAt\n" +
+                "}\n" +
+                "}\n" +
+                "issues(last: 50) {\n" +
+                "nodes {\n" +
+                "createdAt\n" +
+                "}\n" +
+                "}\n" +
+                "}\n" +
+                "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
+                "}\n" +
+                "}";
 
         this.responseProcessor = ResponseProcessor.EXTERNAL_REPO;
         this.requestType = RequestType.EXTERNAL_REPO;

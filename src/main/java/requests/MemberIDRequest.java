@@ -26,6 +26,11 @@ public class MemberIDRequest extends Request {
                 "}\n" +
                 "}\n" +
                 "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
+                "}\n" +
                 "}";
 
         this.responseProcessor = ResponseProcessor.MEMBER_ID;
