@@ -25,7 +25,7 @@ public class MemberPRProcessor {
      */
     public ResponseWrapper processResponse() {
         HashMap<String,ArrayList<String>> memberPRRepoIDs = new HashMap<>();
-        HashMap<String,ArrayList<Date>> pullRequestsDates = new HashMap<>();
+        HashMap<String,ArrayList<Calendar>> pullRequestsDates = new HashMap<>();
         Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {

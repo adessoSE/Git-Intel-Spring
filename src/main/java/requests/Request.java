@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import resources.createdReposByMembers.ResponseCreatedReposByMembers;
 import resources.externalRepo_Resources.ResponseExternalRepository;
 import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
@@ -86,8 +87,26 @@ public abstract class Request {
             case EXTERNAL_REPO:
                 processExternalRepos(requestQuery, restTemplate, entity);
                 break;
+            case CREATED_REPOS_BY_MEMBERS:
+                processCreatedReposByMembers(requestQuery, restTemplate, entity);
+                break;
         }
         requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
+    }
+
+    /**
+     * Processing of the request for the external repos with contribution by the members. Usage of the Response class for the external repos.
+     * Throws NullPointerException if response data is null because of bad request.
+     *
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
+     */
+    private void processCreatedReposByMembers(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseCreatedReposByMembers.class));
+        if (response.getResponseCreatedReposByMembers().getData() != null) {
+            requestQuery.setQueryResponse(response);
+        } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
 
     /**

@@ -4,6 +4,7 @@ package objects;
 import objects.Team.Teams;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -14,10 +15,11 @@ public class ResponseWrapper {
     private OrganizationDetail organizationDetail;
     private MemberPR memberPR;
     private HashMap<String, Member> members;
-    private HashMap<String,ArrayList<Date>> comittedRepos;
-    private HashMap<String,ArrayList<Date>> pullRequestsDates;
+    private HashMap<String,ArrayList<Calendar>> comittedRepos;
+    private HashMap<String,ArrayList<Calendar>> pullRequestsDates;
     private Repositories repositories;
     private Teams teams;
+    private CreatedRepositoriesByMembers createdRepositoriesByMembers;
 
     // TODO: Builder Pattern anwenden! Mehrere Constructoren mit ArrayList nicht zulässig!
     public ResponseWrapper(Teams teams) {
@@ -28,7 +30,10 @@ public class ResponseWrapper {
         this.repositories = repositories;
     }
 
-    public ResponseWrapper(HashMap<String, Member> members, HashMap<String,ArrayList<Date>> committedRepos) {
+    public ResponseWrapper(CreatedRepositoriesByMembers createdRepositoriesByMembers){
+        this.createdRepositoriesByMembers = createdRepositoriesByMembers;
+    }
+    public ResponseWrapper(HashMap<String, Member> members, HashMap<String,ArrayList<Calendar>> committedRepos) {
         this.members = members;
         this.comittedRepos = committedRepos;
     }
@@ -37,7 +42,7 @@ public class ResponseWrapper {
         this.response = response;
     }
 
-    public ResponseWrapper(MemberPR memberPR, HashMap<String,ArrayList<Date>> pullRequestsDates) {
+    public ResponseWrapper(MemberPR memberPR, HashMap<String,ArrayList<Calendar>> pullRequestsDates) {
         this.memberPR = memberPR;
         this.pullRequestsDates = pullRequestsDates;
     }
@@ -74,11 +79,15 @@ public class ResponseWrapper {
         return teams;
     }
 
-    public HashMap<String, ArrayList<Date>> getComittedRepos() {
+    public HashMap<String, ArrayList<Calendar>> getComittedRepos() {
         return comittedRepos;
     }
 
-    public HashMap<String, ArrayList<Date>> getPullRequestsDates() {
+    public HashMap<String, ArrayList<Calendar>> getPullRequestsDates() {
         return pullRequestsDates;
+    }
+
+    public CreatedRepositoriesByMembers getCreatedRepositoriesByMembers() {
+        return createdRepositoriesByMembers;
     }
 }

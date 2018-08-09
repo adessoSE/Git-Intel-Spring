@@ -1,12 +1,13 @@
 package resources.memberPR_Resources;
 
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class NodesPR {
 
     private Repository repository;
-    private Date updatedAt;
+    private Calendar updatedAt;
 
     public NodesPR() {}
 
@@ -14,7 +15,7 @@ public class NodesPR {
         return repository;
     }
 
-    public Date getUpdatedAt() {
+    public Calendar getUpdatedAt() {
         return updatedAt;
     }
 }

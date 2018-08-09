@@ -16,6 +16,18 @@ public class Repository {
     //Optional for external Repos
     private ArrayList<Member> contributors;
 
+    public Repository(){}
+
+    public Repository(String name, String url, String description, String programmingLanguage, String license, int forks, int stars) {
+        this.name = name;
+        this.url = url;
+        this.description = description;
+        this.programmingLanguage = programmingLanguage;
+        this.license = license;
+        this.forks = forks;
+        this.stars = stars;
+    }
+
     public Repository(String name, String url, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
         this.name = name;
         this.url = url;

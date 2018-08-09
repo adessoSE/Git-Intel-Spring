@@ -36,6 +36,7 @@ public class MemberRequest {
                 "history(first: 100, since: \"" + getDateWeekAgoInISO8601UTC() + "\"  ,author: {id: \"" + memberID + "\"}) {\n" +
                 "nodes {\n" +
                 "committedDate\n" +
+                "url\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
@@ -46,11 +47,13 @@ public class MemberRequest {
                 "issues(last: 25) {\n" +
                 "nodes {\n" +
                 "createdAt\n" +
+                "url\n" +
                 "}\n" +
                 "}\n" +
                 "pullRequests(last: 25) {\n" +
                 "nodes {\n" +
                 "createdAt\n" +
+                "url\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
