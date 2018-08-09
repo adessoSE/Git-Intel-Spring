@@ -20,6 +20,6 @@ public class OrganizationUpdateTask {
      */
     @Scheduled(fixedDelay = 300000000, initialDelay = 5000)
     private void generateQuery() {
-//        requestRepository.save(new RequestManager("adessoAGg").generateRequest(RequestType.ORGANIZATION_VALIDATION));
+       requestRepository.save(new RequestManager("adessoAG").generateRequest(RequestType.ORGANIZATION_VALIDATION));
     }
 }
