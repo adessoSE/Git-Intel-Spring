@@ -27,6 +27,7 @@ public class MemberPRRequest {
                 "updatedAt \n" +
                 "repository {\n" +
                 "id\n" +
+                "isFork\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
