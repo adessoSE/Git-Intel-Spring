@@ -1,13 +1,11 @@
 package processors;
 
 import config.Config;
-import config.RateLimitConfig;
 import objects.Query;
 import objects.Repositories;
 import objects.Repository;
 import objects.ResponseWrapper;
 import resources.externalRepo_Resources.*;
-import resources.rateLimit_Resources.RateLimit;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,18 +20,10 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        HashMap<String,Repository> repositoriesMap = new HashMap<>();
+        HashMap<String, Repository> repositoriesMap = new HashMap<>();
         Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
 
-        RateLimit rateLimit = repositoriesData.getRateLimit();
-        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
-        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
-        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
-
-        System.out.println("Rate Limit: "  + RateLimitConfig.getRateLimit());
-        System.out.println("Rate Limit Remaining: "  + RateLimitConfig.getRemainingRateLimit());
-        System.out.println("Request Cost: "  + RateLimitConfig.getPreviousRequestCostAndRequestType());
-        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+        super.updateRateLimit(repositoriesData.getRateLimit(), requestQuery.getQueryRequestType());
 
         ArrayList<Date> pullRequestDates = new ArrayList<>();
         ArrayList<Date> issuesDates = new ArrayList<>();

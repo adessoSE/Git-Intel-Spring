@@ -1,18 +1,14 @@
 package processors;
 
-import config.RateLimitConfig;
 import objects.MemberID;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.memberID_Resources.Members;
 import resources.memberID_Resources.Nodes;
-import resources.rateLimit_Resources.RateLimit;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
-public class MemberIDProcessor {
+public class MemberIDProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
@@ -27,15 +23,7 @@ public class MemberIDProcessor {
      * @return ResponseWrapper containing the MemberID object.
      */
     public ResponseWrapper processResponse() {
-        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseMemberID().getData().getRateLimit();
-        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
-        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
-        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
-
-        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
-        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
-        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
-        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getRateLimit(), requestQuery.getQueryRequestType());
 
         ArrayList<String> memberIDs = new ArrayList<>();
         Members members = this.requestQuery.getQueryResponse().getResponseMemberID().getData().getOrganization().getMembers();

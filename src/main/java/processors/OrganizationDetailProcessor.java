@@ -1,13 +1,11 @@
 package processors;
 
-import config.RateLimitConfig;
 import objects.OrganizationDetail;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.organisation_Resources.Organization;
-import resources.rateLimit_Resources.RateLimit;
 
-public class OrganizationDetailProcessor {
+public class OrganizationDetailProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
@@ -22,15 +20,7 @@ public class OrganizationDetailProcessor {
      * @return ResponseWrapper containing the OrganizationDetail object.
      */
     public ResponseWrapper processResponse() {
-        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseOrganization().getData().getRateLimit();
-        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
-        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
-        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
-
-        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
-        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
-        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
-        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseOrganization().getData().getRateLimit(), requestQuery.getQueryRequestType());
 
         Organization organization = this.requestQuery.getQueryResponse().getResponseOrganization().getData().getOrganization();
         return new ResponseWrapper(new OrganizationDetail(

@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class RateLimitConfig {
 
     public static final int RATE_LIMIT = 5000;
-    public static int REMAINING_RATE_LIMIT;
+    public static int REMAINING_RATE_LIMIT = RATE_LIMIT;
     public static Date RESET_RATE_LIMIT_AT;
     public static HashMap<RequestType, Integer> previousRequestCostAndRequestType = new HashMap<>();
 

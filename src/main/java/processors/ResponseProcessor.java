@@ -1,7 +1,10 @@
 package processors;
 
 import config.Config;
+import config.RateLimitConfig;
+import enums.RequestType;
 import objects.ChartJSData;
+import resources.rateLimit_Resources.RateLimit;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,6 +17,14 @@ import java.util.Date;
 public abstract class ResponseProcessor {
 
     private Date dateToStartCrawling = new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS);
+
+    public void updateRateLimit(RateLimit rateLimit, RequestType requestType){
+        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
+        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
+        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestType);
+
+        System.out.println("Rate Limit remaining: " + RateLimitConfig.getRemainingRateLimit());
+    }
 
     public ChartJSData generateChartJSData(ArrayList<Date> arrayOfDates) {
         this.sortArrayOfDatesAscendingOrder(arrayOfDates);

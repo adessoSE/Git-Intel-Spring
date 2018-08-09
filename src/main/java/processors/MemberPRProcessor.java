@@ -1,18 +1,16 @@
 package processors;
 
 import config.Config;
-import config.RateLimitConfig;
 import objects.MemberPR;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.memberPR_Resources.Members;
 import resources.memberPR_Resources.NodesMember;
 import resources.memberPR_Resources.NodesPR;
-import resources.rateLimit_Resources.RateLimit;
 
 import java.util.*;
 
-public class MemberPRProcessor {
+public class MemberPRProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
@@ -27,37 +25,30 @@ public class MemberPRProcessor {
      * @return ResponseWrapper containing the MemberPR object.
      */
     public ResponseWrapper processResponse() {
-        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getRateLimit();
-        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
-        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
-        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getRateLimit(), requestQuery.getQueryRequestType());
 
-        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
-        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
-        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
-        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
-
-        HashMap<String,ArrayList<String>> memberPRRepoIDs = new HashMap<>();
-        HashMap<String,ArrayList<Date>> pullRequestsDates = new HashMap<>();
+        HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
+        HashMap<String, ArrayList<Date>> pullRequestsDates = new HashMap<>();
         Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
-                if(memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())){
+                if (memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())) {
                     //TODO: Change to Set!
-                    if(!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())){
+                    if (!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())) {
                         memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
                     }
                     if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < pullRequests.getUpdatedAt().getTime()) {
-                        if(pullRequestsDates.containsKey(pullRequests.getRepository().getId())){
+                        if (pullRequestsDates.containsKey(pullRequests.getRepository().getId())) {
                             pullRequestsDates.get(pullRequests.getRepository().getId()).add(pullRequests.getUpdatedAt());
-                        } else pullRequestsDates.put(pullRequests.getRepository().getId(),new ArrayList<>(Arrays.asList(pullRequests.getUpdatedAt())));
+                        } else
+                            pullRequestsDates.put(pullRequests.getRepository().getId(), new ArrayList<>(Arrays.asList(pullRequests.getUpdatedAt())));
                     }
 
 
                 } else {
                     ArrayList<String> contributorIDs = new ArrayList<>();
                     contributorIDs.add(nodes.getId());
-                    memberPRRepoIDs.put(pullRequests.getRepository().getId(),contributorIDs);
+                    memberPRRepoIDs.put(pullRequests.getRepository().getId(), contributorIDs);
                 }
             }
         }

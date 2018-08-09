@@ -1,11 +1,9 @@
 package processors;
 
-import config.RateLimitConfig;
 import objects.Query;
 import objects.ResponseWrapper;
 import objects.Team.Team;
 import objects.Team.TeamRepository;
-import resources.rateLimit_Resources.RateLimit;
 import resources.team_Resources.NodesRepositories;
 import resources.team_Resources.NodesTeams;
 import resources.team_Resources.Teams;
@@ -13,7 +11,7 @@ import resources.team_Resources.Teams;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TeamProcessor {
+public class TeamProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
@@ -28,21 +26,13 @@ public class TeamProcessor {
      * @return ResponseWrapper containing the Teams object.
      */
     public ResponseWrapper processResponse() {
-        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseTeam().getData().getRateLimit();
-        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
-        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
-        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
-
-        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
-        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
-        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
-        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseTeam().getData().getRateLimit(), requestQuery.getQueryRequestType());
 
         Teams organizationTeams = this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams();
 
         HashMap<String, Team> teams = new HashMap<>();
         for (NodesTeams team : organizationTeams.getNodes()) {
-            teams.put(team.getId(),new Team(team.getName(), team.getDescription(), team.getAvatarUrl(),team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
+            teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
         }
         return new ResponseWrapper(new objects.Team.Teams(teams, organizationTeams.getPageInfo().getEndCursor(), organizationTeams.getPageInfo().isHasNextPage()));
     }
