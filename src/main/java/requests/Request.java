@@ -16,6 +16,7 @@ import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
 import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
+import resources.organization_validation.ResponseOrganizationValidation;
 import resources.repository_Resources.ResponseRepository;
 import resources.team_Resources.ResponseTeam;
 
@@ -66,6 +67,8 @@ public abstract class Request {
      */
     private void processRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) throws Exception {
         switch (requestQuery.getQueryRequestType()) {
+            case ORGANIZATION_VALIDATION:
+                processOrganizationValidationRequest(requestQuery, restTemplate, entity);
             case ORGANIZATION_DETAIL:
                 processOrganizationRequest(requestQuery, restTemplate, entity);
                 break;
@@ -92,6 +95,19 @@ public abstract class Request {
                 break;
         }
         requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
+    }
+
+    /**
+     * Processing of the request for validating an organization's name.
+     * @param requestQuery
+     * @param restTemplate
+     * @param entity
+     */
+    private void processOrganizationValidationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
+        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseOrganizationValidation.class));
+        if (response.getResponseOrganizationValidation().getData() != null) {
+            requestQuery.setQueryResponse(response);
+        } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
 
     /**
