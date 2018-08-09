@@ -6,6 +6,7 @@ import objects.Query;
 
 public class CreatedReposByMembersRequest extends Request {
 
+    private final int estimatedQueryCost = 1;
     private String query;
     private ResponseProcessor responseProcessor;
     private RequestType requestType;
@@ -47,12 +48,17 @@ public class CreatedReposByMembersRequest extends Request {
                 "}\n" +
                 "}\n" +
                 "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
+                "}\n" +
                 "}";
         this.requestType = RequestType.CREATED_REPOS_BY_MEMBERS;
         this.responseProcessor = ResponseProcessor.CREATED_REPOS_BY_MEMBERS;
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 }

@@ -22,6 +22,8 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor{
         Data response = processingQuery.getQueryResponse().getResponseCreatedReposByMembers().getData();
         PageInfoRepositories pageInfo = response.getNode().getRepositories().getPageInfo();
 
+        super.updateRateLimit(response.getRateLimit(), processingQuery.getQueryRequestType());
+
         for (NodesRepositories repository: response.getNode().getRepositories().getNodes()){
             if(repository.isFork() || repository.isMirror() || !repository.getOwner().getId().equals(response.getNode().getId())){
                 continue;

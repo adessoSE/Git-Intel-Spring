@@ -1,7 +1,7 @@
 package Tasks;
 
+import config.RateLimitConfig;
 import enums.RequestStatus;
-import enums.RequestType;
 import objects.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,13 +20,28 @@ public class RequestProcessorTask {
      */
     @Scheduled(fixedRate = 500)
     private void crawlQueryData() {
-        ArrayList<Query> processingQuerys = requestRepository.findByQueryStatus(RequestStatus.CREATED);
-        if (!processingQuerys.isEmpty()) {
-            Query processingQuery = processingQuerys.get(0);
-            requestRepository.delete(processingQuery);
-            processingQuery.crawlQueryResponse();
-            requestRepository.save(processingQuery);
+        ArrayList<Query> queriesToProcess = requestRepository.findByQueryStatus(RequestStatus.CREATED);
+
+        if (!queriesToProcess.isEmpty() && RateLimitConfig.getRemainingRateLimit() != 0) {
+            Query queryToProcess = this.findProcessableQueryByRequestCost(queriesToProcess);
+            this.processQuery(queryToProcess);
         }
     }
 
+    private Query findProcessableQueryByRequestCost(ArrayList<Query> processingQuerys) {
+        for (Query createdQuery : processingQuerys) {
+            if (RateLimitConfig.getRemainingRateLimit() - createdQuery.getEstimatedQueryCost() >= 0) {
+                return createdQuery;
+            }
+        }
+        return null;
+    }
+
+    private void processQuery(Query queryToProcess) {
+        if (queryToProcess != null) {
+            requestRepository.delete(queryToProcess);
+            queryToProcess.crawlQueryResponse();
+            requestRepository.save(queryToProcess);
+        }
+    }
 }

@@ -1,6 +1,6 @@
 package processors;
 
-import objects.ChartJSData;
+import config.Config;
 import objects.Member;
 import objects.Query;
 import objects.ResponseWrapper;
@@ -17,6 +17,8 @@ public class MemberProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMember().getData().getRateLimit(), requestQuery.getQueryRequestType());
+
         HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
@@ -31,7 +33,7 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {

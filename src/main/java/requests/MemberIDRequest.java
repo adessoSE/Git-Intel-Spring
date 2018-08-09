@@ -6,6 +6,7 @@ import objects.Query;
 
 public class MemberIDRequest extends Request {
 
+    private final int estimatedQueryCost = 1;
     private String query;
     private ResponseProcessor responseProcessor;
     private RequestType requestType;
@@ -25,6 +26,11 @@ public class MemberIDRequest extends Request {
                 "}\n" +
                 "}\n" +
                 "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
+                "}\n" +
                 "}";
 
         this.responseProcessor = ResponseProcessor.MEMBER_ID;
@@ -32,6 +38,6 @@ public class MemberIDRequest extends Request {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 }

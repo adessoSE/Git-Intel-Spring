@@ -5,7 +5,7 @@ import objects.Query;
 import objects.ResponseWrapper;
 import resources.organisation_Resources.Organization;
 
-public class OrganizationDetailProcessor {
+public class OrganizationDetailProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
@@ -20,6 +20,8 @@ public class OrganizationDetailProcessor {
      * @return ResponseWrapper containing the OrganizationDetail object.
      */
     public ResponseWrapper processResponse() {
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseOrganization().getData().getRateLimit(), requestQuery.getQueryRequestType());
+
         Organization organization = this.requestQuery.getQueryResponse().getResponseOrganization().getData().getOrganization();
         return new ResponseWrapper(new OrganizationDetail(
                 organization.getName(),

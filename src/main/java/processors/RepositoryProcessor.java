@@ -1,5 +1,6 @@
 package processors;
 
+import config.Config;
 import objects.Query;
 import objects.Repository;
 import objects.ResponseWrapper;
@@ -19,6 +20,8 @@ public class RepositoryProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseRepository().getData().getRateLimit(), requestQuery.getQueryRequestType());
+
         HashMap<String, Repository> repositories = new HashMap<>();
         Repositories repositoriesData = this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories();
 
@@ -27,7 +30,7 @@ public class RepositoryProcessor extends ResponseProcessor {
         ArrayList<Calendar> commitsDates = new ArrayList<>();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             int stars = repo.getStargazers().getTotalCount();

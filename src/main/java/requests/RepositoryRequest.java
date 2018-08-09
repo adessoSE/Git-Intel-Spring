@@ -1,5 +1,6 @@
 package requests;
 
+import config.Config;
 import enums.RequestType;
 import enums.ResponseProcessor;
 import objects.Query;
@@ -11,6 +12,7 @@ import java.util.TimeZone;
 
 public class RepositoryRequest {
 
+    private final int estimatedQueryCost = 2;
     private String query;
     private ResponseProcessor responseProcessor;
     private String organizationName;
@@ -43,7 +45,7 @@ public class RepositoryRequest {
                 "defaultBranchRef {\n" +
                 "target {\n" +
                 "... on Commit {\n" +
-                "history(first: 50, since: \"" + this.getDateWeekAgoInISO8601UTC() + "\") {\n" +
+                "history(first: 50, since: \"" + this.getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
                 "nodes {\n" +
                 "committedDate\n" +
                 "}\n" +
@@ -64,6 +66,11 @@ public class RepositoryRequest {
                 "}\n" +
                 "}\n" +
                 "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
+                "}\n" +
                 "}";
 
         this.responseProcessor = ResponseProcessor.REPOSITORY;
@@ -71,14 +78,13 @@ public class RepositoryRequest {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 
-    private String getDateWeekAgoInISO8601UTC() {
-        long DAY_IN_MS = 1000 * 60 * 60 * 24;
+    private String getDateToStartCrawlingInISO8601UTC() {
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(tz);
-        return df.format(new Date(System.currentTimeMillis() - (7 * DAY_IN_MS)));
+        return df.format(new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS));
     }
 }

@@ -1,5 +1,6 @@
 package Tasks;
 
+import config.RateLimitConfig;
 import enums.RequestStatus;
 import enums.RequestType;
 import objects.*;
@@ -85,6 +86,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
         if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, processingQuery.getOrganizationName()).size() == 1) {
             organization.addFinishedRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.CREATED_REPOS_BY_MEMBERS));
         organizationRepository.save(organization);
         this.checkIfUpdateIsFinished(organization);
     }
@@ -116,6 +118,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
         if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, processingQuery.getOrganizationName()).size() == 1) {
             organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.EXTERNAL_REPO));
         organizationRepository.save(organization);
         this.checkIfUpdateIsFinished(organization);
     }
@@ -127,6 +130,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization = new OrganizationWrapper(processingQuery.getOrganizationName());
             organization.setTeams(responseWrapper.getTeams().getTeams());
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.TEAM));
         organizationRepository.save(organization);
         if (responseWrapper.getTeams().isHasNextPage()) {
             requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor()).generateRequest(RequestType.TEAM));
@@ -144,6 +148,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization = new OrganizationWrapper(processingQuery.getOrganizationName());
             organization.setRepositories(responseWrapper.getRepositories().getRepositories());
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.REPOSITORY));
         organizationRepository.save(organization);
         if (responseWrapper.getRepositories().isHasNextPage()) {
             requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor()).generateRequest(RequestType.REPOSITORY));
@@ -167,6 +172,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization.addMemberAmount(responseWrapper.getOrganizationDetail().getNumOfMembers());
         }
         organization.addFinishedRequest(RequestType.ORGANIZATION_DETAIL);
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.ORGANIZATION_DETAIL));
         organizationRepository.save(organization);
         this.checkIfUpdateIsFinished(organization);
     }
@@ -178,6 +184,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             organization = new OrganizationWrapper(processingQuery.getOrganizationName());
             organization.setMemberIDs(responseWrapper.getMemberID().getMemberIDs());
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.MEMBER_ID));
         organizationRepository.save(organization);
         if (responseWrapper.getMemberID().isHasNextPage()) {
             requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberID().getEndCursor()).generateRequest(RequestType.MEMBER_ID));
@@ -218,6 +225,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             }
             organization.addFinishedRequest(RequestType.MEMBER_PR);
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.MEMBER_PR));
         organizationRepository.save(organization);
         this.checkIfUpdateIsFinished(organization);
     }
@@ -232,6 +240,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             this.calculateInternalOrganizationCommitsChartJSData(organization, responseWrapper.getComittedRepos());
             organization.addFinishedRequest(RequestType.MEMBER);
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.MEMBER));
         organizationRepository.save(organization);
         this.checkIfUpdateIsFinished(organization);
     }
@@ -278,6 +287,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
     private void checkIfUpdateIsFinished(OrganizationWrapper organization){
         if (organization.getFinishedRequests().size() == RequestType.values().length){
             organization.setLastUpdateTimestamp(new Date());
+            System.out.println("Complete Update Cost: " + organization.getCompleteUpdateCost());
             organizationRepository.save(organization);
         }
     }

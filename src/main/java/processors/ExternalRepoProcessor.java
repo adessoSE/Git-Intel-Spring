@@ -1,5 +1,6 @@
 package processors;
 
+import config.Config;
 import objects.Query;
 import objects.Repositories;
 import objects.Repository;
@@ -19,8 +20,10 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
-        HashMap<String,Repository> repositoriesMap = new HashMap<>();
+        HashMap<String, Repository> repositoriesMap = new HashMap<>();
         Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
+
+        super.updateRateLimit(repositoriesData.getRateLimit(), requestQuery.getQueryRequestType());
 
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
@@ -37,7 +40,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             String id = repo.getId();
 
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {

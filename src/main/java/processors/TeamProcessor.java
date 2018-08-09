@@ -11,7 +11,7 @@ import resources.team_Resources.Teams;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TeamProcessor {
+public class TeamProcessor extends ResponseProcessor {
 
     private Query requestQuery;
 
@@ -26,11 +26,13 @@ public class TeamProcessor {
      * @return ResponseWrapper containing the Teams object.
      */
     public ResponseWrapper processResponse() {
+        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseTeam().getData().getRateLimit(), requestQuery.getQueryRequestType());
+
         Teams organizationTeams = this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams();
 
         HashMap<String, Team> teams = new HashMap<>();
         for (NodesTeams team : organizationTeams.getNodes()) {
-            teams.put(team.getId(),new Team(team.getName(), team.getDescription(), team.getAvatarUrl(),team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
+            teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
         }
         return new ResponseWrapper(new objects.Team.Teams(teams, organizationTeams.getPageInfo().getEndCursor(), organizationTeams.getPageInfo().isHasNextPage()));
     }

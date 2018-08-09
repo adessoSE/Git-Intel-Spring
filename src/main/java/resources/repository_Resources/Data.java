@@ -1,8 +1,11 @@
 package resources.repository_Resources;
 
+import resources.rateLimit_Resources.RateLimit;
+
 public class Data {
 
     private Organization organization;
+    private RateLimit rateLimit;
 
     public Data() {}
 
@@ -10,5 +13,7 @@ public class Data {
         return organization;
     }
 
-
+    public RateLimit getRateLimit() {
+        return rateLimit;
+    }
 }
