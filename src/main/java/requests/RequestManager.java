@@ -74,8 +74,8 @@ public class RequestManager {
         ArrayList<RequestType> startRequests = new ArrayList<>();
         startRequests.add(RequestType.ORGANIZATION_DETAIL);
         startRequests.add(RequestType.REPOSITORY);
-        startRequests.add(RequestType.MEMBER_PR);
         startRequests.add(RequestType.MEMBER_ID);
+        startRequests.add(RequestType.MEMBER_PR);
         startRequests.add(RequestType.TEAM);
 
         ArrayList<Query> allRequestQuerys = new ArrayList<>();

@@ -77,6 +77,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
         if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, processingQuery.getOrganizationName()).size() == 1) {
             organization.addFinishedRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
         }
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.CREATED_REPOS_BY_MEMBERS));
         organizationRepository.save(organization);
         this.checkIfUpdateIsFinished(organization);
     }
