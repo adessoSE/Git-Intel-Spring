@@ -6,10 +6,7 @@ import objects.Query;
 import objects.ResponseWrapper;
 import resources.member_Resources.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class MemberProcessor extends ResponseProcessor {
 
@@ -25,35 +22,39 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
-        ArrayList<Date> pullRequestDates = new ArrayList<>();
-        ArrayList<Date> issuesDates = new ArrayList<>();
-        ArrayList<Date> commitsDates = new ArrayList<>();
+        HashMap<String, String> previousCommitsWithLink = new HashMap<>();
+        HashMap<String, String> previousIssuesWithLink = new HashMap<>();
+        HashMap<String, String> previousPullRequestsWithLink = new HashMap<>();
 
-        int amountPreviousCommits;
-        int amountPreviousIssues;
-        int amountPreviousPRs;
+        ArrayList<Calendar> pullRequestDates = new ArrayList<>();
+        ArrayList<Calendar> issuesDates = new ArrayList<>();
+        ArrayList<Calendar> commitsDates = new ArrayList<>();
 
-        HashMap<String, ArrayList<Date>> committedRepos = new HashMap<>();
+        HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
 
-        for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
-            if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
 
-                pullRequestDates.add(nodesPullRequests.getCreatedAt());
+            for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
+                if (cal.before(nodesPullRequests.getCreatedAt())) {
+                    pullRequestDates.add(nodesPullRequests.getCreatedAt());
+                    previousPullRequestsWithLink.put(nodesPullRequests.getCreatedAt().getTime().toString(), nodesPullRequests.getUrl());
+                }
             }
-        }
-        for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
-            if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesIssues.getCreatedAt().getTime()) {
-                issuesDates.add(nodesIssues.getCreatedAt());
+            for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
+                if (cal.before(nodesIssues.getCreatedAt())) {
+                    issuesDates.add(nodesIssues.getCreatedAt());
+                  previousIssuesWithLink.put(nodesIssues.getCreatedAt().getTime().toString(), nodesIssues.getUrl());
+                }
             }
-        }
+
         for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
             String committedRepoID = nodesRepoContributedTo.getId();
             for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
                 if (committedRepos.containsKey(committedRepoID)) {
                     committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
-                } else
-                    committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
-
+                } else committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
+                previousCommitsWithLink.put(nodesHistory.getCommittedDate().getTime().toString(), nodesHistory.getUrl());
                 commitsDates.add(nodesHistory.getCommittedDate());
             }
         }
@@ -63,9 +64,9 @@ public class MemberProcessor extends ResponseProcessor {
                 singleMember.getLogin(),
                 singleMember.getAvatarUrl(),
                 singleMember.getUrl(),
-                commitsDates.size(),
-                issuesDates.size(),
-                pullRequestDates.size(),
+                previousCommitsWithLink,
+                previousIssuesWithLink,
+                previousPullRequestsWithLink,
                 this.generateChartJSData(commitsDates),
                 this.generateChartJSData(issuesDates),
                 this.generateChartJSData(pullRequestDates)));

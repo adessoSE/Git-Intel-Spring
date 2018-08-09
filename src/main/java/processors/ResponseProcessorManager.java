@@ -35,6 +35,8 @@ public class ResponseProcessorManager {
                 return new TeamProcessor(this.requestQuery).processResponse();
             case EXTERNAL_REPO:
                 return new ExternalRepoProcessor(this.requestQuery).processResponse();
+            case CREATED_REPOS_BY_MEMBERS:
+                return new CreatedReposByMembersProcessor(this.requestQuery).processResponse();
             default:
                 return new ResponseWrapper(this.requestQuery.getQueryResponse());
         }

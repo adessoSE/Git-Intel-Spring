@@ -23,6 +23,7 @@ public class OrganizationWrapper {
     private HashMap<String, Integer> memberAmount = new HashMap<>();
     private HashMap<String, Team> teams = new HashMap<>();
     private HashMap<String, Repository> externalRepos = new HashMap<>();
+    private HashMap<String, ArrayList<Repository>> createdReposByMembers = new HashMap<>();
     private Date lastUpdateTimestamp;
     private int completeUpdateCost = 0;
 
@@ -157,5 +158,17 @@ public class OrganizationWrapper {
 
     public void addExternalRepos(HashMap<String, Repository> externalRepos) {
         this.externalRepos.putAll(externalRepos);
+    }
+
+    public HashMap<String, ArrayList<Repository>> getCreatedReposByMembers() {
+        return createdReposByMembers;
+    }
+
+    public void setCreatedReposByMembers(HashMap<String, ArrayList<Repository>> createdReposByMembers) {
+        this.createdReposByMembers = createdReposByMembers;
+    }
+
+    public void addCreatedReposByMembers(HashMap<String, ArrayList<Repository>> createdReposByMembers) {
+        this.createdReposByMembers.putAll(createdReposByMembers);
     }
 }

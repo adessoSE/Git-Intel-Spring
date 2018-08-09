@@ -60,9 +60,27 @@ public class ResponseProcessorTask extends ResponseProcessor {
             case EXTERNAL_REPO:
                 this.processExternalRepo(organization, responseWrapper, processingQuery);
                 break;
+            case CREATED_REPOS_BY_MEMBERS:
+                processCreatedReposByMembers(organization, responseWrapper, processingQuery);
+                break;
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
     }
+
+    private void processCreatedReposByMembers(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
+        if (organization != null) {
+            organization.addCreatedReposByMembers(responseWrapper.getCreatedRepositoriesByMembers().getRepositories());
+        } else {
+            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+            organization.setCreatedReposByMembers(responseWrapper.getCreatedRepositoriesByMembers().getRepositories());
+        }
+        if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, processingQuery.getOrganizationName()).size() == 1) {
+            organization.addFinishedRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
+        }
+        organizationRepository.save(organization);
+        this.checkIfUpdateIsFinished(organization);
+    }
+
     private void processExternalRepo(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
         if (organization != null) {
             organization.addExternalRepos(responseWrapper.getRepositories().getRepositories());
@@ -166,6 +184,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             ArrayList<String> memberIDs = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName()).getMemberIDs();
             while (!memberIDs.isEmpty()) {
                 requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.get(0), RequestType.MEMBER).generateRequest(RequestType.MEMBER));
+                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.get(0), RequestType.CREATED_REPOS_BY_MEMBERS).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
                 memberIDs.removeAll(Arrays.asList(memberIDs.get(0)));
             }
         }
@@ -220,9 +239,9 @@ public class ResponseProcessorTask extends ResponseProcessor {
      * Calculates the internal commits of the members in the own organization repositories. Generated as ChartJSData and saved in OrganizationDetail.
      * @param organization
      */
-    private void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Date>> comittedRepo) {
+    private void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> comittedRepo) {
         Set<String> organizationRepoIDs = organization.getRepositories().keySet();
-        ArrayList<Date> internalCommitsDates = new ArrayList<>();
+        ArrayList<Calendar> internalCommitsDates = new ArrayList<>();
         for(String id : organizationRepoIDs){
             if (comittedRepo.containsKey(id)){
                 internalCommitsDates.addAll(comittedRepo.get(id));
@@ -237,12 +256,12 @@ public class ResponseProcessorTask extends ResponseProcessor {
      * Calculates the external pull requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
      * @param organization
      */
-    private void calculateExternalOrganizationPullRequestsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Date>> contributedRepos) {
+    private void calculateExternalOrganizationPullRequestsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> contributedRepos) {
         Set<String> organizationRepoIDs = organization.getRepositories().keySet();
-        ArrayList<Date> externalPullRequestsDates = new ArrayList<>();
+        ArrayList<Calendar> externalPullRequestsDates = new ArrayList<>();
         contributedRepos.keySet().removeAll(organizationRepoIDs);
-        for(ArrayList<Date> date : contributedRepos.values()){
-                externalPullRequestsDates.addAll(date);
+        for(ArrayList<Calendar> calendar : contributedRepos.values()){
+                externalPullRequestsDates.addAll(calendar);
         }
 
         organization.getOrganizationDetail().setExternalRepositoriesPullRequests(this.generateChartJSData(externalPullRequestsDates));

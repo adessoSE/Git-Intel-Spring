@@ -7,6 +7,7 @@ import objects.ResponseWrapper;
 import resources.repository_Resources.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -24,9 +25,12 @@ public class RepositoryProcessor extends ResponseProcessor {
         HashMap<String, Repository> repositories = new HashMap<>();
         Repositories repositoriesData = this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories();
 
-        ArrayList<Date> pullRequestDates = new ArrayList<>();
-        ArrayList<Date> issuesDates = new ArrayList<>();
-        ArrayList<Date> commitsDates = new ArrayList<>();
+        ArrayList<Calendar> pullRequestDates = new ArrayList<>();
+        ArrayList<Calendar> issuesDates = new ArrayList<>();
+        ArrayList<Calendar> commitsDates = new ArrayList<>();
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
 
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             int stars = repo.getStargazers().getTotalCount();
@@ -38,12 +42,12 @@ public class RepositoryProcessor extends ResponseProcessor {
             String name = repo.getName();
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
-                if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+                if (cal.before(nodesPullRequests.getCreatedAt())) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
                 }
             }
             for (NodesIssues nodesIssues : repo.getIssues().getNodes()) {
-                if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesIssues.getCreatedAt().getTime()) {
+                if (cal.before(nodesIssues.getCreatedAt())) {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
