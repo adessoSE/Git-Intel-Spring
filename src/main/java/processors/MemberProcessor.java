@@ -36,13 +36,13 @@ public class MemberProcessor extends ResponseProcessor {
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
-                    previousPullRequestsWithLink.put(nodesPullRequests.getCreatedAt().toString(), nodesPullRequests.getUrl());
+                    previousPullRequestsWithLink.put(nodesPullRequests.getCreatedAt().getTime().toString(), nodesPullRequests.getUrl());
                 }
             }
             for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
                 if (cal.before(nodesIssues.getCreatedAt())) {
                     issuesDates.add(nodesIssues.getCreatedAt());
-                  previousIssuesWithLink.put(nodesIssues.getCreatedAt().toString(), nodesIssues.getUrl());
+                  previousIssuesWithLink.put(nodesIssues.getCreatedAt().getTime().toString(), nodesIssues.getUrl());
                 }
             }
 
@@ -51,9 +51,8 @@ public class MemberProcessor extends ResponseProcessor {
             for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
                 if (committedRepos.containsKey(committedRepoID)) {
                     committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
-                } else 
-                committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
-                previousCommitsWithLink.put(nodesHistory.getCommittedDate().toString(), nodesHistory.getUrl());
+                } else committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
+                previousCommitsWithLink.put(nodesHistory.getCommittedDate().getTime().toString(), nodesHistory.getUrl());
                 commitsDates.add(nodesHistory.getCommittedDate());
             }
         }
@@ -66,9 +65,9 @@ public class MemberProcessor extends ResponseProcessor {
                 previousCommitsWithLink,
                 previousIssuesWithLink,
                 previousPullRequestsWithLink,
-                this.generateChartJSData(previousCommits),
-                this.generateChartJSData(previousIssues),
-                this.generateChartJSData(previousPullRequests)));
+                this.generateChartJSData(commitsDates),
+                this.generateChartJSData(issuesDates),
+                this.generateChartJSData(pullRequestDates)));
 
         return new ResponseWrapper(members, committedRepos);
     }
