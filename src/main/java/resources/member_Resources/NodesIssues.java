@@ -1,15 +1,16 @@
 package resources.member_Resources;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class NodesIssues {
 
-    private Date createdAt;
+    private Calendar createdAt;
 
     public NodesIssues() {
     }
 
-    public Date getCreatedAt() {
+    public Calendar getCreatedAt() {
         return createdAt;
     }
 }

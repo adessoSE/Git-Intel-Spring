@@ -1,12 +1,12 @@
 package resources.repository_Resources;
 
-import java.util.Date;
+import java.util.Calendar;
 
 public class NodesHistory {
 
-    private Date committedDate;
+    private Calendar committedDate;
 
-    public Date getCommittedDate() {
+    public Calendar getCommittedDate() {
         return committedDate;
     }
 }

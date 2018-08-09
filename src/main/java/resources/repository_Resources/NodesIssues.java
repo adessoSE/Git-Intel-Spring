@@ -1,12 +1,12 @@
 package resources.repository_Resources;
 
-import java.util.Date;
+import java.util.Calendar;
 
 public class NodesIssues {
 
-    private Date createdAt;
+    private Calendar createdAt;
 
-    public Date getCreatedAt() {
+    public Calendar getCreatedAt() {
         return createdAt;
     }
 }

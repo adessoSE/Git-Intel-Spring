@@ -7,7 +7,7 @@ import objects.ResponseWrapper;
 import resources.externalRepo_Resources.*;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class ExternalRepoProcessor extends ResponseProcessor {
@@ -22,9 +22,9 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         HashMap<String,Repository> repositoriesMap = new HashMap<>();
         Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
 
-        ArrayList<Date> pullRequestDates = new ArrayList<>();
-        ArrayList<Date> issuesDates = new ArrayList<>();
-        ArrayList<Date> commitsDates = new ArrayList<>();
+        ArrayList<Calendar> pullRequestDates = new ArrayList<>();
+        ArrayList<Calendar> issuesDates = new ArrayList<>();
+        ArrayList<Calendar> commitsDates = new ArrayList<>();
 
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             int stars = repo.getStargazers().getTotalCount();
@@ -36,13 +36,16 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             String name = repo.getName();
             String id = repo.getId();
 
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+                if (cal.before(nodesPullRequests.getCreatedAt())) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
                 }
             }
             for (NodesIssues nodesIssues : repo.getIssues().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
+                if (cal.before(nodesIssues.getCreatedAt())) {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
