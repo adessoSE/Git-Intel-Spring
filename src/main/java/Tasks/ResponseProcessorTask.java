@@ -38,6 +38,9 @@ public class ResponseProcessorTask extends ResponseProcessor {
     private void processResponse(Query processingQuery, ResponseWrapper responseWrapper) {
         OrganizationWrapper organization = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName());
         switch (processingQuery.getQueryRequestType()) {
+            case ORGANIZATION_VALIDATION:
+                this.processOrganizationValidation(responseWrapper, processingQuery);
+                break;
             case ORGANIZATION_DETAIL:
                 this.processOrganizationDetailResponse(organization, responseWrapper, processingQuery);
                 break;
@@ -64,6 +67,12 @@ public class ResponseProcessorTask extends ResponseProcessor {
                 break;
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
+    }
+
+    private void processOrganizationValidation(ResponseWrapper responseWrapper, Query processingQuery) {
+        if (responseWrapper.isValid()) {
+            requestRepository.saveAll(new RequestManager(processingQuery.getOrganizationName()).generateAllRequests());
+        }
     }
 
     private void processCreatedReposByMembers(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){

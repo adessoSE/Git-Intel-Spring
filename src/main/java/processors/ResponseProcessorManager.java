@@ -21,6 +21,8 @@ public class ResponseProcessorManager {
     public ResponseWrapper processResponse() {
         ResponseProcessor responseProcessor = requestQuery.getQueryResponseProcessorType();
         switch (responseProcessor) {
+            case ORGANIZATION_VALIDATION:
+                return new OrganizationValidationProcessor(this.requestQuery).processResponse();
             case ORGANIZATION_DETAIL:
                 return new OrganizationDetailProcessor(this.requestQuery).processResponse();
             case MEMBER_ID:

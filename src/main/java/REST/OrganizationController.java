@@ -1,6 +1,7 @@
 package REST;
 
 
+import enums.RequestType;
 import objects.*;
 import objects.Team.Team;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,7 @@ import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import requests.RequestManager;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -88,20 +86,20 @@ public class OrganizationController {
         if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
             if (organizationRepository.findByOrganizationName(organizationName) != null) {
                 return true;
-            } else this.gatherData(organizationName);
+            } else this.validateOrganization(organizationName);
         } else {
-            System.out.println("Data is still being gathered for this organization");
+            System.out.println("Data is still being gathered for this organization...");
         }
         return false;
     }
 
-    private void gatherData(String organizationName) {
-        requestRepository.saveAll(new RequestManager(organizationName).generateAllRequests());
-        System.out.println("Organization data is being gathered. Try again in a few moments");
+    private void validateOrganization(String organizationName) {
+        System.out.println("Validating organization...");
+        requestRepository.save(new RequestManager(organizationName).generateRequest(RequestType.ORGANIZATION_VALIDATION));
     }
 
 
-    private String formatInput (String input) {
-        return input.replaceAll("\\s+","").toLowerCase();
+    private String formatInput(String input) {
+        return input.replaceAll("\\s+", "").toLowerCase();
     }
 }
