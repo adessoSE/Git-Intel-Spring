@@ -24,6 +24,7 @@ public class OrganizationWrapper {
     private HashMap<String, Team> teams = new HashMap<>();
     private HashMap<String, Repository> externalRepos = new HashMap<>();
     private Date lastUpdateTimestamp;
+    private int completeUpdateCost = 0;
 
     /**
      * Wrapper for all the needed information of a organization.
@@ -34,6 +35,13 @@ public class OrganizationWrapper {
         this.organizationName = organizationName;
     }
 
+    public int getCompleteUpdateCost() {
+        return completeUpdateCost;
+    }
+
+    public void setCompleteUpdateCost(int completeUpdateCost) {
+        this.completeUpdateCost += completeUpdateCost;
+    }
 
     public Date getLastUpdateTimestamp() {
         return lastUpdateTimestamp;

@@ -11,6 +11,7 @@ public class Query extends Request {
     @Id
     private String id;
 
+    private int estimatedQueryCost;
     private RequestStatus queryStatus;
     private String organizationName;
     private String queryContent;
@@ -19,12 +20,13 @@ public class Query extends Request {
     private ResponseProcessor queryResponseProcessorType;
     private Exception queryError;
 
-    public Query(String organizationName, String queryContent, ResponseProcessor queryResponseProcessorType, RequestType queryRequestType) {
+    public Query(String organizationName, String queryContent, ResponseProcessor queryResponseProcessorType, RequestType queryRequestType, int estimatedQueryCost) {
         this.setOrganizationName(organizationName);
         this.setQueryStatus(RequestStatus.CREATED);
         this.setQuery(queryContent);
         this.setQueryResponseProcessorType(queryResponseProcessorType);
         this.queryRequestType = queryRequestType;
+        this.estimatedQueryCost = estimatedQueryCost;
     }
 
     public RequestStatus getQueryStatus() {
@@ -83,4 +85,7 @@ public class Query extends Request {
         return queryRequestType;
     }
 
+    public int getEstimatedQueryCost() {
+        return estimatedQueryCost;
+    }
 }

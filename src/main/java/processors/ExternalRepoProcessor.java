@@ -1,10 +1,13 @@
 package processors;
 
+import config.Config;
+import config.RateLimitConfig;
 import objects.Query;
 import objects.Repositories;
 import objects.Repository;
 import objects.ResponseWrapper;
 import resources.externalRepo_Resources.*;
+import resources.rateLimit_Resources.RateLimit;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +25,16 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         HashMap<String,Repository> repositoriesMap = new HashMap<>();
         Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
 
+        RateLimit rateLimit = repositoriesData.getRateLimit();
+        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
+        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
+        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
+
+        System.out.println("Rate Limit: "  + RateLimitConfig.getRateLimit());
+        System.out.println("Rate Limit Remaining: "  + RateLimitConfig.getRemainingRateLimit());
+        System.out.println("Request Cost: "  + RateLimitConfig.getPreviousRequestCostAndRequestType());
+        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+
         ArrayList<Date> pullRequestDates = new ArrayList<>();
         ArrayList<Date> issuesDates = new ArrayList<>();
         ArrayList<Date> commitsDates = new ArrayList<>();
@@ -37,12 +50,12 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             String id = repo.getId();
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+                if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
                 }
             }
             for (NodesIssues nodesIssues : repo.getIssues().getNodes()) {
-                if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
+                if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesIssues.getCreatedAt().getTime()) {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }

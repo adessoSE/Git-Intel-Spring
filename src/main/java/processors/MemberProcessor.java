@@ -1,10 +1,13 @@
 package processors;
 
+import config.Config;
+import config.RateLimitConfig;
 import objects.ChartJSData;
 import objects.Member;
 import objects.Query;
 import objects.ResponseWrapper;
 import resources.member_Resources.*;
+import resources.rateLimit_Resources.RateLimit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +23,16 @@ public class MemberProcessor extends ResponseProcessor {
     }
 
     public ResponseWrapper processResponse() {
+        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseMember().getData().getRateLimit();
+        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
+        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
+        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
+
+        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
+        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
+        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
+        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+
         HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
@@ -34,13 +47,13 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, ArrayList<Date>> committedRepos = new HashMap<>();
 
         for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
-            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
+            if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
 
                 pullRequestDates.add(nodesPullRequests.getCreatedAt());
             }
         }
         for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
-            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
+            if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < nodesIssues.getCreatedAt().getTime()) {
                 issuesDates.add(nodesIssues.getCreatedAt());
             }
         }

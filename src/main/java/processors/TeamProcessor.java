@@ -1,9 +1,11 @@
 package processors;
 
+import config.RateLimitConfig;
 import objects.Query;
 import objects.ResponseWrapper;
 import objects.Team.Team;
 import objects.Team.TeamRepository;
+import resources.rateLimit_Resources.RateLimit;
 import resources.team_Resources.NodesRepositories;
 import resources.team_Resources.NodesTeams;
 import resources.team_Resources.Teams;
@@ -26,6 +28,16 @@ public class TeamProcessor {
      * @return ResponseWrapper containing the Teams object.
      */
     public ResponseWrapper processResponse() {
+        RateLimit rateLimit = this.requestQuery.getQueryResponse().getResponseTeam().getData().getRateLimit();
+        RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
+        RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
+        RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(),requestQuery.getQueryRequestType());
+
+        System.out.println("Rate Limit:"  + RateLimitConfig.getRateLimit());
+        System.out.println("Rate Limit Remaining:"  + RateLimitConfig.getRemainingRateLimit());
+        System.out.println("Request Cost:"  + RateLimitConfig.getPreviousRequestCostAndRequestType());
+        System.out.println("Reset Rate Limit At: " + RateLimitConfig.getResetRateLimitAt());
+
         Teams organizationTeams = this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams();
 
         HashMap<String, Team> teams = new HashMap<>();
