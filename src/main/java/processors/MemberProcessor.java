@@ -6,10 +6,7 @@ import objects.Query;
 import objects.ResponseWrapper;
 import resources.member_Resources.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class MemberProcessor extends ResponseProcessor {
 
@@ -23,37 +20,41 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
-        ArrayList<Date> previousCommits = new ArrayList<>();
-        ArrayList<Date> previousIssues = new ArrayList<>();
-        ArrayList<Date> previousPullRequests = new ArrayList<>();
-
         HashMap<String, String> previousCommitsWithLink = new HashMap<>();
         HashMap<String, String> previousIssuesWithLink = new HashMap<>();
         HashMap<String, String> previousPullRequestsWithLink = new HashMap<>();
 
-        HashMap<String, ArrayList<Date>> committedRepos = new HashMap<>();
+        ArrayList<Calendar> pullRequestDates = new ArrayList<>();
+        ArrayList<Calendar> issuesDates = new ArrayList<>();
+        ArrayList<Calendar> commitsDates = new ArrayList<>();
 
-        for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
-            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesPullRequests.getCreatedAt().getTime()) {
-                previousPullRequests.add(nodesPullRequests.getCreatedAt());
-                previousPullRequestsWithLink.put(nodesPullRequests.getCreatedAt().toString(), nodesPullRequests.getUrl());
+        HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+
+            for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
+                if (cal.before(nodesPullRequests.getCreatedAt())) {
+                    pullRequestDates.add(nodesPullRequests.getCreatedAt());
+                    previousPullRequestsWithLink.put(nodesPullRequests.getCreatedAt().toString(), nodesPullRequests.getUrl());
+                }
             }
-        }
-        for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
-            if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < nodesIssues.getCreatedAt().getTime()) {
-                previousCommits.add(nodesIssues.getCreatedAt());
-                previousIssuesWithLink.put(nodesIssues.getCreatedAt().toString(), nodesIssues.getUrl());
+            for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
+                if (cal.before(nodesIssues.getCreatedAt())) {
+                    issuesDates.add(nodesIssues.getCreatedAt());
+                  previousIssuesWithLink.put(nodesIssues.getCreatedAt().toString(), nodesIssues.getUrl());
+                }
             }
-        }
+
         for (NodesRepoContributedTo nodesRepoContributedTo : singleMember.getRepositoriesContributedTo().getNodes()) {
             String committedRepoID = nodesRepoContributedTo.getId();
             for (NodesHistory nodesHistory : nodesRepoContributedTo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
                 if (committedRepos.containsKey(committedRepoID)) {
                     committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
-                } else
-                    committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
-                previousCommits.add(nodesHistory.getCommittedDate());
+                } else 
+                committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
                 previousCommitsWithLink.put(nodesHistory.getCommittedDate().toString(), nodesHistory.getUrl());
+                commitsDates.add(nodesHistory.getCommittedDate());
             }
         }
 

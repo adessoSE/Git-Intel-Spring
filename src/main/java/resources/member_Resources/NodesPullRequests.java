@@ -1,16 +1,16 @@
 package resources.member_Resources;
 
-import java.util.Date;
+import java.util.Calendar;
 
 public class NodesPullRequests {
 
-    private Date createdAt;
+    private Calendar createdAt;
     private String url;
 
     public NodesPullRequests() {
     }
 
-    public Date getCreatedAt() {
+    public Calendar getCreatedAt() {
         return createdAt;
     }
 

@@ -1,17 +1,17 @@
 package resources.member_Resources;
 
 
-import java.util.Date;
+import java.util.Calendar;
 
 public class NodesHistory {
 
-    private Date committedDate;
+    private Calendar committedDate;
     private String url;
 
     public NodesHistory() {
     }
 
-    public Date getCommittedDate() {
+    public Calendar getCommittedDate() {
         return committedDate;
     }
 
