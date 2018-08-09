@@ -35,7 +35,7 @@ public class MemberPRProcessor {
                         if(!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())){
                             memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
                         }
-                        if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < pullRequests.getUpdatedAt().getTime()) {
+                        if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < pullRequests.getUpdatedAt().getTime().getTime()) {
                             if(pullRequestsDates.containsKey(pullRequests.getRepository().getId())){
                                 pullRequestsDates.get(pullRequests.getRepository().getId()).add(pullRequests.getUpdatedAt());
                             } else pullRequestsDates.put(pullRequests.getRepository().getId(),new ArrayList<>(Arrays.asList(pullRequests.getUpdatedAt())));
