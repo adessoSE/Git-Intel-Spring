@@ -5,6 +5,7 @@ import java.util.Calendar;
 public class NodesPullRequests {
 
     private Calendar createdAt;
+    private String url;
 
     public NodesPullRequests() {
     }
@@ -13,4 +14,7 @@ public class NodesPullRequests {
         return createdAt;
     }
 
+    public String getUrl() {
+        return url;
+    }
 }

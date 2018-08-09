@@ -20,6 +20,10 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, Member> members = new HashMap<>();
         User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
 
+        HashMap<String, String> previousCommitsWithLink = new HashMap<>();
+        HashMap<String, String> previousIssuesWithLink = new HashMap<>();
+        HashMap<String, String> previousPullRequestsWithLink = new HashMap<>();
+
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
@@ -32,11 +36,13 @@ public class MemberProcessor extends ResponseProcessor {
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
+                    previousPullRequestsWithLink.put(nodesPullRequests.getCreatedAt().getTime().toString(), nodesPullRequests.getUrl());
                 }
             }
             for (NodesIssues nodesIssues : singleMember.getIssues().getNodes()) {
                 if (cal.before(nodesIssues.getCreatedAt())) {
                     issuesDates.add(nodesIssues.getCreatedAt());
+                  previousIssuesWithLink.put(nodesIssues.getCreatedAt().getTime().toString(), nodesIssues.getUrl());
                 }
             }
 
@@ -46,7 +52,7 @@ public class MemberProcessor extends ResponseProcessor {
                 if (committedRepos.containsKey(committedRepoID)) {
                     committedRepos.get(committedRepoID).add(nodesHistory.getCommittedDate());
                 } else committedRepos.put(committedRepoID, new ArrayList<>(Arrays.asList(nodesHistory.getCommittedDate())));
-
+                previousCommitsWithLink.put(nodesHistory.getCommittedDate().getTime().toString(), nodesHistory.getUrl());
                 commitsDates.add(nodesHistory.getCommittedDate());
             }
         }
@@ -56,9 +62,9 @@ public class MemberProcessor extends ResponseProcessor {
                 singleMember.getLogin(),
                 singleMember.getAvatarUrl(),
                 singleMember.getUrl(),
-                commitsDates.size(),
-                issuesDates.size(),
-                pullRequestDates.size(),
+                previousCommitsWithLink,
+                previousIssuesWithLink,
+                previousPullRequestsWithLink,
                 this.generateChartJSData(commitsDates),
                 this.generateChartJSData(issuesDates),
                 this.generateChartJSData(pullRequestDates)));
