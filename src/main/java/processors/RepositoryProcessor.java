@@ -30,7 +30,7 @@ public class RepositoryProcessor extends ResponseProcessor {
         ArrayList<Calendar> commitsDates = new ArrayList<>();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             int stars = repo.getStargazers().getTotalCount();

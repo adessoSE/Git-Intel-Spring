@@ -32,13 +32,13 @@ public class MemberPRProcessor extends ResponseProcessor {
         Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
-                if(!pullRequests.getRepository().isFork()){
+                if(!pullRequests.getRepository().isFork() && checkIfPullRequestIsActiveSinceOneYear(pullRequests.getUpdatedAt().getTime())){
                     if(memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())){
                         //TODO: Change to Set!
                         if(!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())){
                             memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
                         }
-                        if (new Date(System.currentTimeMillis() - (7 * 1000 * 60 * 60 * 24)).getTime() < pullRequests.getUpdatedAt().getTime().getTime()) {
+                        if (new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS).getTime() < pullRequests.getUpdatedAt().getTime().getTime()) {
                             if(pullRequestsDates.containsKey(pullRequests.getRepository().getId())){
                                 pullRequestsDates.get(pullRequests.getRepository().getId()).add(pullRequests.getUpdatedAt());
                             } else pullRequestsDates.put(pullRequests.getRepository().getId(),new ArrayList<>(Arrays.asList(pullRequests.getUpdatedAt())));

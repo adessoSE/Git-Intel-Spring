@@ -21,6 +21,7 @@ public abstract class ResponseProcessor {
         RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(), requestType);
 
         System.out.println("Rate Limit remaining: " + RateLimitConfig.getRemainingRateLimit());
+        System.out.println("Rate Limit Cost: " + RateLimitConfig.getPreviousRequestCostAndRequestType());
     }
 
     public ChartJSData generateChartJSData(ArrayList<Calendar> arrayOfDates) {

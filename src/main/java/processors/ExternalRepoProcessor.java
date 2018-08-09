@@ -40,7 +40,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             String id = repo.getId();
 
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {

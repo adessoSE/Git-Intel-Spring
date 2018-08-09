@@ -33,7 +33,7 @@ public class MemberProcessor extends ResponseProcessor {
         HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-7);
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
             for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {
