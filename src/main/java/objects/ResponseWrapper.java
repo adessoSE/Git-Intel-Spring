@@ -20,8 +20,14 @@ public class ResponseWrapper {
     private Repositories repositories;
     private Teams teams;
     private CreatedRepositoriesByMembers createdRepositoriesByMembers;
+    private boolean isValid;
 
     // TODO: Builder Pattern anwenden! Mehrere Constructoren mit ArrayList nicht zulässig!
+
+    public ResponseWrapper(boolean isValid) {
+        this.isValid = isValid;
+    }
+
     public ResponseWrapper(Teams teams) {
         this.teams = teams;
     }
@@ -53,6 +59,10 @@ public class ResponseWrapper {
 
     public ResponseWrapper(OrganizationDetail organizationDetail) {
         this.organizationDetail = organizationDetail;
+    }
+
+    public boolean isValid() {
+        return isValid;
     }
 
     public MemberID getMemberID() {

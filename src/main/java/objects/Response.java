@@ -6,11 +6,13 @@ import resources.memberID_Resources.ResponseMemberID;
 import resources.memberPR_Resources.ResponseMemberPR;
 import resources.member_Resources.ResponseMember;
 import resources.organisation_Resources.ResponseOrganization;
+import resources.organization_validation.ResponseOrganizationValidation;
 import resources.repository_Resources.ResponseRepository;
 import resources.team_Resources.ResponseTeam;
 
 public class Response {
 
+    private ResponseOrganizationValidation responseOrganizationValidation;
     private ResponseMemberID responseMemberID;
     private ResponseMemberPR responseMemberPR;
     private ResponseOrganization responseOrganization;
@@ -18,10 +20,13 @@ public class Response {
     private ResponseRepository responseRepository;
     private ResponseTeam responseTeam;
     private ResponseExternalRepository responseExternalRepository;
-
     private ResponseCreatedReposByMembers responseCreatedReposByMembers;
 
     public Response() {
+    }
+
+    public Response(ResponseOrganizationValidation responseOrganizationValidation) {
+        this.responseOrganizationValidation = responseOrganizationValidation;
     }
 
     public Response(ResponseCreatedReposByMembers responseCreatedReposByMembers) {
@@ -56,6 +61,9 @@ public class Response {
         this.responseOrganization = responseOrganization;
     }
 
+    public ResponseOrganizationValidation getResponseOrganizationValidation() {
+        return responseOrganizationValidation;
+    }
 
     public ResponseTeam getResponseTeam() {
         return responseTeam;

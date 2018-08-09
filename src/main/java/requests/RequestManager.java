@@ -49,6 +49,8 @@ public class RequestManager {
      */
     public Query generateRequest(RequestType requestType) {
         switch (requestType) {
+            case ORGANIZATION_VALIDATION:
+                return new OrganizationValidationRequest(organizationName).generateQuery();
             case ORGANIZATION_DETAIL:
                 return new OrganizationDetailRequest(organizationName).generateQuery();
             case MEMBER_ID:
