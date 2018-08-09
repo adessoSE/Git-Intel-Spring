@@ -59,9 +59,27 @@ public class ResponseProcessorTask extends ResponseProcessor {
             case EXTERNAL_REPO:
                 this.processExternalRepo(organization, responseWrapper, processingQuery);
                 break;
+            case CREATED_REPOS_BY_MEMBERS:
+                processCreatedReposByMembers(organization, responseWrapper, processingQuery);
+                break;
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
     }
+
+    private void processCreatedReposByMembers(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
+        if (organization != null) {
+            organization.addCreatedReposByMembers(responseWrapper.getCreatedRepositoriesByMembers().getRepositories());
+        } else {
+            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+            organization.setCreatedReposByMembers(responseWrapper.getCreatedRepositoriesByMembers().getRepositories());
+        }
+        if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, processingQuery.getOrganizationName()).size() == 1) {
+            organization.addFinishedRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
+        }
+        organizationRepository.save(organization);
+        this.checkIfUpdateIsFinished(organization);
+    }
+
     private void processExternalRepo(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
         if (organization != null) {
             organization.addExternalRepos(responseWrapper.getRepositories().getRepositories());
@@ -160,6 +178,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
             ArrayList<String> memberIDs = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName()).getMemberIDs();
             while (!memberIDs.isEmpty()) {
                 requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.get(0), RequestType.MEMBER).generateRequest(RequestType.MEMBER));
+                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.get(0), RequestType.CREATED_REPOS_BY_MEMBERS).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
                 memberIDs.removeAll(Arrays.asList(memberIDs.get(0)));
             }
         }
