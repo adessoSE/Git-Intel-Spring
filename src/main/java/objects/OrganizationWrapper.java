@@ -5,9 +5,7 @@ import enums.RequestType;
 import objects.Team.Team;
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class OrganizationWrapper {
 
@@ -19,7 +17,7 @@ public class OrganizationWrapper {
     private ArrayList<String> memberIDs = new ArrayList<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
     private HashMap<String, Member> members = new HashMap<>();
-    private ArrayList<RequestType> finishedRequests = new ArrayList<>();
+    private Set<RequestType> finishedRequests = new HashSet<>();
     private HashMap<String, Repository> repositories = new HashMap<>();
     private HashMap<String, Integer> memberAmount = new HashMap<>();
     private HashMap<String, Team> teams = new HashMap<>();
@@ -109,7 +107,7 @@ public class OrganizationWrapper {
         this.members.putAll(members);
     }
 
-    public ArrayList<RequestType> getFinishedRequests() {
+    public Set<RequestType> getFinishedRequests() {
         return finishedRequests;
     }
 

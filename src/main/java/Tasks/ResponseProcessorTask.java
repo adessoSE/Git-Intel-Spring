@@ -64,7 +64,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
                 this.processExternalRepo(organization, responseWrapper, processingQuery);
                 break;
             case CREATED_REPOS_BY_MEMBERS:
-                processCreatedReposByMembers(organization, responseWrapper, processingQuery);
+                this.processCreatedReposByMembers(organization, responseWrapper, processingQuery);
                 break;
         }
         processingQuery.setQueryStatus(RequestStatus.FINISHED);
@@ -73,187 +73,122 @@ public class ResponseProcessorTask extends ResponseProcessor {
     private void processOrganizationValidation(ResponseWrapper responseWrapper, Query processingQuery) {
         if (responseWrapper.isValid()) {
             requestRepository.saveAll(new RequestManager(processingQuery.getOrganizationName()).generateAllRequests());
+            OrganizationWrapper organization = new OrganizationWrapper(processingQuery.getOrganizationName());
+            organizationRepository.save(organization);
         }
     }
 
-    private void processCreatedReposByMembers(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
-        if (organization != null) {
-            organization.addCreatedReposByMembers(responseWrapper.getCreatedRepositoriesByMembers().getRepositories());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setCreatedReposByMembers(responseWrapper.getCreatedRepositoriesByMembers().getRepositories());
-        }
-        if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, processingQuery.getOrganizationName()).size() == 1) {
-            organization.addFinishedRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
-        }
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.CREATED_REPOS_BY_MEMBERS));
-        organizationRepository.save(organization);
-        this.checkIfUpdateIsFinished(organization);
+    private void processCreatedReposByMembers(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
+        organization.addCreatedReposByMembers(responseWrapper.getCreatedRepositoriesByMembers().getRepositories());
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.CREATED_REPOS_BY_MEMBERS);
     }
 
     private void processExternalRepo(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
-        if (organization != null) {
-            organization.addExternalRepos(responseWrapper.getRepositories().getRepositories());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setExternalRepos(responseWrapper.getRepositories().getRepositories());
-        }
-        if(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, organization.getOrganizationName()).size() == 1){
-            HashMap<String,ArrayList<String>> externalRepos = this.calculateExternalRepoContributions(organization);
-            for (String externalRepoID : externalRepos.keySet()){
-                    for(String contributorID : externalRepos.get(externalRepoID)){
-                        Repository suitableExternalRepo = organization.getExternalRepos().containsKey(externalRepoID) ? organization.getExternalRepos().get(externalRepoID) : null;
-                        if(suitableExternalRepo != null){
-                            if(suitableExternalRepo.getContributor() != null){
-                                suitableExternalRepo.addContributor(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
-                            } else {
-                                ArrayList<Member> contributors = new ArrayList<>();
-                                contributors.add(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
-                                suitableExternalRepo.setContributor(contributors);
-                            }
+        organization.addExternalRepos(responseWrapper.getRepositories().getRepositories());
+        this.processExternalReposAndFindContributors(organization, processingQuery);
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.EXTERNAL_REPO);
+    }
+
+    private void processExternalReposAndFindContributors(OrganizationWrapper organization, Query processingQuery) {
+        if (this.checkIfQueryIsLastOfRequestType(organization, processingQuery, RequestType.EXTERNAL_REPO)) {
+            HashMap<String, ArrayList<String>> externalRepos = this.calculateExternalRepoContributions(organization);
+            for (String externalRepoID : externalRepos.keySet()) {
+                for (String contributorID : externalRepos.get(externalRepoID)) {
+                    Repository suitableExternalRepo = organization.getExternalRepos().containsKey(externalRepoID) ? organization.getExternalRepos().get(externalRepoID) : null;
+                    if (suitableExternalRepo != null) {
+                        if (suitableExternalRepo.getContributor() != null) {
+                            suitableExternalRepo.addContributor(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
+                        } else {
+                            ArrayList<Member> contributors = new ArrayList<>();
+                            contributors.add(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
+                            suitableExternalRepo.setContributor(contributors);
                         }
                     }
                 }
             }
-        if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, processingQuery.getOrganizationName()).size() == 1) {
-            organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
         }
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.EXTERNAL_REPO));
-        organizationRepository.save(organization);
-        this.checkIfUpdateIsFinished(organization);
     }
 
-    private void processOrganizationTeams(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery){
-        if (organization != null) {
-            organization.addTeams(responseWrapper.getTeams().getTeams());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setTeams(responseWrapper.getTeams().getTeams());
-        }
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.TEAM));
-        organizationRepository.save(organization);
+    private void processOrganizationTeams(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
+        organization.addTeams(responseWrapper.getTeams().getTeams());
         if (responseWrapper.getTeams().isHasNextPage()) {
-            requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor()).generateRequest(RequestType.TEAM));
-        } else {
-            organization.addFinishedRequest(RequestType.TEAM);
-            organizationRepository.save(organization);
+            this.generateNextRequests(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor(), RequestType.TEAM);
         }
-        this.checkIfUpdateIsFinished(organization);
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.TEAM);
     }
 
     private void processRepositoryResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
-        if (organization != null) {
-            organization.addRepositories(responseWrapper.getRepositories().getRepositories());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setRepositories(responseWrapper.getRepositories().getRepositories());
-        }
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.REPOSITORY));
-        organizationRepository.save(organization);
+        organization.addRepositories(responseWrapper.getRepositories().getRepositories());
         if (responseWrapper.getRepositories().isHasNextPage()) {
-            requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor()).generateRequest(RequestType.REPOSITORY));
+            this.generateNextRequests(processingQuery.getOrganizationName(), responseWrapper.getRepositories().getEndCursor(), RequestType.REPOSITORY);
         } else {
-            if(organization.getFinishedRequests().contains(RequestType.MEMBER_PR)){
+            if (organization.getFinishedRequests().contains(RequestType.MEMBER_PR)) {
                 organization.getOrganizationDetail().setNumOfExternalRepoContributions(calculateExternalRepoContributions(organization).size());
             }
-            organization.addFinishedRequest(RequestType.REPOSITORY);
-            organizationRepository.save(organization);
         }
-        this.checkIfUpdateIsFinished(organization);
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.REPOSITORY);
     }
 
     private void processOrganizationDetailResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
-        if (organization != null) {
-            organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
-            organization.addMemberAmount(responseWrapper.getOrganizationDetail().getNumOfMembers());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
-            organization.addMemberAmount(responseWrapper.getOrganizationDetail().getNumOfMembers());
-        }
-        organization.addFinishedRequest(RequestType.ORGANIZATION_DETAIL);
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.ORGANIZATION_DETAIL));
-        organizationRepository.save(organization);
-        this.checkIfUpdateIsFinished(organization);
+        organization.setOrganizationDetail(responseWrapper.getOrganizationDetail());
+        organization.addMemberAmount(responseWrapper.getOrganizationDetail().getNumOfMembers());
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.ORGANIZATION_DETAIL);
     }
 
     private void processMemberIDResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
-        if (organization != null) {
-            organization.addMemberIDs(responseWrapper.getMemberID().getMemberIDs());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setMemberIDs(responseWrapper.getMemberID().getMemberIDs());
-        }
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.MEMBER_ID));
-        organizationRepository.save(organization);
+        organization.addMemberIDs(responseWrapper.getMemberID().getMemberIDs());
         if (responseWrapper.getMemberID().isHasNextPage()) {
-            requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberID().getEndCursor()).generateRequest(RequestType.MEMBER_ID));
+            this.generateNextRequests(processingQuery.getOrganizationName(), responseWrapper.getMemberID().getEndCursor(), RequestType.MEMBER_ID);
         } else {
-            organization.addFinishedRequest(RequestType.MEMBER_ID);
-            organizationRepository.save(organization);
-            ArrayList<String> memberIDs = organizationRepository.findByOrganizationName(processingQuery.getOrganizationName()).getMemberIDs();
-            while (!memberIDs.isEmpty()) {
-                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.get(0), RequestType.MEMBER).generateRequest(RequestType.MEMBER));
-                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberIDs.get(0), RequestType.CREATED_REPOS_BY_MEMBERS).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
-                memberIDs.removeAll(Arrays.asList(memberIDs.get(0)));
+            for (String memberID : organization.getMemberIDs()) {
+                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberID, RequestType.MEMBER).generateRequest(RequestType.MEMBER));
+                requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), memberID, RequestType.CREATED_REPOS_BY_MEMBERS).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
             }
         }
-        this.checkIfUpdateIsFinished(organization);
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.MEMBER_ID);
     }
 
     private void processMemberPRResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
-        if (organization != null) {
-            organization.addMemberPRs(responseWrapper.getMemberPR().getMemberPRrepositoryIDs());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setMemberPRRepoIDs(responseWrapper.getMemberPR().getMemberPRrepositoryIDs());
-        }
+        organization.addMemberPRs(responseWrapper.getMemberPR().getMemberPRrepositoryIDs());
+
         if (responseWrapper.getMemberPR().isHasNextPage()) {
-            requestRepository.save(new RequestManager(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor()).generateRequest(RequestType.MEMBER_PR));
+            this.generateNextRequests(processingQuery.getOrganizationName(), responseWrapper.getMemberPR().getEndCursor(), RequestType.MEMBER_PR);
         } else {
-            if(organization.getFinishedRequests().contains(RequestType.REPOSITORY)){
-                calculateExternalOrganizationPullRequestsChartJSData(organization,responseWrapper.getPullRequestsDates());
-                organization.getOrganizationDetail().setNumOfExternalRepoContributions(calculateExternalRepoContributions(organization).size());
+            if (organization.getFinishedRequests().contains(RequestType.REPOSITORY)) {
+                this.calculateExternalOrganizationPullRequestsChartJSData(organization, responseWrapper.getPullRequestsDates());
+                organization.getOrganizationDetail().setNumOfExternalRepoContributions(this.calculateExternalRepoContributions(organization).size());
             }
 
-            Set<String> repoIDs = calculateExternalRepoContributions(organization).keySet();
+            Set<String> repoIDs = this.calculateExternalRepoContributions(organization).keySet();
             while (!repoIDs.isEmpty()) {
                 Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
                 List<String> targetList = new ArrayList<>(subSet);
                 requestRepository.save(new RequestManager(targetList, processingQuery.getOrganizationName()).generateRequest(RequestType.EXTERNAL_REPO));
                 repoIDs.removeAll(subSet);
             }
-            organization.addFinishedRequest(RequestType.MEMBER_PR);
         }
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.MEMBER_PR));
-        organizationRepository.save(organization);
-        this.checkIfUpdateIsFinished(organization);
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.MEMBER_PR);
     }
+
     private void processMemberResponse(OrganizationWrapper organization, ResponseWrapper responseWrapper, Query processingQuery) {
-        if (organization != null) {
-            organization.addMembers(responseWrapper.getMembers());
-        } else {
-            organization = new OrganizationWrapper(processingQuery.getOrganizationName());
-            organization.setMembers(responseWrapper.getMembers());
-        }
-        if (requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, processingQuery.getOrganizationName()).size() == 1) {
+        organization.addMembers(responseWrapper.getMembers());
+
+        if (this.checkIfQueryIsLastOfRequestType(organization, processingQuery, RequestType.MEMBER)) {
             this.calculateInternalOrganizationCommitsChartJSData(organization, responseWrapper.getComittedRepos());
-            organization.addFinishedRequest(RequestType.MEMBER);
         }
-        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(RequestType.MEMBER));
-        organizationRepository.save(organization);
-        this.checkIfUpdateIsFinished(organization);
+        this.doFinishingQueryProcedure(organization, processingQuery, RequestType.MEMBER);
     }
 
     /**
      * Calculates the internal commits of the members in the own organization repositories. Generated as ChartJSData and saved in OrganizationDetail.
+     *
      * @param organization
      */
     private void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> comittedRepo) {
         Set<String> organizationRepoIDs = organization.getRepositories().keySet();
         ArrayList<Calendar> internalCommitsDates = new ArrayList<>();
-        for(String id : organizationRepoIDs){
-            if (comittedRepo.containsKey(id)){
+        for (String id : organizationRepoIDs) {
+            if (comittedRepo.containsKey(id)) {
                 internalCommitsDates.addAll(comittedRepo.get(id));
             }
         }
@@ -264,14 +199,15 @@ public class ResponseProcessorTask extends ResponseProcessor {
 
     /**
      * Calculates the external pull requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
+     *
      * @param organization
      */
     private void calculateExternalOrganizationPullRequestsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> contributedRepos) {
         Set<String> organizationRepoIDs = organization.getRepositories().keySet();
         ArrayList<Calendar> externalPullRequestsDates = new ArrayList<>();
         contributedRepos.keySet().removeAll(organizationRepoIDs);
-        for(ArrayList<Calendar> calendar : contributedRepos.values()){
-                externalPullRequestsDates.addAll(calendar);
+        for (ArrayList<Calendar> calendar : contributedRepos.values()) {
+            externalPullRequestsDates.addAll(calendar);
         }
 
         organization.getOrganizationDetail().setExternalRepositoriesPullRequests(this.generateChartJSData(externalPullRequestsDates));
@@ -284,12 +220,33 @@ public class ResponseProcessorTask extends ResponseProcessor {
         return externalContributions;
     }
 
-    private void checkIfUpdateIsFinished(OrganizationWrapper organization){
-        if (organization.getFinishedRequests().size() == RequestType.values().length){
+    private void checkIfOrganizationUpdateIsFinished(OrganizationWrapper organization) {
+        if (organization.getFinishedRequests().size() == RequestType.values().length - 1) {
             organization.setLastUpdateTimestamp(new Date());
             System.out.println("Complete Update Cost: " + organization.getCompleteUpdateCost());
-            organizationRepository.save(organization);
         }
+        organizationRepository.save(organization);
+    }
+
+    private boolean checkIfQueryIsLastOfRequestType(OrganizationWrapper organization, Query processingQuery, RequestType requestType) {
+        if (requestRepository.findByQueryRequestTypeAndOrganizationName(requestType, processingQuery.getOrganizationName()).size() == 1) {
+            organization.addFinishedRequest(requestType);
+            return true;
+        }
+        return false;
+    }
+
+
+    private void doFinishingQueryProcedure(OrganizationWrapper organization, Query processingQuery, RequestType requestType) {
+        organizationRepository.save(organization);
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(requestType));
+        this.checkIfQueryIsLastOfRequestType(organization, processingQuery, requestType);
+        this.checkIfOrganizationUpdateIsFinished(organization);
+    }
+
+
+    private void generateNextRequests(String organizationName, String endCursor, RequestType requestType) {
+        requestRepository.save(new RequestManager(organizationName, endCursor).generateRequest(requestType));
     }
 
 }
