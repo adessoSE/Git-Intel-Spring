@@ -39,6 +39,6 @@ secrets.yml
 .gradletasknamecache
 .sts4-cache
 
-src/main/java/config/Config\Config.java
+src/main/java/de.adesso.config/Config\Config.java
 
 *.class

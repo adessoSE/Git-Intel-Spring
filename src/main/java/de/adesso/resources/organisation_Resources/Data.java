@@ -1,0 +1,17 @@
+package de.adesso.resources.organisation_Resources;
+
+import de.adesso.resources.rateLimit_Resources.RateLimit;
+
+public class Data {
+
+    private Organization organization;
+    private RateLimit rateLimit;
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public RateLimit getRateLimit() {
+        return rateLimit;
+    }
+}
