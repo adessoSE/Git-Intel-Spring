@@ -1,10 +1,10 @@
 package processors;
 
 import config.Config;
-import objects.Query;
-import objects.Repositories;
-import objects.Repository;
-import objects.ResponseWrapper;
+import enums.RequestType;
+import objects.*;
+import repositories.OrganizationRepository;
+import repositories.RequestRepository;
 import resources.externalRepo_Resources.*;
 
 import java.util.ArrayList;
@@ -13,23 +13,60 @@ import java.util.HashMap;
 
 public class ExternalRepoProcessor extends ResponseProcessor {
 
+    private RequestRepository requestRepository;
+    private OrganizationRepository organizationRepository;
     private Query requestQuery;
+    private OrganizationWrapper organization;
 
-    public ExternalRepoProcessor(Query requestQuery) {
-        this.requestQuery = requestQuery;
+    private HashMap<String, Repository> repositoriesMap = new HashMap<>();
+
+    public ExternalRepoProcessor() {
     }
 
-    public ResponseWrapper processResponse() {
-        HashMap<String, Repository> repositoriesMap = new HashMap<>();
+    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+        this.requestQuery = requestQuery;
+        this.requestRepository = requestRepository;
+        this.organizationRepository = organizationRepository;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
+    }
+
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+        this.setUp(requestQuery, requestRepository, organizationRepository);
         Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
 
         super.updateRateLimit(repositoriesData.getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(repositoriesData.getNodes());
+        this.processExternalReposAndFindContributors(organization, requestQuery);
+        super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, organization, requestQuery, RequestType.EXTERNAL_REPO);
+    }
 
+    private void processExternalReposAndFindContributors(OrganizationWrapper organization, Query requestQuery) {
+        if (super.checkIfQueryIsLastOfRequestType(organization, requestQuery, RequestType.EXTERNAL_REPO, this.requestRepository)) {
+            this.organization.addExternalRepos(this.repositoriesMap);
+            HashMap<String, ArrayList<String>> externalRepos = super.calculateExternalRepoContributions(organization);
+            for (String externalRepoID : externalRepos.keySet()) {
+                for (String contributorID : externalRepos.get(externalRepoID)) {
+                    Repository suitableExternalRepo = organization.getExternalRepos().containsKey(externalRepoID) ? organization.getExternalRepos().get(externalRepoID) : null;
+                    if (suitableExternalRepo != null) {
+                        if (suitableExternalRepo.getContributor() != null) {
+                            suitableExternalRepo.addContributor(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
+                        } else {
+                            ArrayList<Member> contributors = new ArrayList<>();
+                            contributors.add(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
+                            suitableExternalRepo.setContributor(contributors);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void processQueryResponse(ArrayList<NodesRepositories> repositories){
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
 
-        for (NodesRepositories repo : repositoriesData.getNodes()) {
+        for (NodesRepositories repo : repositories) {
             int stars = repo.getStargazers().getTotalCount();
             int forks = repo.getForkCount();
             String url = repo.getUrl();
@@ -57,11 +94,9 @@ public class ExternalRepoProcessor extends ResponseProcessor {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
-            repositoriesMap.put(id, new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+            this.repositoriesMap.put(id, new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
-        return new ResponseWrapper(new Repositories(repositoriesMap));
     }
-
     private String getLicense(NodesRepositories repo) {
         if (repo.getLicenseInfo() == null) return "";
         else return repo.getLicenseInfo().getName();

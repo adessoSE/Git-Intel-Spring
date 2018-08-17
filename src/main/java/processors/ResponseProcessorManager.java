@@ -2,45 +2,86 @@ package processors;
 
 import enums.ResponseProcessor;
 import objects.Query;
-import objects.ResponseWrapper;
+import repositories.OrganizationRepository;
+import repositories.RequestRepository;
+
+import java.util.HashMap;
 
 public class ResponseProcessorManager {
 
-    private Query requestQuery;
+    private OrganizationRepository organizationRepository;
+    private RequestRepository requestRepository;
 
-    public ResponseProcessorManager(Query requestQuery) {
-        this.requestQuery = requestQuery;
+    public static HashMap<String, OrganizationValidationProcessor> organizationValidationProcessorHashMap = new HashMap<>();
+    public static HashMap<String, OrganizationDetailProcessor> organizationDetailProcessorHashMap = new HashMap<>();
+    public static HashMap<String, MemberIDProcessor> memberIDProcessorHashMap = new HashMap<>();
+    public static HashMap<String, MemberProcessor> memberProcessorHashMap = new HashMap<>();
+    public static HashMap<String, MemberPRProcessor> memberPRProcessorHashMap = new HashMap<>();
+    public static HashMap<String, RepositoryProcessor> repositoryProcessorHashMap = new HashMap<>();
+    public static HashMap<String, TeamProcessor> teamProcessorHashMap = new HashMap<>();
+    public static HashMap<String, ExternalRepoProcessor> externalRepoProcessorHashMap = new HashMap<>();
+    public static HashMap<String, CreatedReposByMembersProcessor> createdReposByMembersProcessorHashMap = new HashMap<>();
+
+    public ResponseProcessorManager() {
     }
 
-    /**
-     * Manager for the selection of the suitable response processor. Selection is based on the ResponseProcessor specified in the query.
-     * Returns the processed response in a ResponseWrapper because of the various responses.
-     *
-     * @return ResponseWrapper to fit all the different response in one object.
-     */
-    public ResponseWrapper processResponse() {
+    public void processResponse(OrganizationRepository organizationRepository, RequestRepository requestRepository, Query requestQuery) {
         ResponseProcessor responseProcessor = requestQuery.getQueryResponseProcessorType();
         switch (responseProcessor) {
             case ORGANIZATION_VALIDATION:
-                return new OrganizationValidationProcessor(this.requestQuery).processResponse();
+                if (!organizationValidationProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    organizationValidationProcessorHashMap.put(requestQuery.getOrganizationName(), new OrganizationValidationProcessor());
+                }
+                organizationValidationProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case ORGANIZATION_DETAIL:
-                return new OrganizationDetailProcessor(this.requestQuery).processResponse();
+                if (!organizationDetailProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    organizationDetailProcessorHashMap.put(requestQuery.getOrganizationName(), new OrganizationDetailProcessor());
+                }
+                organizationDetailProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case MEMBER_ID:
-                return new MemberIDProcessor(this.requestQuery).processResponse();
+                if (!memberIDProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    memberIDProcessorHashMap.put(requestQuery.getOrganizationName(), new MemberIDProcessor());
+                }
+                memberIDProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case MEMBER:
-                return new MemberProcessor(this.requestQuery).processResponse();
+                if (!memberProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    memberProcessorHashMap.put(requestQuery.getOrganizationName(), new MemberProcessor());
+                }
+                memberProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case MEMBER_PR:
-                return new MemberPRProcessor(this.requestQuery).processResponse();
+                if (!memberPRProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    memberPRProcessorHashMap.put(requestQuery.getOrganizationName(), new MemberPRProcessor());
+                }
+                memberPRProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case REPOSITORY:
-                return new RepositoryProcessor(this.requestQuery).processResponse();
+                if (!repositoryProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    repositoryProcessorHashMap.put(requestQuery.getOrganizationName(), new RepositoryProcessor());
+                }
+                repositoryProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case TEAM:
-                return new TeamProcessor(this.requestQuery).processResponse();
+                if (!teamProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    teamProcessorHashMap.put(requestQuery.getOrganizationName(), new TeamProcessor());
+                }
+                teamProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case EXTERNAL_REPO:
-                return new ExternalRepoProcessor(this.requestQuery).processResponse();
+                if (!externalRepoProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    externalRepoProcessorHashMap.put(requestQuery.getOrganizationName(), new ExternalRepoProcessor());
+                }
+                externalRepoProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
             case CREATED_REPOS_BY_MEMBERS:
-                return new CreatedReposByMembersProcessor(this.requestQuery).processResponse();
-            default:
-                return new ResponseWrapper(this.requestQuery.getQueryResponse());
+                if (!createdReposByMembersProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
+                    createdReposByMembersProcessorHashMap.put(requestQuery.getOrganizationName(), new CreatedReposByMembersProcessor());
+                }
+                createdReposByMembersProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                break;
         }
     }
 }

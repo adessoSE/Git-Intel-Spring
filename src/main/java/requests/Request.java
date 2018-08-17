@@ -69,6 +69,7 @@ public abstract class Request {
         switch (requestQuery.getQueryRequestType()) {
             case ORGANIZATION_VALIDATION:
                 processOrganizationValidationRequest(requestQuery, restTemplate, entity);
+                break;
             case ORGANIZATION_DETAIL:
                 processOrganizationRequest(requestQuery, restTemplate, entity);
                 break;

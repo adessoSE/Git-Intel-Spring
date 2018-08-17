@@ -15,9 +15,14 @@ public class OrganizationValidationRequest {
     public OrganizationValidationRequest(String organizationName) {
         this.organizationName = organizationName;
         this.query = "query {\n" +
-                "  organization(login:\"" + organizationName + "\") {\n" +
-                "    id\n" +
-                "  }\n" +
+                "organization(login:\"" + organizationName + "\") {\n" +
+                "id\n" +
+                "}\n" +
+                "rateLimit {\n" +
+                "cost\n" +
+                "remaining\n" +
+                "resetAt\n" +
+                "}\n" +
                 "}";
         this.responseProcessor = ResponseProcessor.ORGANIZATION_VALIDATION;
         this.requestType = RequestType.ORGANIZATION_VALIDATION;
@@ -25,6 +30,6 @@ public class OrganizationValidationRequest {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType,this.estimatedQueryCost);
+        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
     }
 }

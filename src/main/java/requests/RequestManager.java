@@ -26,7 +26,7 @@ public class RequestManager {
     }
 
     public RequestManager(String organizationName, String memberID, String endCursor){
-        this. organizationName = this.formatInput(organizationName);
+        this.organizationName = this.formatInput(organizationName);
         this.endCursor = "\"" + endCursor + "\"";
         this.memberID = memberID;
     }
