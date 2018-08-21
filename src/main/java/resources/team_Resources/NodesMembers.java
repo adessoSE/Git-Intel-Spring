@@ -1,6 +1,6 @@
 package resources.team_Resources;
 
-public class NodesRepositories {
+public class NodesMembers {
 
     private String id;
 

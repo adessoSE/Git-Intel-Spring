@@ -1,6 +1,9 @@
 package objects.Team;
 
-import java.util.ArrayList;
+import objects.Member;
+import objects.Repository;
+
+import java.util.HashMap;
 
 public class Team {
 
@@ -8,24 +11,20 @@ public class Team {
     private String description;
     private String avatarURL;
     private String githubURL;
-    private int numOfMembers;
-    private ArrayList<TeamRepository> teamRepositories;
+    private HashMap<String, Member> teamMembers;
+    private HashMap<String, Repository> teamRepositories;
 
-    public Team(String name, String description, String avatarURL, String githubURL, int numOfMembers, ArrayList<TeamRepository> teamRepositories) {
+    public Team(String name, String description, String avatarURL, String githubURL, HashMap<String, Member> teamMembers, HashMap<String, Repository> teamRepositories) {
         this.name = name;
         this.description = description;
         this.avatarURL = avatarURL;
         this.githubURL = githubURL;
-        this.numOfMembers = numOfMembers;
+        this.teamMembers = teamMembers;
         this.teamRepositories = teamRepositories;
     }
 
     public String getGithubURL() {
         return githubURL;
-    }
-
-    public ArrayList<TeamRepository> getTeamRepositories() {
-        return teamRepositories;
     }
 
     public String getName() {
@@ -40,7 +39,11 @@ public class Team {
         return avatarURL;
     }
 
-    public int getNumOfMembers() {
-        return numOfMembers;
+    public HashMap<String, Member> getTeamMembers() {
+        return teamMembers;
+    }
+
+    public HashMap<String, Repository> getTeamRepositories() {
+        return teamRepositories;
     }
 }

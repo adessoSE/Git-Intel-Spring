@@ -1,8 +1,6 @@
 package resources.team_Resources;
 
 
-import java.util.ArrayList;
-
 public class NodesTeams {
 
     private String name;

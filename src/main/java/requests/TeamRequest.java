@@ -34,23 +34,16 @@ public class TeamRequest extends Request {
                 "description\n" +
                 "avatarUrl\n" +
                 "url\n" +
-                "repositories(first: 10) {\n" +
+                "repositories (first: 100) {\n" +
+                "nodes {\n" +
+                "id\n" +
+                "}\n" +
+                "}\n" +
+                "members (first: 100) {\n" +
                 "totalCount\n" +
                 "nodes {\n" +
-                "name\n" +
-                "defaultBranchRef {\n" +
-                "target {\n" +
-                "... on Commit {\n" +
-                "history(first: 25, since: \"" + getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
-                "totalCount\n" +
+                "id\n" +
                 "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "members {\n" +
-                "totalCount\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
@@ -61,7 +54,6 @@ public class TeamRequest extends Request {
                 "resetAt\n" +
                 "}\n" +
                 "}";
-
         this.responseProcessor = ResponseProcessor.TEAM;
         this.requestType = RequestType.TEAM;
     }

@@ -1,16 +1,14 @@
 package processors;
 
 import enums.RequestType;
+import objects.Member;
 import objects.OrganizationWrapper;
 import objects.Query;
+import objects.Repository;
 import objects.Team.Team;
-import objects.Team.TeamRepository;
 import repositories.OrganizationRepository;
 import repositories.RequestRepository;
-import resources.team_Resources.NodesRepositories;
-import resources.team_Resources.NodesTeams;
-import resources.team_Resources.PageInfo;
-import resources.team_Resources.Teams;
+import resources.team_Resources.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,14 +56,26 @@ public class TeamProcessor extends ResponseProcessor {
 
     private void processQueryResponse(Teams organizationTeams) {
         for (NodesTeams team : organizationTeams.getNodes()) {
-            this.teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
+            this.teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), this.processTeamMembers(team.getMembers().getNodes()), this.processTeamRepositories(team.getRepositories().getNodes())));
         }
     }
 
-    private ArrayList<TeamRepository> processTeamRepositories(NodesTeams team) {
-        ArrayList<TeamRepository> teamRepositories = new ArrayList<>();
-        for (NodesRepositories repos : team.getRepositories().getNodes()) {
-            teamRepositories.add(new TeamRepository(repos.getName(), repos.getDefaultBranchRef().getTarget().getHistory().getTotalCount()));
+    private HashMap<String, Member> processTeamMembers(ArrayList<NodesMembers> members) {
+        HashMap<String, Member> teamMembers = new HashMap<>();
+        for (NodesMembers member : members) {
+            if (this.organization.getMembers().containsKey(member.getId())) {
+                teamMembers.put(member.getId(), this.organization.getMembers().get(member.getId()));
+            }
+        }
+        return teamMembers;
+    }
+
+    private HashMap<String, Repository> processTeamRepositories(ArrayList<NodesRepositories> repositories) {
+        HashMap<String, Repository> teamRepositories = new HashMap<>();
+        for (NodesRepositories repository : repositories) {
+            if (this.organization.getRepositories().containsKey(repository.getId())) {
+                teamRepositories.put(repository.getId(), this.organization.getRepositories().get(repository.getId()));
+            }
         }
         return teamRepositories;
     }
