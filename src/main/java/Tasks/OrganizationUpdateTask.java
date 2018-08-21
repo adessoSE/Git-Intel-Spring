@@ -16,7 +16,6 @@ public class OrganizationUpdateTask {
      * Scheduled task for generating queries in order to update saved organisation.
      * Currently used for debugging the requests.
      * TODO: Scheduled task should run at night time!
-     * TODO: Request have to be done in specific sequence. MEMBER_PR needs REPOSITORY first. Define in RequestTask
      */
     @Scheduled(fixedDelay = 300000000, initialDelay = 5000)
     private void generateQuery() {

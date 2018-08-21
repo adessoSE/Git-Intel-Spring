@@ -2,6 +2,8 @@ package requests;
 
 import enums.RequestType;
 import objects.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import repositories.RequestRepository;
 
 import java.util.ArrayList;
 import java.util.List;

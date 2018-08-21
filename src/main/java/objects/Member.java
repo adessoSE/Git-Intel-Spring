@@ -1,6 +1,5 @@
 package objects;
 
-import java.util.Date;
 import java.util.HashMap;
 
 public class Member {

@@ -81,7 +81,6 @@ public class MemberPRProcessor extends ResponseProcessor {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
                 if (!pullRequests.getRepository().isFork() && checkIfPullRequestIsActiveSinceOneYear(pullRequests.getUpdatedAt().getTime())) {
                     if (memberPRRepoIDs.containsKey(pullRequests.getRepository().getId())) {
-                        //TODO: Change to Set!
                         if (!memberPRRepoIDs.get(pullRequests.getRepository().getId()).contains(nodes.getId())) {
                             memberPRRepoIDs.get(pullRequests.getRepository().getId()).add(nodes.getId());
                         }

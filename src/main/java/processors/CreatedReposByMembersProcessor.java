@@ -44,19 +44,18 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS);
     }
 
-    //TODO: Hinzufügen gesamten Repos zum Schluss funktioniert nicht
-    private void checkIfRequestTypeIsFinished(){
-        System.out.println("Check Last Request: " + super.checkIfRequestTypeIsFinished(this.organization, RequestType.CREATED_REPOS_BY_MEMBERS));
-        if(super.checkIfRequestTypeIsFinished(this.organization, RequestType.CREATED_REPOS_BY_MEMBERS)){
+    private void checkIfRequestTypeIsFinished() {
+        if (super.checkIfQueryIsLastOfRequestType(this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS, this.requestRepository)) {
             this.organization.addCreatedReposByMembers(createdRepositoriesByMembers);
         }
     }
+
     private void processRemainingRepositoriesOfMember(PageInfoRepositories pageInfo, String organizationName, String memberID) {
         if (pageInfo.hasNextPage()) {
             this.requestRepository.save(new RequestManager(organizationName, memberID, pageInfo.getEndCursor()).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
         }
     }
-//TODO: Prüfung wenn Nutzer schon da ist Repos hinzufügen
+
     private void processQueryResponse(Data response) {
         ArrayList<Repository> createdRepositoriesByMember = new ArrayList<>();
 
@@ -75,7 +74,13 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
             createdRepositoriesByMember.add(new Repository(name, url, description, programmingLanguage, license, forks, stars));
         }
-        this.createdRepositoriesByMembers.put(response.getNode().getId(), createdRepositoriesByMember);
+        if (checkIfMemberIsAlreadyAssigned(response.getNode().getId())) {
+            this.createdRepositoriesByMembers.get(response.getNode().getId()).addAll(createdRepositoriesByMember);
+        } else this.createdRepositoriesByMembers.put(response.getNode().getId(), createdRepositoriesByMember);
+    }
+
+    private boolean checkIfMemberIsAlreadyAssigned(String memberID) {
+        return this.createdRepositoriesByMembers.containsKey(memberID);
     }
 
     private String getLicense(NodesRepositories repository) {

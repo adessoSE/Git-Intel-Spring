@@ -31,12 +31,6 @@ public class MemberIDProcessor extends ResponseProcessor {
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
-    /**
-     * Response processing of the MemberID request. Processing through every MemberID and save it in a ArrayList.
-     * Creating a MemberID object containing the MemberID ArrayList and the PageInfo wrapped into the ResponseWrapper.
-     *
-     * @return ResponseWrapper containing the MemberID object.
-     */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getRateLimit(), requestQuery.getQueryRequestType());
