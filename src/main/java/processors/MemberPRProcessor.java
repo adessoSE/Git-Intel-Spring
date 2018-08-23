@@ -59,10 +59,8 @@ public class MemberPRProcessor extends ResponseProcessor {
     }
 
     private void processNumOfExternalRepoContributions() {
-        if (super.checkIfRequestTypeIsFinished(this.organization, RequestType.REPOSITORY)) {
             super.calculateExternalOrganizationPullRequestsChartJSData(organization, this.pullRequestsDates);
             this.organization.getOrganizationDetail().setNumOfExternalRepoContributions(super.calculateExternalRepoContributions(this.organization).size());
-        }
     }
 
     private void generateRequestsBasedOnMemberPR() {

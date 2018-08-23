@@ -51,6 +51,8 @@ public class ResponseProcessorTask extends ResponseProcessor {
         switch (requestType) {
             case TEAM:
                 return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, organizationName).isEmpty() && this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.REPOSITORY, organizationName).isEmpty();
+            case MEMBER_PR:
+                return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.REPOSITORY, organizationName).isEmpty();
             default:
                 return true;
         }

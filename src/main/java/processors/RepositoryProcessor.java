@@ -33,7 +33,7 @@ public class RepositoryProcessor extends ResponseProcessor {
     }
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
-        this.setUp(requestQuery,requestRepository,organizationRepository);
+        this.setUp(requestQuery, requestRepository, organizationRepository);
         super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseRepository().getData().getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories());
         this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories().getPageInfo(), requestQuery.getOrganizationName());
@@ -45,13 +45,6 @@ public class RepositoryProcessor extends ResponseProcessor {
             super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.REPOSITORY, requestRepository);
         } else {
             this.organization.addRepositories(this.repositories);
-            this.processNumOfExternalRepoContributions();
-        }
-    }
-
-    private void processNumOfExternalRepoContributions() {
-        if (super.checkIfRequestTypeIsFinished(this.organization, RequestType.MEMBER_PR)) {
-            this.organization.getOrganizationDetail().setNumOfExternalRepoContributions(super.calculateExternalRepoContributions(this.organization).size());
         }
     }
 
