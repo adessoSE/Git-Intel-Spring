@@ -101,13 +101,13 @@ public class TeamProcessor extends ResponseProcessor {
      * Processing of the members of the teams and selection of the suitable member object from the organization.
      *
      * @param members All members of the team.
-     * @return HashMap with the member ID as key and the member object as value.
+     * @return ArrayList with the member object.
      */
-    private HashMap<String, Member> processTeamMembers(ArrayList<NodesMembers> members) {
-        HashMap<String, Member> teamMembers = new HashMap<>();
+    private ArrayList<Member> processTeamMembers(ArrayList<NodesMembers> members) {
+        ArrayList<Member> teamMembers = new ArrayList<>();
         for (NodesMembers member : members) {
             if (this.organization.getMembers().containsKey(member.getId())) {
-                teamMembers.put(member.getId(), this.organization.getMembers().get(member.getId()));
+                teamMembers.add(this.organization.getMembers().get(member.getId()));
             }
         }
         return teamMembers;
@@ -118,13 +118,13 @@ public class TeamProcessor extends ResponseProcessor {
      * Processing of the repositories of the teams and selection of the suitable repository object from the organization.
      *
      * @param repositories All repositories of the team.
-     * @return HashMap with the repository ID as key and the repository object as value.
+     * @return ArrayList with the repository object.
      */
-    private HashMap<String, Repository> processTeamRepositories(ArrayList<NodesRepositories> repositories) {
-        HashMap<String, Repository> teamRepositories = new HashMap<>();
+    private ArrayList<Repository> processTeamRepositories(ArrayList<NodesRepositories> repositories) {
+        ArrayList<Repository> teamRepositories = new ArrayList<>();
         for (NodesRepositories repository : repositories) {
             if (this.organization.getRepositories().containsKey(repository.getId())) {
-                teamRepositories.put(repository.getId(), this.organization.getRepositories().get(repository.getId()));
+                teamRepositories.add(this.organization.getRepositories().get(repository.getId()));
             }
         }
         return teamRepositories;
