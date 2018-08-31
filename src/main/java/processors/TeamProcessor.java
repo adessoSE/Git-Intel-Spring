@@ -9,6 +9,12 @@ import objects.Team.Team;
 import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import resources.team_Resources.*;
+import objects.Query;
+import objects.Repository;
+import objects.Team.Team;
+import repositories.OrganizationRepository;
+import repositories.RequestRepository;
+import resources.team_Resources.*;
 import objects.OrganizationWrapper;
 import objects.Query;
 import objects.Team.Team;
@@ -87,6 +93,7 @@ public class TeamProcessor extends ResponseProcessor {
     private void processQueryResponse(Teams organizationTeams) {
         for (NodesTeams team : organizationTeams.getNodes()) {
             this.teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), this.processTeamMembers(team.getMembers().getNodes()), this.processTeamRepositories(team.getRepositories().getNodes())));
+
         }
     }
 
@@ -107,6 +114,7 @@ public class TeamProcessor extends ResponseProcessor {
     }
 
     /**
+
      * Processing of the repositories of the teams and selection of the suitable repository object from the organization.
      *
      * @param repositories All repositories of the team.
