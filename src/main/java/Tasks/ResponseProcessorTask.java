@@ -9,7 +9,6 @@ import processors.ResponseProcessor;
 import processors.ResponseProcessorManager;
 import repositories.OrganizationRepository;
 import repositories.RequestRepository;
-
 import java.util.ArrayList;
 
 public class ResponseProcessorTask extends ResponseProcessor {
