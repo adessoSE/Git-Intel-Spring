@@ -1,6 +1,14 @@
 package processors;
 
 import enums.RequestType;
+import objects.Member;
+import objects.OrganizationWrapper;
+import objects.Query;
+import objects.Repository;
+import objects.Team.Team;
+import repositories.OrganizationRepository;
+import repositories.RequestRepository;
+import resources.team_Resources.*;
 import objects.OrganizationWrapper;
 import objects.Query;
 import objects.Team.Team;
@@ -27,6 +35,13 @@ public class TeamProcessor extends ResponseProcessor {
     public TeamProcessor() {
     }
 
+    /**
+     * SetUp method to set up the necessary data for processing. Already selects the matching organization.
+     *
+     * @param requestQuery           Contains the necessary information, for example the TeamRequest response.
+     * @param requestRepository      RequestRepository for saving and checking outstanding requests.
+     * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
+     */
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -35,10 +50,12 @@ public class TeamProcessor extends ResponseProcessor {
     }
 
     /**
-     * Response processing of the Team request. Processing through every Team and save it in a ArrayList.
-     * Creating a Teams object containing the Team ArrayList and the PageInfo wrapped into the ResponseWrapper.
+     * Processing TeamRequest response.
+     * Update of the RateLimit from the Github API. Check whether it is the last request of the type.
      *
-     * @return ResponseWrapper containing the Teams object.
+     * @param requestQuery           Contains the necessary information, for example the TeamRequest response.
+     * @param requestRepository      RequestRepository for saving and checking outstanding requests.
+     * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
      */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
@@ -48,6 +65,12 @@ public class TeamProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.TEAM);
     }
 
+    /**
+     * Processing if additional requests are necessary for outstanding information. Otherwise the collected data will be added to the organization.
+     *
+     * @param pageInfo         Contains information about outstanding data.
+     * @param organizationName Name related to the query.
+     */
     private void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
         if (pageInfo.isHasNextPage()) {
             super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.TEAM, requestRepository);
@@ -56,16 +79,45 @@ public class TeamProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Processing the response from the TeamRequest. Creation of the team objects and saving in the HashMap.
+     *
+     * @param organizationTeams All teams of the organization.
+     */
     private void processQueryResponse(Teams organizationTeams) {
         for (NodesTeams team : organizationTeams.getNodes()) {
-            this.teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
+            this.teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), this.processTeamMembers(team.getMembers().getNodes()), this.processTeamRepositories(team.getRepositories().getNodes())));
         }
     }
 
-    private ArrayList<TeamRepository> processTeamRepositories(NodesTeams team) {
-        ArrayList<TeamRepository> teamRepositories = new ArrayList<>();
-        for (NodesRepositories repos : team.getRepositories().getNodes()) {
-            teamRepositories.add(new TeamRepository(repos.getName(), repos.getDefaultBranchRef().getTarget().getHistory().getTotalCount()));
+    /**
+     * Processing of the members of the teams and selection of the suitable member object from the organization.
+     *
+     * @param members All members of the team.
+     * @return HashMap with the member ID as key and the member object as value.
+     */
+    private HashMap<String, Member> processTeamMembers(ArrayList<NodesMembers> members) {
+        HashMap<String, Member> teamMembers = new HashMap<>();
+        for (NodesMembers member : members) {
+            if (this.organization.getMembers().containsKey(member.getId())) {
+                teamMembers.put(member.getId(), this.organization.getMembers().get(member.getId()));
+            }
+        }
+        return teamMembers;
+    }
+
+    /**
+     * Processing of the repositories of the teams and selection of the suitable repository object from the organization.
+     *
+     * @param repositories All repositories of the team.
+     * @return HashMap with the repository ID as key and the repository object as value.
+     */
+    private HashMap<String, Repository> processTeamRepositories(ArrayList<NodesRepositories> repositories) {
+        HashMap<String, Repository> teamRepositories = new HashMap<>();
+        for (NodesRepositories repository : repositories) {
+            if (this.organization.getRepositories().containsKey(repository.getId())) {
+                teamRepositories.put(repository.getId(), this.organization.getRepositories().get(repository.getId()));
+            }
         }
         return teamRepositories;
     }
