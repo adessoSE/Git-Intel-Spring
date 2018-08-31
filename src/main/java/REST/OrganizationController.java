@@ -68,6 +68,14 @@ public class OrganizationController {
         } else return null;
     }
 
+    @RequestMapping("/externalrepositories")
+    public Collection<Repository> retrieveExternalRepositories(@RequestParam(value = "name") String name) {
+        String formattedName = this.formatInput(name);
+        if (this.checkIfDataAvailable(formattedName)) {
+            return this.organizationRepository.findByOrganizationName(formattedName).getExternalRepos().values();
+        } else return null;
+    }
+
     @RequestMapping("/teams")
     public Collection<Team> retrieveOrganizationTeams(@RequestParam(value = "name") String name) {
         String formattedName = this.formatInput(name);
