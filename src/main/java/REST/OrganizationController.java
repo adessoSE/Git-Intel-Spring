@@ -5,10 +5,7 @@ import enums.RequestType;
 import objects.*;
 import objects.Team.Team;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import repositories.OrganizationRepository;
 import repositories.RequestRepository;
 import requests.RequestManager;
@@ -33,52 +30,51 @@ public class OrganizationController {
      * <p>
      * TODO Check if organization is valid before generating requests.
      *
-     * @param name
      * @return
      */
-    @RequestMapping("/organizationdetail")
-    public OrganizationDetail retrieveOrganizationDetail(@RequestParam(value = "name") String name) {
-        String formattedName = this.formatInput(name);
+    @RequestMapping("/organizationdetail/{organizationName}")
+    public OrganizationDetail retrieveOrganizationDetail(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName).getOrganizationDetail();
         } else return null;
     }
 
-    @RequestMapping("/organizationobject")
-    public OrganizationWrapper retrieveOrganizationObject(@RequestParam(value = "name") String name) {
-        String formattedName = this.formatInput(name);
+    @RequestMapping("/organizationobject/{organizationName}")
+    public OrganizationWrapper retrieveOrganizationObject(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName);
         } else return null;
     }
 
-    @RequestMapping("/members")
-    public Collection<Member> retrieveOrganizationMembers(@RequestParam(value = "name") String name) {
-        String formattedName = this.formatInput(name);
+    @RequestMapping("/members/{organizationName}")
+    public Collection<Member> retrieveOrganizationMembers(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName).getMembers().values();
         } else return null;
     }
 
-    @RequestMapping("/repositories")
-    public Collection<Repository> retrieveOrganizationRepositories(@RequestParam(value = "name") String name) {
-        String formattedName = this.formatInput(name);
+    @RequestMapping("/repositories/{organizationName}")
+    public Collection<Repository> retrieveOrganizationRepositories(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName).getRepositories().values();
         } else return null;
     }
 
-    @RequestMapping("/externalrepositories")
-    public Collection<Repository> retrieveExternalRepositories(@RequestParam(value = "name") String name) {
-        String formattedName = this.formatInput(name);
+    @RequestMapping("/externalrepositories/{organizationName}")
+    public Collection<Repository> retrieveExternalRepositories(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName).getExternalRepos().values();
         } else return null;
     }
 
-    @RequestMapping("/teams")
-    public Collection<Team> retrieveOrganizationTeams(@RequestParam(value = "name") String name) {
-        String formattedName = this.formatInput(name);
+    @RequestMapping("/teams/{organizationName}")
+    public Collection<Team> retrieveOrganizationTeams(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName).getTeams().values();
         } else return null;
