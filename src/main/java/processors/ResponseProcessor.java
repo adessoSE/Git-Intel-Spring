@@ -4,6 +4,11 @@ import config.Config;
 import config.RateLimitConfig;
 import enums.RequestType;
 import objects.ChartJSData;
+import objects.OrganizationWrapper;
+import objects.Query;
+import repositories.OrganizationRepository;
+import repositories.RequestRepository;
+import requests.RequestManager;
 import resources.rateLimit_Resources.RateLimit;
 
 import java.text.DateFormat;
@@ -21,6 +26,7 @@ public abstract class ResponseProcessor {
         RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(), requestType);
 
         System.out.println("Rate Limit remaining: " + RateLimitConfig.getRemainingRateLimit());
+        System.out.println("Request Type: " + requestType);
         System.out.println("Rate Limit Cost: " + RateLimitConfig.getPreviousRequestCostAndRequestType());
     }
 
@@ -127,6 +133,80 @@ public abstract class ResponseProcessor {
                 chartJSDataset.add(0);
             }
         }
+    }
+
+    /**
+     * Calculates the internal commits of the members in the own organization repositories. Generated as ChartJSData and saved in OrganizationDetail.
+     *
+     * @param organization
+     */
+    public void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> comittedRepo) {
+        Set<String> organizationRepoIDs = organization.getRepositories().keySet();
+        ArrayList<Calendar> internalCommitsDates = new ArrayList<>();
+        for (String id : organizationRepoIDs) {
+            if (comittedRepo.containsKey(id)) {
+                internalCommitsDates.addAll(comittedRepo.get(id));
+            }
+        }
+
+        organization.getOrganizationDetail().setInternalRepositoriesCommits(this.generateChartJSData(internalCommitsDates));
+
+    }
+
+    /**
+     * Calculates the external pull requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
+     *
+     * @param organization
+     */
+    public void calculateExternalOrganizationPullRequestsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> contributedRepos) {
+        Set<String> organizationRepoIDs = organization.getRepositories().keySet();
+        ArrayList<Calendar> externalPullRequestsDates = new ArrayList<>();
+        contributedRepos.keySet().removeAll(organizationRepoIDs);
+        for (ArrayList<Calendar> calendar : contributedRepos.values()) {
+            externalPullRequestsDates.addAll(calendar);
+        }
+
+        organization.getOrganizationDetail().setExternalRepositoriesPullRequests(this.generateChartJSData(externalPullRequestsDates));
+    }
+
+    public HashMap<String, ArrayList<String>> calculateExternalRepoContributions(OrganizationWrapper organization) {
+        HashMap<String, ArrayList<String>> externalContributions = new HashMap<>();
+        externalContributions.putAll(organization.getMemberPRRepoIDs());
+        externalContributions.keySet().removeAll(organization.getRepositories().keySet());
+        return externalContributions;
+    }
+
+    private void checkIfOrganizationUpdateIsFinished(OrganizationWrapper organization, OrganizationRepository organizationRepository) {
+        if (organization.getFinishedRequests().size() == RequestType.values().length) {
+            organization.setLastUpdateTimestamp(new Date());
+            System.out.println("Complete Update Cost: " + organization.getCompleteUpdateCost());
+        }
+        organizationRepository.save(organization);
+    }
+
+    public boolean checkIfQueryIsLastOfRequestType(OrganizationWrapper organization, Query processingQuery, RequestType requestType, RequestRepository requestRepository) {
+        if (requestRepository.findByQueryRequestTypeAndOrganizationName(requestType, processingQuery.getOrganizationName()).size() == 1) {
+            organization.addFinishedRequest(requestType);
+            return true;
+        }
+        return false;
+    }
+
+
+    public void doFinishingQueryProcedure(RequestRepository requestRepository, OrganizationRepository organizationRepository, OrganizationWrapper organization, Query processingQuery, RequestType requestType) {
+        organizationRepository.save(organization);
+        organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(requestType));
+        this.checkIfQueryIsLastOfRequestType(organization, processingQuery, requestType, requestRepository);
+        this.checkIfOrganizationUpdateIsFinished(organization, organizationRepository);
+    }
+
+
+    public void generateNextRequests(String organizationName, String endCursor, RequestType requestType, RequestRepository requestRepository) {
+        requestRepository.save(new RequestManager(organizationName, endCursor).generateRequest(requestType));
+    }
+
+    public boolean checkIfRequestTypeIsFinished(OrganizationWrapper organization, RequestType requestType){
+        return organization.getFinishedRequests().contains(requestType);
     }
 
 }

@@ -2,6 +2,8 @@ package requests;
 
 import enums.RequestType;
 import objects.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import repositories.RequestRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class RequestManager {
     }
 
     public RequestManager(String organizationName, String memberID, String endCursor){
-        this. organizationName = this.formatInput(organizationName);
+        this.organizationName = this.formatInput(organizationName);
         this.endCursor = "\"" + endCursor + "\"";
         this.memberID = memberID;
     }

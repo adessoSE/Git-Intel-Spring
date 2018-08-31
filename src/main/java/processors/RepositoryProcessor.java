@@ -1,36 +1,67 @@
 package processors;
 
 import config.Config;
+import enums.RequestType;
+import objects.OrganizationWrapper;
 import objects.Query;
 import objects.Repository;
-import objects.ResponseWrapper;
+import repositories.OrganizationRepository;
+import repositories.RequestRepository;
 import resources.repository_Resources.*;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 public class RepositoryProcessor extends ResponseProcessor {
 
+    private RequestRepository requestRepository;
+    private OrganizationRepository organizationRepository;
     private Query requestQuery;
+    private OrganizationWrapper organization;
 
-    public RepositoryProcessor(Query requestQuery) {
-        this.requestQuery = requestQuery;
+    private HashMap<String, Repository> repositories = new HashMap<>();
+
+    public RepositoryProcessor() {
     }
 
-    public ResponseWrapper processResponse() {
+    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+        this.requestQuery = requestQuery;
+        this.requestRepository = requestRepository;
+        this.organizationRepository = organizationRepository;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
+    }
+
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+        this.setUp(requestQuery,requestRepository,organizationRepository);
         super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseRepository().getData().getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories());
+        this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories().getPageInfo(), requestQuery.getOrganizationName());
+        super.doFinishingQueryProcedure(requestRepository, organizationRepository, this.organization, requestQuery, RequestType.REPOSITORY);
+    }
 
-        HashMap<String, Repository> repositories = new HashMap<>();
-        Repositories repositoriesData = this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories();
+    private void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
+        if (pageInfo.isHasNextPage()) {
+            super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.REPOSITORY, requestRepository);
+        } else {
+            this.organization.addRepositories(this.repositories);
+            this.processNumOfExternalRepoContributions();
+        }
+    }
 
+    private void processNumOfExternalRepoContributions() {
+        if (super.checkIfRequestTypeIsFinished(this.organization, RequestType.MEMBER_PR)) {
+            this.organization.getOrganizationDetail().setNumOfExternalRepoContributions(super.calculateExternalRepoContributions(this.organization).size());
+        }
+    }
+
+    private void processQueryResponse(Repositories repositoriesData) {
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             int stars = repo.getStargazers().getTotalCount();
@@ -58,7 +89,6 @@ public class RepositoryProcessor extends ResponseProcessor {
             }
             repositories.put(repo.getId(), new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
-        return new ResponseWrapper(new objects.Repositories(repositories, repositoriesData.getPageInfo().getEndCursor(), repositoriesData.getPageInfo().isHasNextPage()));
     }
 
     private String getLicense(NodesRepositories repo) {

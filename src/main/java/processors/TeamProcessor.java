@@ -1,11 +1,15 @@
 package processors;
 
+import enums.RequestType;
+import objects.OrganizationWrapper;
 import objects.Query;
-import objects.ResponseWrapper;
 import objects.Team.Team;
 import objects.Team.TeamRepository;
+import repositories.OrganizationRepository;
+import repositories.RequestRepository;
 import resources.team_Resources.NodesRepositories;
 import resources.team_Resources.NodesTeams;
+import resources.team_Resources.PageInfo;
 import resources.team_Resources.Teams;
 
 import java.util.ArrayList;
@@ -13,10 +17,21 @@ import java.util.HashMap;
 
 public class TeamProcessor extends ResponseProcessor {
 
+    private RequestRepository requestRepository;
+    private OrganizationRepository organizationRepository;
     private Query requestQuery;
+    private OrganizationWrapper organization;
 
-    public TeamProcessor(Query requestQuery) {
+    private HashMap<String, Team> teams = new HashMap<>();
+
+    public TeamProcessor() {
+    }
+
+    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
+        this.requestRepository = requestRepository;
+        this.organizationRepository = organizationRepository;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
     /**
@@ -25,16 +40,26 @@ public class TeamProcessor extends ResponseProcessor {
      *
      * @return ResponseWrapper containing the Teams object.
      */
-    public ResponseWrapper processResponse() {
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+        this.setUp(requestQuery, requestRepository, organizationRepository);
         super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseTeam().getData().getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams());
+        this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams().getPageInfo(), requestQuery.getOrganizationName());
+        super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.TEAM);
+    }
 
-        Teams organizationTeams = this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams();
-
-        HashMap<String, Team> teams = new HashMap<>();
-        for (NodesTeams team : organizationTeams.getNodes()) {
-            teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
+    private void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
+        if (pageInfo.isHasNextPage()) {
+            super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.TEAM, requestRepository);
+        } else {
+            organization.addTeams(this.teams);
         }
-        return new ResponseWrapper(new objects.Team.Teams(teams, organizationTeams.getPageInfo().getEndCursor(), organizationTeams.getPageInfo().isHasNextPage()));
+    }
+
+    private void processQueryResponse(Teams organizationTeams) {
+        for (NodesTeams team : organizationTeams.getNodes()) {
+            this.teams.put(team.getId(), new Team(team.getName(), team.getDescription(), team.getAvatarUrl(), team.getUrl(), team.getMembers().getTotalCount(), processTeamRepositories(team)));
+        }
     }
 
     private ArrayList<TeamRepository> processTeamRepositories(NodesTeams team) {
