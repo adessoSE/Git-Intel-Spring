@@ -1,4 +1,4 @@
-package objects.Team;
+package objects;
 
 import objects.Member;
 import objects.Repository;

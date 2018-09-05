@@ -3,7 +3,7 @@ package REST;
 
 import enums.RequestType;
 import objects.*;
-import objects.Team.Team;
+import objects.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import repositories.OrganizationRepository;
