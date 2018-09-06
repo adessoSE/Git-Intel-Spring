@@ -1,14 +1,12 @@
 package requests;
 
 import enums.RequestType;
-import enums.ResponseProcessor;
 import objects.Query;
 
 public class OrganizationValidationRequest {
 
     private final int estimatedQueryCost = 1;
     private String query;
-    private ResponseProcessor responseProcessor;
     private String organizationName;
     private RequestType requestType;
 
@@ -24,12 +22,11 @@ public class OrganizationValidationRequest {
                 "resetAt\n" +
                 "}\n" +
                 "}";
-        this.responseProcessor = ResponseProcessor.ORGANIZATION_VALIDATION;
         this.requestType = RequestType.ORGANIZATION_VALIDATION;
 
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
+        return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }
 }

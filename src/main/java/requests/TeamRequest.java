@@ -1,20 +1,12 @@
 package requests;
 
-import config.Config;
 import enums.RequestType;
-import enums.ResponseProcessor;
 import objects.Query;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class TeamRequest extends Request {
 
-    private final int estimatedQueryCost = 5;
+    private final int estimatedQueryCost = 1;
     private String query;
-    private ResponseProcessor responseProcessor;
     private RequestType requestType;
     private String organizationName;
 
@@ -54,18 +46,11 @@ public class TeamRequest extends Request {
                 "resetAt\n" +
                 "}\n" +
                 "}";
-        this.responseProcessor = ResponseProcessor.TEAM;
         this.requestType = RequestType.TEAM;
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
+        return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }
 
-    private String getDateToStartCrawlingInISO8601UTC() {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        df.setTimeZone(tz);
-        return df.format(new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS));
-    }
 }

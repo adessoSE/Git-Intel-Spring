@@ -2,7 +2,6 @@ package requests;
 
 import config.Config;
 import enums.RequestType;
-import enums.ResponseProcessor;
 import objects.Query;
 
 import java.text.DateFormat;
@@ -14,7 +13,6 @@ public class RepositoryRequest {
 
     private final int estimatedQueryCost = 2;
     private String query;
-    private ResponseProcessor responseProcessor;
     private String organizationName;
     private RequestType requestType;
 
@@ -72,13 +70,11 @@ public class RepositoryRequest {
                 "resetAt\n" +
                 "}\n" +
                 "}";
-
-        this.responseProcessor = ResponseProcessor.REPOSITORY;
         this.requestType = RequestType.REPOSITORY;
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
+        return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }
 
     private String getDateToStartCrawlingInISO8601UTC() {

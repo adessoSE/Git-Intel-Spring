@@ -2,20 +2,17 @@ package requests;
 
 import config.Config;
 import enums.RequestType;
-import enums.ResponseProcessor;
 import objects.Query;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 public class MemberRequest {
 
     private final int estimatedQueryCost = 1;
     private String query;
-    private ResponseProcessor responseProcessor;
     private String organizationName;
     private RequestType requestType;
 
@@ -66,17 +63,7 @@ public class MemberRequest {
                 "resetAt\n" +
                 "}\n" +
                 "}";
-
-        this.responseProcessor = ResponseProcessor.MEMBER;
         this.requestType = RequestType.MEMBER;
-    }
-
-    private String formatMemberIDs(List<String> memberIDs) {
-        String formattedString = "";
-        for (String memberID : memberIDs) {
-            formattedString += "\"" + memberID.toString() + "\",";
-        }
-        return formattedString;
     }
 
     private String getDateToStartCrawlingInISO8601UTC() {
@@ -87,6 +74,6 @@ public class MemberRequest {
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
+        return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }
 }

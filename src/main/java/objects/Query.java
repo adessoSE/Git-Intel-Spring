@@ -2,7 +2,6 @@ package objects;
 
 import enums.RequestStatus;
 import enums.RequestType;
-import enums.ResponseProcessor;
 import org.springframework.data.annotation.Id;
 import requests.Request;
 
@@ -17,14 +16,12 @@ public class Query extends Request {
     private String queryContent;
     private Response queryResponse;
     private RequestType queryRequestType;
-    private ResponseProcessor queryResponseProcessorType;
     private Exception queryError;
 
-    public Query(String organizationName, String queryContent, ResponseProcessor queryResponseProcessorType, RequestType queryRequestType, int estimatedQueryCost) {
-        this.setOrganizationName(organizationName);
+    public Query(String organizationName, String queryContent, RequestType queryRequestType, int estimatedQueryCost) {
+        this.organizationName = organizationName;
         this.setQueryStatus(RequestStatus.CREATED);
         this.setQuery(queryContent);
-        this.setQueryResponseProcessorType(queryResponseProcessorType);
         this.queryRequestType = queryRequestType;
         this.estimatedQueryCost = estimatedQueryCost;
     }
@@ -65,20 +62,8 @@ public class Query extends Request {
         this.queryError = queryError;
     }
 
-    public ResponseProcessor getQueryResponseProcessorType() {
-        return queryResponseProcessorType;
-    }
-
-    public void setQueryResponseProcessorType(ResponseProcessor queryResponseProcessorType) {
-        this.queryResponseProcessorType = queryResponseProcessorType;
-    }
-
     public String getOrganizationName() {
         return organizationName;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
     }
 
     public RequestType getQueryRequestType() {
