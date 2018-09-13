@@ -66,7 +66,7 @@ public class MemberRequest {
         this.requestType = RequestType.MEMBER;
     }
 
-    private String getDateToStartCrawlingInISO8601UTC() {
+    protected String getDateToStartCrawlingInISO8601UTC() {
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(tz);

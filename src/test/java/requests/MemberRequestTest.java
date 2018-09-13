@@ -7,56 +7,49 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class RepositoryRequestTest {
+public class MemberRequestTest {
 
-    private RepositoryRequest repositoryRequest;
+    private MemberRequest memberRequest;
     private String expectedGeneratedQueryContent;
 
     @Before
     public void setUp() throws Exception {
-        this.repositoryRequest = new RepositoryRequest("adessoAG", "testEndCursor");
-        this.expectedGeneratedQueryContent = "query {\n" +
-                "organization(login: \"adessoAG\") {\n" +
-                "repositories(first: 100 after: testEndCursor) {\n" +
-                "pageInfo {\n" +
-                "hasNextPage\n" +
-                "endCursor\n" +
-                "}\n" +
-                "nodes {\n" +
-                "url\n" +
+        this.memberRequest = new MemberRequest("adessoAG", "testMemberID");
+        this.expectedGeneratedQueryContent = "{\n" +
+                "node(id: \"testMemberID\") {\n" +
+                "... on User {\n" +
+                "name\n" +
                 "id\n" +
-                "name\n" +
-                "description\n" +
-                "forkCount\n" +
-                "stargazers {\n" +
-                "totalCount\n" +
-                "}\n" +
-                "licenseInfo {\n" +
-                "name\n" +
-                "}\n" +
-                "primaryLanguage {\n" +
-                "name\n" +
-                "}\n" +
+                "login\n" +
+                "url\n" +
+                "avatarUrl\n" +
+                "repositoriesContributedTo(first: 100, contributionTypes: COMMIT, includeUserRepositories: true) {\n" +
+                "nodes {\n" +
+                "id\n" +
                 "defaultBranchRef {\n" +
                 "target {\n" +
                 "... on Commit {\n" +
-                "history(first: 50, since: \"" + this.repositoryRequest.getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
+                "history(first: 100, since: \"" + this.memberRequest.getDateToStartCrawlingInISO8601UTC() + "\"  ,author: {id: \"testMemberID\"}) {\n" +
                 "nodes {\n" +
                 "committedDate\n" +
+                "url\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
-                "pullRequests(last: 50) {\n" +
+                "}\n" +
+                "}\n" +
+                "issues(last: 25) {\n" +
                 "nodes {\n" +
                 "createdAt\n" +
+                "url\n" +
                 "}\n" +
                 "}\n" +
-                "issues(last: 50) {\n" +
+                "pullRequests(last: 25) {\n" +
                 "nodes {\n" +
                 "createdAt\n" +
-                "}\n" +
+                "url\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
@@ -71,19 +64,19 @@ public class RepositoryRequestTest {
 
     @Test
     public void checkIfOrganizationNameIsCorrectInGeneratedQuery() {
-        Query query = this.repositoryRequest.generateQuery();
+        Query query = this.memberRequest.generateQuery();
         assertEquals(query.getOrganizationName(), "adessoAG");
     }
 
     @Test
     public void checkIfRequestTypeIsCorrectInGeneratedQuery() {
-        Query query = this.repositoryRequest.generateQuery();
-        assertEquals(query.getQueryRequestType(), RequestType.REPOSITORY);
+        Query query = this.memberRequest.generateQuery();
+        assertEquals(query.getQueryRequestType(), RequestType.MEMBER);
     }
 
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
-        Query query = this.repositoryRequest.generateQuery();
+        Query query = this.memberRequest.generateQuery();
         assertEquals(query.getQuery(), this.expectedGeneratedQueryContent);
     }
 }
