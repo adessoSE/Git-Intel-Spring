@@ -5,12 +5,12 @@ import objects.Query;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class MemberPRRequestTest {
 
     private MemberPRRequest memberPRRequest;
-    private String expectedGeneratedQueryContent  = "query {\n" +
+    private String expectedGeneratedQueryContent = "query {\n" +
             "organization(login:\"adessoAG\") {\n" +
             "members(first: 100, after: testEndCursor) {\n" +
             "pageInfo {\n" +
@@ -46,18 +46,18 @@ public class MemberPRRequestTest {
     @Test
     public void checkIfOrganizationNameIsCorrectInGeneratedQuery() {
         Query query = this.memberPRRequest.generateQuery();
-        assertEquals(query.getOrganizationName(), "adessoAG");
+        assertEquals("adessoAG", query.getOrganizationName());
     }
 
     @Test
     public void checkIfRequestTypeIsCorrectInGeneratedQuery() {
         Query query = this.memberPRRequest.generateQuery();
-        assertEquals(query.getQueryRequestType(), RequestType.MEMBER_PR);
+        assertEquals(RequestType.MEMBER_PR, query.getQueryRequestType());
     }
 
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.memberPRRequest.generateQuery();
-        assertEquals(query.getQuery(), this.expectedGeneratedQueryContent);
+        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
     }
 }

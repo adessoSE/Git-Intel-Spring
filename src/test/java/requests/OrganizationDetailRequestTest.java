@@ -5,7 +5,7 @@ import objects.Query;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class OrganizationDetailRequestTest {
 
@@ -43,18 +43,18 @@ public class OrganizationDetailRequestTest {
     @Test
     public void checkIfOrganizationNameIsCorrectInGeneratedQuery() {
         Query query = this.organizationDetailRequest.generateQuery();
-        assertEquals(query.getOrganizationName(), "adessoAG");
+        assertEquals("adessoAG", query.getOrganizationName());
     }
 
     @Test
     public void checkIfRequestTypeIsCorrectInGeneratedQuery() {
         Query query = this.organizationDetailRequest.generateQuery();
-        assertEquals(query.getQueryRequestType(), RequestType.ORGANIZATION_DETAIL);
+        assertEquals(RequestType.ORGANIZATION_DETAIL, query.getQueryRequestType());
     }
 
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.organizationDetailRequest.generateQuery();
-        assertEquals(query.getQuery(), this.expectedGeneratedQueryContent);
+        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
     }
 }

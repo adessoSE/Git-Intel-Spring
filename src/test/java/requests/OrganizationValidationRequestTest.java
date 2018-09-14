@@ -5,7 +5,7 @@ import objects.Query;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class OrganizationValidationRequestTest {
 
@@ -29,18 +29,18 @@ public class OrganizationValidationRequestTest {
     @Test
     public void checkIfOrganizationNameIsCorrectInGeneratedQuery() {
         Query query = this.organizationValidationRequest.generateQuery();
-        assertEquals(query.getOrganizationName(), "adessoAG");
+        assertEquals("adessoAG", query.getOrganizationName());
     }
 
     @Test
     public void checkIfRequestTypeIsCorrectInGeneratedQuery() {
         Query query = this.organizationValidationRequest.generateQuery();
-        assertEquals(query.getQueryRequestType(), RequestType.ORGANIZATION_VALIDATION);
+        assertEquals(RequestType.ORGANIZATION_VALIDATION, query.getQueryRequestType());
     }
 
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.organizationValidationRequest.generateQuery();
-        assertEquals(query.getQuery(), this.expectedGeneratedQueryContent);
+        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
     }
 }

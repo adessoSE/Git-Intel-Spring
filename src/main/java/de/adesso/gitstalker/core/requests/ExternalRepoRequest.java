@@ -8,7 +8,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 public class ExternalRepoRequest {
 
@@ -40,7 +39,7 @@ public class ExternalRepoRequest {
                 "defaultBranchRef {\n" +
                 "target {\n" +
                 "... on Commit {\n" +
-                "history(first: 50, since: \"" + getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
+                "history(first: 50, since: \"" + getDateToStartCrawlingInISO8601UTC(new Date()) + "\") {\n" +
                 "nodes {\n" +
                 "committedDate\n" +
                 "}\n" +
@@ -69,19 +68,17 @@ public class ExternalRepoRequest {
         this.requestType = RequestType.EXTERNAL_REPO;
     }
 
-    private String formatRepoIDs(List<String> repoIDs) {
+    protected String formatRepoIDs(List<String> repoIDs) {
         String formattedString = "";
         for (String repoID : repoIDs) {
-            formattedString += "\"" + repoID.toString() + "\",";
+            formattedString += "\"" + repoID + "\",";
         }
         return formattedString;
     }
 
-    private String getDateToStartCrawlingInISO8601UTC() {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
+    protected String getDateToStartCrawlingInISO8601UTC(Date currentDate) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        df.setTimeZone(tz);
-        return df.format(new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS));
+        return df.format(new Date(currentDate.getTime() - Config.PAST_DAYS_TO_CRAWL_IN_MS));
     }
 
     public Query generateQuery() {
