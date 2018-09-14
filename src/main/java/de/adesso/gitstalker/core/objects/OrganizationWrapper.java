@@ -1,6 +1,7 @@
 package de.adesso.gitstalker.core.objects;
 
 import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import org.springframework.data.annotation.Id;
 
 import java.util.*;
@@ -167,5 +168,21 @@ public class OrganizationWrapper {
 
     public void addCreatedReposByMembers(HashMap<String, ArrayList<Repository>> createdReposByMembers) {
         this.createdReposByMembers.putAll(createdReposByMembers);
+    }
+
+    public void prepareOrganizationForUpdate(OrganizationRepository organizationRepository){
+        this.organizationDetail = null;
+        this.memberIDs = new ArrayList<>();
+        this.memberPRRepoIDs = new HashMap<>();
+        this.members = new HashMap<>();
+        this.finishedRequests = new HashSet<>();
+        this.repositories = new HashMap<>();
+        this.teams = new HashMap<>();
+        this.externalRepos = new HashMap<>();
+        this.createdReposByMembers = new HashMap<>();
+        this.completeUpdateCost = 0;
+        this.lastUpdateTimestamp = null;
+
+        organizationRepository.save(this);
     }
 }
