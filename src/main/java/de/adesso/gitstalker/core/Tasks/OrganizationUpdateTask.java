@@ -24,7 +24,7 @@ public class OrganizationUpdateTask {
      * Currently used for debugging the de.adesso.gitstalker.core.requests.
      * TODO: Scheduled task should run at night time!
      */
-    @Scheduled(fixedDelay = 300000000, initialDelay = 5000)
+    @Scheduled(fixedDelay = 5000, initialDelay = 5000)
     private void generateQuery() {
         for (OrganizationWrapper wrapper : organizationRepository.findAllByLastUpdateTimestampLessThanEqual(new Date(System.currentTimeMillis() - Config.UPDATE_RATE_DAYS_IN_MS))){
             wrapper.prepareOrganizationForUpdate(organizationRepository);
