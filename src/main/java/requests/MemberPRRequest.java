@@ -1,14 +1,12 @@
 package requests;
 
 import enums.RequestType;
-import enums.ResponseProcessor;
 import objects.Query;
 
 public class MemberPRRequest {
 
     private final int estimatedQueryCost = 1;
     private String query;
-    private ResponseProcessor responseProcessor;
     private RequestType requestType;
     private String organizationName;
 
@@ -41,12 +39,10 @@ public class MemberPRRequest {
                 "resetAt\n" +
                 "}\n" +
                 "}";
-
-        this.responseProcessor = ResponseProcessor.MEMBER_PR;
         this.requestType = RequestType.MEMBER_PR;
     }
 
     public Query generateQuery() {
-        return new Query(this.organizationName, this.query, this.responseProcessor, this.requestType, this.estimatedQueryCost);
+        return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }
 }

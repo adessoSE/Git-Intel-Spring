@@ -1,6 +1,6 @@
 package processors;
 
-import enums.ResponseProcessor;
+import enums.RequestType;
 import objects.Query;
 import repositories.OrganizationRepository;
 import repositories.RequestRepository;
@@ -26,8 +26,8 @@ public class ResponseProcessorManager {
     }
 
     public void processResponse(OrganizationRepository organizationRepository, RequestRepository requestRepository, Query requestQuery) {
-        ResponseProcessor responseProcessor = requestQuery.getQueryResponseProcessorType();
-        switch (responseProcessor) {
+        RequestType requestType = requestQuery.getQueryRequestType();
+        switch (requestType) {
             case ORGANIZATION_VALIDATION:
                 if (!organizationValidationProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     organizationValidationProcessorHashMap.put(requestQuery.getOrganizationName(), new OrganizationValidationProcessor());

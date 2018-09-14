@@ -1,7 +1,7 @@
 package enums;
 
 /**
- * Enum used for the declaration of the request type. Similar to the ResponseProcessor enum but slightly different in cases.
+ * Enum used for the declaration of the request type.
  */
 public enum RequestType {
     ORGANIZATION_VALIDATION,
