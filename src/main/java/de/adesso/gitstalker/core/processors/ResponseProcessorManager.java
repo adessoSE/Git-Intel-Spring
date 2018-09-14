@@ -9,9 +9,6 @@ import java.util.HashMap;
 
 public class ResponseProcessorManager {
 
-    private OrganizationRepository organizationRepository;
-    private RequestRepository requestRepository;
-
     public static HashMap<String, OrganizationValidationProcessor> organizationValidationProcessorHashMap = new HashMap<>();
     public static HashMap<String, OrganizationDetailProcessor> organizationDetailProcessorHashMap = new HashMap<>();
     public static HashMap<String, MemberIDProcessor> memberIDProcessorHashMap = new HashMap<>();

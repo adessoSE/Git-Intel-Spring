@@ -15,4 +15,8 @@ public class Config {
     public static final int PAST_DAYS_AMOUNT_TO_CRAWL = 5;
     public static final long DAY_IN_MS = 1000 * 60 * 60 * 24;
     public static final long PAST_DAYS_TO_CRAWL_IN_MS = PAST_DAYS_AMOUNT_TO_CRAWL * DAY_IN_MS;
+
+    //Update of organization information
+    public static final int UPDATE_RATE_DAYS = 1;
+    public static final long UPDATE_RATE_DAYS_IN_MS = UPDATE_RATE_DAYS * DAY_IN_MS;
 }
