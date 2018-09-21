@@ -38,10 +38,8 @@ public class RequestProcessorTask {
     }
 
     private void processQuery(Query queryToProcess) {
-        if (queryToProcess != null) {
             requestRepository.delete(queryToProcess);
             queryToProcess.crawlQueryResponse();
             requestRepository.save(queryToProcess);
-        }
     }
 }

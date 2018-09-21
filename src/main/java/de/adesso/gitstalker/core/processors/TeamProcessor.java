@@ -33,7 +33,7 @@ public class TeamProcessor extends ResponseProcessor {
      * SetUp method to set up the necessary data for processing. Already selects the matching organization.
      *
      * @param requestQuery           Contains the necessary information, for example the TeamRequest response.
-     * @param requestRepository      RequestRepository for saving and checking outstanding de.adesso.gitstalker.core.requests.
+     * @param requestRepository      RequestRepository for saving and checking outstanding de.adesso.gitstalker.core.de.adesso.gitstalker.requests.
      * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
      */
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
@@ -48,7 +48,7 @@ public class TeamProcessor extends ResponseProcessor {
      * Update of the RateLimit from the Github API. Check whether it is the last request of the type.
      *
      * @param requestQuery           Contains the necessary information, for example the TeamRequest response.
-     * @param requestRepository      RequestRepository for saving and checking outstanding de.adesso.gitstalker.core.requests.
+     * @param requestRepository      RequestRepository for saving and checking outstanding de.adesso.gitstalker.core.de.adesso.gitstalker.requests.
      * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
      */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
@@ -60,7 +60,7 @@ public class TeamProcessor extends ResponseProcessor {
     }
 
     /**
-     * Processing if additional de.adesso.gitstalker.core.requests are necessary for outstanding information. Otherwise the collected data will be added to the organization.
+     * Processing if additional de.adesso.gitstalker.core.de.adesso.gitstalker.requests are necessary for outstanding information. Otherwise the collected data will be added to the organization.
      *
      * @param pageInfo         Contains information about outstanding data.
      * @param organizationName Name related to the query.

@@ -1,22 +1,24 @@
-package requests;
+package de.adesso.gitstalker.core.requests;
 
-import enums.RequestType;
-import objects.Query;
+import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.Query;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class RepositoryRequestTest {
+public class CreatedReposByMembersRequestTest {
 
-    private RepositoryRequest repositoryRequest;
+    private CreatedReposByMembersRequest createdReposByMembersRequest;
     private String expectedGeneratedQueryContent;
 
     @Before
     public void setUp() throws Exception {
-        this.repositoryRequest = new RepositoryRequest("adessoAG", "testEndCursor");
-        this.expectedGeneratedQueryContent = "query {\n" +
-                "organization(login: \"adessoAG\") {\n" +
+        this.createdReposByMembersRequest = new CreatedReposByMembersRequest("adessoAG", "testMemberID", "testEndCursor");
+        this.expectedGeneratedQueryContent = "{\n" +
+                "node(id: \"testMemberID\") {\n" +
+                "... on User {\n" +
+                "id\n" +
                 "repositories(first: 100 after: testEndCursor) {\n" +
                 "pageInfo {\n" +
                 "hasNextPage\n" +
@@ -37,25 +39,10 @@ public class RepositoryRequestTest {
                 "primaryLanguage {\n" +
                 "name\n" +
                 "}\n" +
-                "defaultBranchRef {\n" +
-                "target {\n" +
-                "... on Commit {\n" +
-                "history(first: 50, since: \"" + this.repositoryRequest.getDateToStartCrawlingInISO8601UTC() + "\") {\n" +
-                "nodes {\n" +
-                "committedDate\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "pullRequests(last: 50) {\n" +
-                "nodes {\n" +
-                "createdAt\n" +
-                "}\n" +
-                "}\n" +
-                "issues(last: 50) {\n" +
-                "nodes {\n" +
-                "createdAt\n" +
+                "isFork\n" +
+                "isMirror\n" +
+                "owner {\n" +
+                "id\n" +
                 "}\n" +
                 "}\n" +
                 "}\n" +
@@ -71,19 +58,19 @@ public class RepositoryRequestTest {
 
     @Test
     public void checkIfOrganizationNameIsCorrectInGeneratedQuery() {
-        Query query = this.repositoryRequest.generateQuery();
+        Query query = this.createdReposByMembersRequest.generateQuery();
         assertEquals("adessoAG", query.getOrganizationName());
     }
 
     @Test
     public void checkIfRequestTypeIsCorrectInGeneratedQuery() {
-        Query query = this.repositoryRequest.generateQuery();
-        assertEquals(RequestType.REPOSITORY, query.getQueryRequestType());
+        Query query = this.createdReposByMembersRequest.generateQuery();
+        assertEquals(RequestType.CREATED_REPOS_BY_MEMBERS, query.getQueryRequestType());
     }
 
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
-        Query query = this.repositoryRequest.generateQuery();
+        Query query = this.createdReposByMembersRequest.generateQuery();
         assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
     }
 }

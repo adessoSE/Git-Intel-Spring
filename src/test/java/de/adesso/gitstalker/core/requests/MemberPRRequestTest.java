@@ -1,38 +1,31 @@
-package requests;
+package de.adesso.gitstalker.core.requests;
 
-import enums.RequestType;
-import objects.Query;
+import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.Query;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TeamRequestTest {
+public class MemberPRRequestTest {
 
-    private TeamRequest teamRequest;
+    private MemberPRRequest memberPRRequest;
     private String expectedGeneratedQueryContent = "query {\n" +
-            "organization(login: \"adessoAG\") {\n" +
-            "teams(first: 50, after: testEndCursor) {\n" +
+            "organization(login:\"adessoAG\") {\n" +
+            "members(first: 100, after: testEndCursor) {\n" +
             "pageInfo {\n" +
             "hasNextPage\n" +
             "endCursor\n" +
             "}\n" +
-            "totalCount\n" +
-            "nodes {\n" +
-            "name\n" +
-            "id\n" +
-            "description\n" +
-            "avatarUrl\n" +
-            "url\n" +
-            "repositories (first: 100) {\n" +
             "nodes {\n" +
             "id\n" +
+            "pullRequests(last: 25, states: [MERGED, OPEN]) {\n" +
+            "nodes {\n" +
+            "updatedAt \n" +
+            "repository {\n" +
+            "id\n" +
+            "isFork\n" +
             "}\n" +
-            "}\n" +
-            "members (first: 100) {\n" +
-            "totalCount\n" +
-            "nodes {\n" +
-            "id\n" +
             "}\n" +
             "}\n" +
             "}\n" +
@@ -47,24 +40,24 @@ public class TeamRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        this.teamRequest = new TeamRequest("adessoAG", "testEndCursor");
+        this.memberPRRequest = new MemberPRRequest("adessoAG", "testEndCursor");
     }
 
     @Test
     public void checkIfOrganizationNameIsCorrectInGeneratedQuery() {
-        Query query = this.teamRequest.generateQuery();
+        Query query = this.memberPRRequest.generateQuery();
         assertEquals("adessoAG", query.getOrganizationName());
     }
 
     @Test
     public void checkIfRequestTypeIsCorrectInGeneratedQuery() {
-        Query query = this.teamRequest.generateQuery();
-        assertEquals(RequestType.TEAM, query.getQueryRequestType());
+        Query query = this.memberPRRequest.generateQuery();
+        assertEquals(RequestType.MEMBER_PR, query.getQueryRequestType());
     }
 
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
-        Query query = this.teamRequest.generateQuery();
+        Query query = this.memberPRRequest.generateQuery();
         assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
     }
 }

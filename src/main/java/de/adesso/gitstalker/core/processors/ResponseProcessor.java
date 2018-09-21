@@ -154,7 +154,7 @@ public abstract class ResponseProcessor {
     }
 
     /**
-     * Calculates the external pull de.adesso.gitstalker.core.requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
+     * Calculates the external pull de.adesso.gitstalker.core.de.adesso.gitstalker.requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
      *
      * @param organization
      */

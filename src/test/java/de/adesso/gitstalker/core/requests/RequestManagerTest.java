@@ -1,13 +1,12 @@
-package requests;
+package de.adesso.gitstalker.core.requests;
 
-import enums.RequestType;
-import objects.Query;
+import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.Query;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class RequestManagerTest {
@@ -76,14 +75,14 @@ public class RequestManagerTest {
     }
 
     @Test
-    public void checkIfAllRequestAreGeneratedAfterValidation(){
+    public void checkIfAllRequestAreGeneratedAfterValidation() {
         RequestManager requestManager = new RequestManager("adessoAG");
         ArrayList<Query> generatedRequestsAfterValidation = requestManager.generateAllRequests();
-        assertEquals(4,generatedRequestsAfterValidation.size());
+        assertEquals(5, generatedRequestsAfterValidation.size());
     }
 
     @Test
-    public void checkIfInputIsFormattedCorrectly(){
+    public void checkIfInputIsFormattedCorrectly() {
         RequestManager requestManager = new RequestManager("adessoAG");
         String formattedInput = requestManager.formatInput("adesso AG");
         assertEquals("adessoag", formattedInput);

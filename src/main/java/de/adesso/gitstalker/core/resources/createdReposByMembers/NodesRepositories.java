@@ -62,4 +62,15 @@ public class NodesRepositories {
         return owner;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLicenseInfo(LicenseInfo licenseInfo) {
+        this.licenseInfo = licenseInfo;
+    }
+
+    public void setPrimaryLanguage(PrimaryLanguage primaryLanguage) {
+        this.primaryLanguage = primaryLanguage;
+    }
 }

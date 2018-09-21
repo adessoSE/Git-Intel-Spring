@@ -10,6 +10,7 @@ buildscript {
     }
 }
 
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -34,8 +35,6 @@ dependencies {
     compile("org.springframework:spring-web")
     compile("com.fasterxml.jackson.core:jackson-databind")
 
-    testCompile(
-            [group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "2.0.1.RELEASE"]
-
-    )
+    testCompile "org.mockito:mockito-core:1.+"
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "2.0.1.RELEASE"
 }

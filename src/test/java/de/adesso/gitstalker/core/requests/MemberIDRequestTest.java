@@ -1,7 +1,7 @@
-package requests;
+package de.adesso.gitstalker.core.requests;
 
-import enums.RequestType;
-import objects.Query;
+import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.Query;
 import org.junit.Before;
 import org.junit.Test;
 

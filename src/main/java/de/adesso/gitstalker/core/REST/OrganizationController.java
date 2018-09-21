@@ -3,12 +3,14 @@ package de.adesso.gitstalker.core.REST;
 
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.*;
-import de.adesso.gitstalker.core.objects.Team;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 
@@ -28,7 +30,6 @@ public class OrganizationController {
     /**
      * Check if organization is already stored in data base. If not, initiate GitHub crawl for requested organization.
      * <p>
-     * TODO Check if organization is valid before generating de.adesso.gitstalker.core.requests.
      *
      * @return
      */
@@ -81,7 +82,7 @@ public class OrganizationController {
     }
 
     /**
-     * Method used to check if there is already requested information available. If there are no de.adesso.gitstalker.core.requests running for the requested organization then the de.adesso.gitstalker.core.requests are generated.
+     * Method used to check if there is already requested information available. If there are no de.adesso.gitstalker.core.de.adesso.gitstalker.requests running for the requested organization then the de.adesso.gitstalker.core.de.adesso.gitstalker.requests are generated.
      *
      * @param organizationName Request organization name
      * @return boolean if there is data available

@@ -32,7 +32,7 @@ public class MemberRequest {
                 "defaultBranchRef {\n" +
                 "target {\n" +
                 "... on Commit {\n" +
-                "history(first: 100, since: \"" + getDateToStartCrawlingInISO8601UTC() + "\"  ,author: {id: \"" + memberID + "\"}) {\n" +
+                "history(first: 100, since: \"" + this.getDateToStartCrawlingInISO8601UTC(new Date()) + "\"  ,author: {id: \"" + memberID + "\"}) {\n" +
                 "nodes {\n" +
                 "committedDate\n" +
                 "url\n" +
@@ -66,11 +66,9 @@ public class MemberRequest {
         this.requestType = RequestType.MEMBER;
     }
 
-    protected String getDateToStartCrawlingInISO8601UTC() {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
+    protected String getDateToStartCrawlingInISO8601UTC(Date currentDate) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        df.setTimeZone(tz);
-        return df.format(new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS));
+        return df.format(new Date(currentDate.getTime() - Config.PAST_DAYS_TO_CRAWL_IN_MS));
     }
 
     public Query generateQuery() {

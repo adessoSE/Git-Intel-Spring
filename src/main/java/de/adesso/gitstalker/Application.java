@@ -19,9 +19,6 @@ import de.adesso.gitstalker.core.repositories.RequestRepository;
 @ComponentScan(basePackageClasses = OrganizationController.class)
 public class Application {
 
-    @Autowired
-    RequestRepository requestRepository;
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
