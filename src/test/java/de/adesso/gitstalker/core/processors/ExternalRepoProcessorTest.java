@@ -11,6 +11,7 @@ import de.adesso.gitstalker.core.resources.externalRepo_Resources.LicenseInfo;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.NodesRepositories;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.PrimaryLanguage;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.ResponseExternalRepository;
+import de.adesso.gitstalker.resources.ExternalRepoResources;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -25,78 +26,12 @@ public class ExternalRepoProcessorTest {
     private OrganizationRepository organizationRepository;
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.EXTERNAL_REPO, 1);
     private ResponseExternalRepository responseExternalRepository;
-    private String responseExternalRepoRequest = "{\n" +
-            "  \"data\": {\n" +
-            "    \"nodes\": [\n" +
-            "      {\n" +
-            "        \"url\": \"https://github.com/matthiasbalke/magento\",\n" +
-            "        \"id\": \"MDEwOlJlcG9zaXRvcnk2NDkzMzI=\",\n" +
-            "        \"name\": \"magento\",\n" +
-            "        \"description\": \"Magento Modules\",\n" +
-            "        \"forkCount\": 0,\n" +
-            "        \"stargazers\": {\n" +
-            "          \"totalCount\": 1\n" +
-            "        },\n" +
-            "        \"licenseInfo\": null,\n" +
-            "        \"primaryLanguage\": null,\n" +
-            "        \"defaultBranchRef\": {\n" +
-            "          \"target\": {\n" +
-            "            \"history\": {\n" +
-            "              \"nodes\": []\n" +
-            "            }\n" +
-            "          }\n" +
-            "        },\n" +
-            "        \"pullRequests\": {\n" +
-            "          \"nodes\": []\n" +
-            "        },\n" +
-            "        \"issues\": {\n" +
-            "          \"nodes\": [\n" +
-            "            {\n" +
-            "              \"createdAt\": \"2012-07-10T18:43:03Z\"\n" +
-            "            }\n" +
-            "          ]\n" +
-            "        }\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"url\": \"https://github.com/matthiasbalke/artikel-bdd-2013\",\n" +
-            "        \"id\": \"MDEwOlJlcG9zaXRvcnkxMDk0NjQ1Mw==\",\n" +
-            "        \"name\": \"artikel-bdd-2013\",\n" +
-            "        \"description\": \"Example project for the article 'Behavior Driven Development' by Matthias Balke und Sebastian Laag\",\n" +
-            "        \"forkCount\": 0,\n" +
-            "        \"stargazers\": {\n" +
-            "          \"totalCount\": 0\n" +
-            "        },\n" +
-            "        \"licenseInfo\": null,\n" +
-            "        \"primaryLanguage\": {\n" +
-            "          \"name\": \"Java\"\n" +
-            "        },\n" +
-            "        \"defaultBranchRef\": {\n" +
-            "          \"target\": {\n" +
-            "            \"history\": {\n" +
-            "              \"nodes\": []\n" +
-            "            }\n" +
-            "          }\n" +
-            "        },\n" +
-            "        \"pullRequests\": {\n" +
-            "          \"nodes\": []\n" +
-            "        },\n" +
-            "        \"issues\": {\n" +
-            "          \"nodes\": []\n" +
-            "        }\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"rateLimit\": {\n" +
-            "      \"cost\": 1,\n" +
-            "      \"remaining\": 4999,\n" +
-            "      \"resetAt\": \"2018-09-25T06:44:16Z\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
+    private ExternalRepoResources externalRepoResources;
 
     @Before
     public void setUp() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        this.responseExternalRepository = objectMapper.readValue(responseExternalRepoRequest, ResponseExternalRepository.class);
+        this.externalRepoResources = new ExternalRepoResources();
+        this.responseExternalRepository = new ObjectMapper().readValue(this.externalRepoResources.getResponseExternalRepoRequest(), ResponseExternalRepository.class);
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
         this.externalRepoProcessor = new ExternalRepoProcessor();

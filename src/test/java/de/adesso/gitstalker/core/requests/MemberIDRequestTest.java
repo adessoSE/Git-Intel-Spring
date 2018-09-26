@@ -2,6 +2,7 @@ package de.adesso.gitstalker.core.requests;
 
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
+import de.adesso.gitstalker.resources.MemberIDResources;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,29 +11,12 @@ import static org.junit.Assert.assertEquals;
 public class MemberIDRequestTest {
 
     private MemberIDRequest memberIDRequest;
-    private String expectedGeneratedQueryContent;
+    private MemberIDResources memberIDResources;
 
     @Before
     public void setUp() throws Exception {
         this.memberIDRequest = new MemberIDRequest("adessoAG", "testEndCursor");
-        this.expectedGeneratedQueryContent = "query {\n" +
-                "organization(login: \"adessoAG\") {\n" +
-                "members(first: 100 after: testEndCursor) {\n" +
-                "pageInfo {\n" +
-                " hasNextPage\n" +
-                "endCursor\n" +
-                "}\n" +
-                "nodes {\n" +
-                "id\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "rateLimit {\n" +
-                "cost\n" +
-                "remaining\n" +
-                "resetAt\n" +
-                "}\n" +
-                "}";
+        this.memberIDResources = new MemberIDResources();
     }
 
     @Test
@@ -50,6 +34,6 @@ public class MemberIDRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.memberIDRequest.generateQuery();
-        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
+        assertEquals(this.memberIDResources.getExpectedGeneratedQueryContent(), query.getQuery());
     }
 }

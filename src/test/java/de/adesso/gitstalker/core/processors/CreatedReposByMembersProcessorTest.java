@@ -8,6 +8,7 @@ import de.adesso.gitstalker.core.objects.Repository;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.*;
+import de.adesso.gitstalker.resources.CreatedReposByMemberResources;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,65 +28,12 @@ public class CreatedReposByMembersProcessorTest {
     private OrganizationRepository organizationRepository;
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.MEMBER, 1);
     private ResponseCreatedReposByMembers responseCreatedReposByMembers;
-    private String responseCreatedReposByMemberRequest = "{\n" +
-            "  \"data\": {\n" +
-            "    \"node\": {\n" +
-            "      \"id\": \"MDQ6VXNlcjkxOTkw\",\n" +
-            "      \"repositories\": {\n" +
-            "        \"pageInfo\": {\n" +
-            "          \"hasNextPage\": true,\n" +
-            "          \"endCursor\": \"Y3Vyc29yOnYyOpHOAAnodA==\"\n" +
-            "        },\n" +
-            "        \"nodes\": [\n" +
-            "          {\n" +
-            "            \"url\": \"https://github.com/matthiasbalke/magento\",\n" +
-            "            \"id\": \"MDEwOlJlcG9zaXRvcnk2NDkzMzI=\",\n" +
-            "            \"name\": \"magento\",\n" +
-            "            \"description\": \"Magento Modules\",\n" +
-            "            \"forkCount\": 0,\n" +
-            "            \"stargazers\": {\n" +
-            "              \"totalCount\": 1\n" +
-            "            },\n" +
-            "            \"licenseInfo\": null,\n" +
-            "            \"primaryLanguage\": null,\n" +
-            "            \"isFork\": false,\n" +
-            "            \"isMirror\": false,\n" +
-            "            \"owner\": {\n" +
-            "              \"id\": \"MDQ6VXNlcjkxOTkw\"\n" +
-            "            }\n" +
-            "          },\n" +
-            "{\n" +
-            "            \"url\": \"https://github.com/matthiasbalke/magento\",\n" +
-            "            \"id\": \"MDEwOlJlcG9zaXRvcnk2NDkzMzI=\",\n" +
-            "            \"name\": \"magento\",\n" +
-            "            \"description\": \"Magento Modules\",\n" +
-            "            \"forkCount\": 0,\n" +
-            "            \"stargazers\": {\n" +
-            "              \"totalCount\": 1\n" +
-            "            },\n" +
-            "            \"licenseInfo\": null,\n" +
-            "            \"primaryLanguage\": null,\n" +
-            "            \"isFork\": true,\n" +
-            "            \"isMirror\": false,\n" +
-            "            \"owner\": {\n" +
-            "              \"id\": \"MDQ6VXNlcjkxOTkw\"\n" +
-            "            }\n" +
-            "          }\n" +
-            "        ]\n" +
-            "      }\n" +
-            "    },\n" +
-            "    \"rateLimit\": {\n" +
-            "      \"cost\": 1,\n" +
-            "      \"remaining\": 4999,\n" +
-            "      \"resetAt\": \"2018-09-20T10:08:49Z\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
+    private CreatedReposByMemberResources createdReposByMemberResources;
 
     @Before
     public void setUp() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        this.responseCreatedReposByMembers = objectMapper.readValue(responseCreatedReposByMemberRequest, ResponseCreatedReposByMembers.class);
+        this.createdReposByMemberResources = new CreatedReposByMemberResources();
+        this.responseCreatedReposByMembers = new ObjectMapper().readValue(this.createdReposByMemberResources.getResponseCreatedReposByMemberRequest(), ResponseCreatedReposByMembers.class);
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
         this.createdReposByMembersProcessor = new CreatedReposByMembersProcessor();

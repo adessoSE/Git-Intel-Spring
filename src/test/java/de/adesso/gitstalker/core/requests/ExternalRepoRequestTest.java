@@ -3,6 +3,7 @@ package de.adesso.gitstalker.core.requests;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
+import de.adesso.gitstalker.resources.ExternalRepoResources;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,58 +17,12 @@ import static org.junit.Assert.assertEquals;
 public class ExternalRepoRequestTest {
 
     private ExternalRepoRequest externalRepoRequest;
-    private String expectedGeneratedQueryContent;
+    private ExternalRepoResources externalRepoResources;
 
     @Before
     public void setUp() throws Exception {
         this.externalRepoRequest = new ExternalRepoRequest("adessoAG", Arrays.asList("testRepoID"));
-        this.expectedGeneratedQueryContent = "{\n" +
-                //Request for ten repositories combined
-                "nodes(ids: [" + this.externalRepoRequest.formatRepoIDs(Arrays.asList("testRepoID")) + "]) {\n" +
-                "... on Repository {\n" +
-                "url\n" +
-                "id\n" +
-                "name\n" +
-                "description\n" +
-                "forkCount\n" +
-                "stargazers {\n" +
-                "totalCount\n" +
-                "}\n" +
-                "licenseInfo {\n" +
-                "name\n" +
-                "}\n" +
-                "primaryLanguage {\n" +
-                "name\n" +
-                "}\n" +
-                "defaultBranchRef {\n" +
-                "target {\n" +
-                "... on Commit {\n" +
-                "history(first: 50, since: \"" + this.externalRepoRequest.getDateToStartCrawlingInISO8601UTC(new Date()) + "\") {\n" +
-                "nodes {\n" +
-                "committedDate\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "pullRequests(last: 50) {\n" +
-                "nodes {\n" +
-                "createdAt\n" +
-                "}\n" +
-                "}\n" +
-                "issues(last: 50) {\n" +
-                "nodes {\n" +
-                "createdAt\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "}\n" +
-                "rateLimit {\n" +
-                "cost\n" +
-                "remaining\n" +
-                "resetAt\n" +
-                "}\n" +
-                "}";
+        this.externalRepoResources = new ExternalRepoResources();
     }
 
     @Test
@@ -99,6 +54,6 @@ public class ExternalRepoRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.externalRepoRequest.generateQuery();
-        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
+        assertEquals(this.externalRepoResources.getExpectedGeneratedQueryContent(this.externalRepoRequest.formatRepoIDs(Arrays.asList("testRepoID")), this.externalRepoRequest.getDateToStartCrawlingInISO8601UTC(new Date())), query.getQuery());
     }
 }
