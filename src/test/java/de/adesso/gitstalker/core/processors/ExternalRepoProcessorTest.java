@@ -2,9 +2,7 @@ package de.adesso.gitstalker.core.processors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.gitstalker.core.enums.RequestType;
-import de.adesso.gitstalker.core.objects.OrganizationWrapper;
-import de.adesso.gitstalker.core.objects.Query;
-import de.adesso.gitstalker.core.objects.Repository;
+import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.LicenseInfo;
@@ -16,8 +14,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ExternalRepoProcessorTest {
 
@@ -53,6 +56,62 @@ public class ExternalRepoProcessorTest {
         assertEquals(expectedRepository.getForks(), firstProcessedRepository.getForks());
         assertEquals(expectedRepository.getStars(), firstProcessedRepository.getStars());
         assertEquals(2, externalRepoProcessor.getRepositoriesMap().size());
+    }
+
+    @Test
+    public void checkIfExternalRepoAndContributorAreProcessedCorrectly() {
+        //Given
+        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+
+        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        ArrayList<Query> queries = new ArrayList<>();
+        queries.add(testQuery);
+        Mockito.when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, "adessoAG")).thenReturn(queries);
+
+        HashMap<String, Repository> repositoriesMap = new HashMap<>();
+        repositoriesMap.put("repositoryTestID", new Repository("testRepository", "testURL", "testDescription", "Java", "MIT", 30, 5));
+        repositoriesMap.put("repositoryTestID2", new Repository("testRepository2", "testURL", "testDescription", "Java", "MIT", 34, 15));
+        this.externalRepoProcessor.setRepositoriesMap(repositoriesMap);
+
+        HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
+        ArrayList<String> contributorIDs = new ArrayList<>();
+        contributorIDs.addAll(Arrays.asList("memberTestID", "memberTestID2"));
+        memberPRRepoIDs.put("repositoryTestID2", contributorIDs);
+        organizationWrapper.setMemberPRRepoIDs(memberPRRepoIDs);
+
+        HashMap<String, Repository> repositories = new HashMap<>();
+        repositories.put("repositoryTestID", new Repository("testRepository", "testURL", "testDescription", "Java", "MIT", 30, 5));
+        organizationWrapper.setRepositories(repositories);
+
+        HashMap<String, Member> members = new HashMap<>();
+        members.put("memberTestID", new Member("memberName", "memberUsername", "avatarURLTest", "githubURLTest", new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>())));
+        members.put("memberTestID2", new Member("memberName2", "memberUsername2", "avatarURLTest2", "githubURLTest2", new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>())));
+        organizationWrapper.setMembers(members);
+
+        //When
+        this.externalRepoProcessor.processExternalReposAndFindContributors(organizationWrapper, testQuery);
+
+        //Then
+        assertNull(organizationWrapper.getExternalRepos().get("repositoryTestID").getContributor());
+        assertEquals(2 , organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributor().size());
+        assertEquals("memberName", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributor().get(0).getName());
+        assertEquals("memberName2", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributor().get(1).getName());
+    }
+
+    @Test
+    public void checkIfExternalRepoAndContributorAreProcessedWhenRequestIsStillRunning() {
+        //Given
+        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        ArrayList<Query> queries = new ArrayList<>();
+        when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, "adessoAG")).thenReturn(queries);
+
+        //When
+        this.externalRepoProcessor.processExternalReposAndFindContributors(organizationWrapper, testQuery);
+
+        //Then
+        assertTrue(organizationWrapper.getExternalRepos().isEmpty());
     }
 
     @Test

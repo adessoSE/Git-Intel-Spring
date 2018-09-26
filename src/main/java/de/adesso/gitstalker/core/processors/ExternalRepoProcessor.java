@@ -116,32 +116,16 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         return requestRepository;
     }
 
-    public void setRequestRepository(RequestRepository requestRepository) {
-        this.requestRepository = requestRepository;
-    }
-
     public OrganizationRepository getOrganizationRepository() {
         return organizationRepository;
-    }
-
-    public void setOrganizationRepository(OrganizationRepository organizationRepository) {
-        this.organizationRepository = organizationRepository;
     }
 
     public Query getRequestQuery() {
         return requestQuery;
     }
 
-    public void setRequestQuery(Query requestQuery) {
-        this.requestQuery = requestQuery;
-    }
-
     public OrganizationWrapper getOrganization() {
         return organization;
-    }
-
-    public void setOrganization(OrganizationWrapper organization) {
-        this.organization = organization;
     }
 
     public HashMap<String, Repository> getRepositoriesMap() {
