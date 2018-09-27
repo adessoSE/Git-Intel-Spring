@@ -10,6 +10,7 @@ import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @RestController
@@ -77,6 +78,14 @@ public class OrganizationController {
         String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName).getTeams().values();
+        } else return null;
+    }
+
+    @RequestMapping("/createdreposbymembers /{organizationName}")
+    public Collection<ArrayList<Repository>> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
+        if (this.checkIfDataAvailable(formattedName)) {
+            return this.organizationRepository.findByOrganizationName(formattedName).getCreatedReposByMembers().values();
         } else return null;
     }
 
