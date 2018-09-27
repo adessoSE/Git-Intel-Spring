@@ -62,7 +62,7 @@ public class CreatedReposByMemberResources {
                 "}";
     }
 
-    public String getExpectedGeneratedQueryContent() {
+    public String getExpectedQueryJSONResponse() {
         return "{\n" +
                 "node(id: \"testMemberID\") {\n" +
                 "... on User {\n" +

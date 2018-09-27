@@ -32,7 +32,7 @@ public class MemberIDProcessorTest {
     @Before
     public void setUp() throws Exception {
         this.memberIDResources = new MemberIDResources();
-        this.responseMemberID = new ObjectMapper().readValue(this.memberIDResources.getResponseMemberIDRequest(), ResponseMemberID.class);
+        this.responseMemberID = new ObjectMapper().readValue(this.memberIDResources.getExpectedQueryJSONResponse(), ResponseMemberID.class);
         this.requestRepository = Mockito.mock(RequestRepository.class);
         this.organizationRepository = Mockito.mock(OrganizationRepository.class);
         this.memberIDProcessor = new MemberIDProcessor();

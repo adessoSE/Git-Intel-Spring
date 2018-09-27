@@ -27,7 +27,7 @@ public class MemberIDResources {
                 "}";
     }
 
-    public String getResponseMemberIDRequest() {
+    public String getExpectedQueryJSONResponse() {
         return "{\n" +
                 "  \"data\": {\n" +
                 "    \"organization\": {\n" +

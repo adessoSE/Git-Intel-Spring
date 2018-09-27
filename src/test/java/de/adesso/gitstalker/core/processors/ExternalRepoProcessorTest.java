@@ -34,7 +34,7 @@ public class ExternalRepoProcessorTest {
     @Before
     public void setUp() throws Exception {
         this.externalRepoResources = new ExternalRepoResources();
-        this.responseExternalRepository = new ObjectMapper().readValue(this.externalRepoResources.getResponseExternalRepoRequest(), ResponseExternalRepository.class);
+        this.responseExternalRepository = new ObjectMapper().readValue(this.externalRepoResources.getExpectedQueryJSONResponse(), ResponseExternalRepository.class);
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
         this.externalRepoProcessor = new ExternalRepoProcessor();

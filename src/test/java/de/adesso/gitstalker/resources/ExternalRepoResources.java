@@ -57,7 +57,7 @@ public class ExternalRepoResources {
         return expectedGeneratedQueryContent;
     }
 
-    public String getResponseExternalRepoRequest() {
+    public String getExpectedQueryJSONResponse() {
         return "{\n" +
                 "  \"data\": {\n" +
                 "    \"nodes\": [\n" +

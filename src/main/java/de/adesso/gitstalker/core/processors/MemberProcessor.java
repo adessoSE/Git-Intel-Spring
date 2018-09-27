@@ -37,21 +37,25 @@ public class MemberProcessor extends ResponseProcessor {
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMember().getData().getRateLimit(), requestQuery.getQueryRequestType());
-        this.processQueryResponse();
+        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseMember().getData().getNode());
         this.calculatesInternalOrganizationCommits();
         this.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.MEMBER);
     }
 
-    private void calculatesInternalOrganizationCommits() {
+    protected void calculatesInternalOrganizationCommits() {
         if (this.checkIfQueryIsLastOfRequestType(this.organization, this.requestQuery, RequestType.MEMBER, requestRepository)) {
             organization.addMembers(this.members);
             super.calculateInternalOrganizationCommitsChartJSData(organization, this.committedRepos);
         }
     }
 
-    private void processQueryResponse() {
+    protected Calendar configureCalendarToFitCrawlingPeriod() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
+        return calendar;
+    }
 
-        User singleMember = this.requestQuery.getQueryResponse().getResponseMember().getData().getNode();
+    protected void processQueryResponse(User singleMember) {
 
         HashMap<String, String> previousCommitsWithLink = new HashMap<>();
         HashMap<String, String> previousIssuesWithLink = new HashMap<>();
@@ -61,8 +65,7 @@ public class MemberProcessor extends ResponseProcessor {
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
+        Calendar cal = this.configureCalendarToFitCrawlingPeriod();
 
         for (NodesPullRequests nodesPullRequests : singleMember.getPullRequests().getNodes()) {
             if (cal.before(nodesPullRequests.getCreatedAt())) {

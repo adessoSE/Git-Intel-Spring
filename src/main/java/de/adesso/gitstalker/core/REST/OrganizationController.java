@@ -103,7 +103,6 @@ public class OrganizationController {
         requestRepository.save(new RequestManager(organizationName).generateRequest(RequestType.ORGANIZATION_VALIDATION));
     }
 
-
     private String formatInput(String input) {
         return input.replaceAll("\\s+", "").toLowerCase();
     }
