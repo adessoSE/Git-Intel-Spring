@@ -56,7 +56,7 @@ public class OrganizationController {
         } else return null;
     }
 
-    @RequestMapping("/de/adesso/gitstalker/core/repositories/{organizationName}")
+    @RequestMapping("/repositories/{organizationName}")
     public Collection<Repository> retrieveOrganizationRepositories(@PathVariable String organizationName) {
         String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
