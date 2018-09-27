@@ -3,13 +3,16 @@ package de.adesso.gitstalker.core.REST;
 
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.*;
-import de.adesso.gitstalker.core.objects.Team;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @RestController
@@ -77,6 +80,14 @@ public class OrganizationController {
         String formattedName = this.formatInput(organizationName);
         if (this.checkIfDataAvailable(formattedName)) {
             return this.organizationRepository.findByOrganizationName(formattedName).getTeams().values();
+        } else return null;
+    }
+
+    @RequestMapping("/createdreposbymembers/{organizationName}")
+    public Collection<ArrayList<Repository>> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
+        if (this.checkIfDataAvailable(formattedName)) {
+            return this.organizationRepository.findByOrganizationName(formattedName).getCreatedReposByMembers().values();
         } else return null;
     }
 
