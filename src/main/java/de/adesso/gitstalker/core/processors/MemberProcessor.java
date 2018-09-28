@@ -27,7 +27,7 @@ public class MemberProcessor extends ResponseProcessor {
     public MemberProcessor() {
     }
 
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -103,5 +103,53 @@ public class MemberProcessor extends ResponseProcessor {
                 this.generateChartJSData(commitsDates),
                 this.generateChartJSData(issuesDates),
                 this.generateChartJSData(pullRequestDates)));
+    }
+
+    public RequestRepository getRequestRepository() {
+        return requestRepository;
+    }
+
+    public void setRequestRepository(RequestRepository requestRepository) {
+        this.requestRepository = requestRepository;
+    }
+
+    public OrganizationRepository getOrganizationRepository() {
+        return organizationRepository;
+    }
+
+    public void setOrganizationRepository(OrganizationRepository organizationRepository) {
+        this.organizationRepository = organizationRepository;
+    }
+
+    public Query getRequestQuery() {
+        return requestQuery;
+    }
+
+    public void setRequestQuery(Query requestQuery) {
+        this.requestQuery = requestQuery;
+    }
+
+    public OrganizationWrapper getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(OrganizationWrapper organization) {
+        this.organization = organization;
+    }
+
+    public HashMap<String, ArrayList<Calendar>> getCommittedRepos() {
+        return committedRepos;
+    }
+
+    public void setCommittedRepos(HashMap<String, ArrayList<Calendar>> committedRepos) {
+        this.committedRepos = committedRepos;
+    }
+
+    public HashMap<String, Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(HashMap<String, Member> members) {
+        this.members = members;
     }
 }

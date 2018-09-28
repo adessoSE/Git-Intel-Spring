@@ -140,12 +140,12 @@ public abstract class ResponseProcessor {
      *
      * @param organization
      */
-    public void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> comittedRepo) {
+    public void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> committedRepo) {
         Set<String> organizationRepoIDs = organization.getRepositories().keySet();
         ArrayList<Calendar> internalCommitsDates = new ArrayList<>();
         for (String id : organizationRepoIDs) {
-            if (comittedRepo.containsKey(id)) {
-                internalCommitsDates.addAll(comittedRepo.get(id));
+            if (committedRepo.containsKey(id)) {
+                internalCommitsDates.addAll(committedRepo.get(id));
             }
         }
 
