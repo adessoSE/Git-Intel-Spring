@@ -42,8 +42,8 @@ public class ResponseProcessorTask extends ResponseProcessor {
     /**
      * Validation if the necessary data has already been collected to process the selected query
      *
-     * @param requestType      Requires requestType to find pending de.adesso.gitstalker.core.de.adesso.gitstalker.requests of type
-     * @param organizationName Requires organizationName to find pending de.adesso.gitstalker.core.de.adesso.gitstalker.requests for the associated organization
+     * @param requestType      Requires requestType to find pending requests of type
+     * @param organizationName Requires organizationName to find pending requests for the associated organization
      * @return Returns if the query can be processed or not
      */
     private boolean checkIfNecessaryDataIsAvailable(RequestType requestType, String organizationName) {
