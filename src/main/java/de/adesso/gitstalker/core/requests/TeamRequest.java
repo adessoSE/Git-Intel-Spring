@@ -2,7 +2,6 @@ package de.adesso.gitstalker.core.requests;
 
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.enums.RequestType;
-import de.adesso.gitstalker.core.config.Config;
 
 public class TeamRequest extends Request {
 

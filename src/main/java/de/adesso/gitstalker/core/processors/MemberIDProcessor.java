@@ -24,7 +24,7 @@ public class MemberIDProcessor extends ResponseProcessor {
     public MemberIDProcessor() {
     }
 
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -35,12 +35,12 @@ public class MemberIDProcessor extends ResponseProcessor {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getRateLimit(), requestQuery.getQueryRequestType());
 
-        this.processQueryResponse();
+        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getOrganization().getMembers());
         this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.MEMBER_ID);
     }
 
-    private void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
+    protected void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
         if (pageInfo.isHasNextPage()) {
             super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.MEMBER_ID, requestRepository);
         } else {
@@ -49,17 +49,40 @@ public class MemberIDProcessor extends ResponseProcessor {
         }
     }
 
-    private void generateNextRequestsBasedOnMemberIDs(ArrayList<String> memberIDs) {
+    protected void generateNextRequestsBasedOnMemberIDs(ArrayList<String> memberIDs) {
         for (String memberID : memberIDs) {
             requestRepository.save(new RequestManager(this.requestQuery.getOrganizationName(), memberID, RequestType.MEMBER).generateRequest(RequestType.MEMBER));
             requestRepository.save(new RequestManager(this.requestQuery.getOrganizationName(), memberID, RequestType.CREATED_REPOS_BY_MEMBERS).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
         }
     }
 
-    private void processQueryResponse() {
-        Members members = this.requestQuery.getQueryResponse().getResponseMemberID().getData().getOrganization().getMembers();
+    protected void processQueryResponse(Members members) {
         for (Nodes nodes : members.getNodes()) {
             this.memberIDs.add(nodes.getId());
         }
+    }
+
+    public RequestRepository getRequestRepository() {
+        return requestRepository;
+    }
+
+    public OrganizationRepository getOrganizationRepository() {
+        return organizationRepository;
+    }
+
+    public Query getRequestQuery() {
+        return requestQuery;
+    }
+
+    public OrganizationWrapper getOrganization() {
+        return organization;
+    }
+
+    public ArrayList<String> getMemberIDs() {
+        return memberIDs;
+    }
+
+    public void setMemberIDs(ArrayList<String> memberIDs) {
+        this.memberIDs = memberIDs;
     }
 }

@@ -23,7 +23,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     public ExternalRepoProcessor() {
     }
 
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -40,7 +40,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, organization, requestQuery, RequestType.EXTERNAL_REPO);
     }
 
-    private void processExternalReposAndFindContributors(OrganizationWrapper organization, Query requestQuery) {
+    protected void processExternalReposAndFindContributors(OrganizationWrapper organization, Query requestQuery) {
         if (super.checkIfQueryIsLastOfRequestType(organization, requestQuery, RequestType.EXTERNAL_REPO, this.requestRepository)) {
             this.organization.addExternalRepos(this.repositoriesMap);
             HashMap<String, ArrayList<String>> externalRepos = super.calculateExternalRepoContributions(organization);
@@ -61,7 +61,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         }
     }
 
-    private void processQueryResponse(ArrayList<NodesRepositories> repositories){
+    protected void processQueryResponse(ArrayList<NodesRepositories> repositories){
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
@@ -97,18 +97,42 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             this.repositoriesMap.put(id, new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
     }
-    private String getLicense(NodesRepositories repo) {
+    protected String getLicense(NodesRepositories repo) {
         if (repo.getLicenseInfo() == null) return "";
         else return repo.getLicenseInfo().getName();
     }
 
-    private String getProgrammingLanguage(NodesRepositories repo) {
+    protected String getProgrammingLanguage(NodesRepositories repo) {
         if (repo.getPrimaryLanguage() == null) return "";
         else return repo.getPrimaryLanguage().getName();
     }
 
-    private String getDescription(NodesRepositories repo) {
+    protected String getDescription(NodesRepositories repo) {
         if (repo.getDescription() == null) return "";
         else return repo.getDescription();
+    }
+
+    public RequestRepository getRequestRepository() {
+        return requestRepository;
+    }
+
+    public OrganizationRepository getOrganizationRepository() {
+        return organizationRepository;
+    }
+
+    public Query getRequestQuery() {
+        return requestQuery;
+    }
+
+    public OrganizationWrapper getOrganization() {
+        return organization;
+    }
+
+    public HashMap<String, Repository> getRepositoriesMap() {
+        return repositoriesMap;
+    }
+
+    public void setRepositoriesMap(HashMap<String, Repository> repositoriesMap) {
+        this.repositoriesMap = repositoriesMap;
     }
 }
