@@ -136,7 +136,7 @@ public abstract class ResponseProcessor {
     }
 
     /**
-     * Calculates the internal commits of the members in the own organization de.adesso.gitstalker.core.repositories. Generated as ChartJSData and saved in OrganizationDetail.
+     * Calculates the internal commits of the members in the own organization repositories. Generated as ChartJSData and saved in OrganizationDetail.
      *
      * @param organization
      */
@@ -154,7 +154,7 @@ public abstract class ResponseProcessor {
     }
 
     /**
-     * Calculates the external pull de.adesso.gitstalker.core.de.adesso.gitstalker.requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
+     * Calculates the external pull requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
      *
      * @param organization
      */
