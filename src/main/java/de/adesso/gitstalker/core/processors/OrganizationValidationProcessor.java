@@ -6,17 +6,15 @@ import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
+import lombok.NoArgsConstructor;
 
-
+@NoArgsConstructor
 public class OrganizationValidationProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
-
-    public OrganizationValidationProcessor() {
-    }
 
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;

@@ -10,21 +10,24 @@ import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.Data;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.NodesRepositories;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.PageInfoRepositories;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
+
     private HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = new HashMap<>();
-
-
-    public CreatedReposByMembersProcessor() {
-    }
 
     protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
@@ -51,7 +54,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
     }
 
     protected void processRemainingRepositoriesOfMember(PageInfoRepositories pageInfo, String organizationName, String memberID) {
-        if (pageInfo.hasNextPage()) {
+        if (pageInfo.isHasNextPage()) {
             Query generatedNextQuery = new RequestManager(organizationName, memberID, pageInfo.getEndCursor()).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
             this.requestRepository.save(generatedNextQuery);
         }
@@ -97,29 +100,5 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
     protected String getDescription(NodesRepositories repository) {
         if (repository.getDescription() == null) return "";
         else return repository.getDescription();
-    }
-
-    public void setCreatedRepositoriesByMembers(HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers) {
-        this.createdRepositoriesByMembers = createdRepositoriesByMembers;
-    }
-
-    public HashMap<String, ArrayList<Repository>> getCreatedRepositoriesByMembers() {
-        return createdRepositoriesByMembers;
-    }
-
-    public RequestRepository getRequestRepository() {
-        return requestRepository;
-    }
-
-    public OrganizationRepository getOrganizationRepository() {
-        return organizationRepository;
-    }
-
-    public Query getRequestQuery() {
-        return requestQuery;
-    }
-
-    public OrganizationWrapper getOrganization() {
-        return organization;
     }
 }

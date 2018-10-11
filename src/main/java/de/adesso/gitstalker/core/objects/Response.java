@@ -9,7 +9,12 @@ import de.adesso.gitstalker.core.resources.organisation_Resources.ResponseOrgani
 import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrganizationValidation;
 import de.adesso.gitstalker.core.resources.repository_Resources.ResponseRepository;
 import de.adesso.gitstalker.core.resources.team_Resources.ResponseTeam;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
+//TODO: Builder Pattern
 public class Response {
 
     private ResponseOrganizationValidation responseOrganizationValidation;
@@ -22,8 +27,6 @@ public class Response {
     private ResponseExternalRepository responseExternalRepository;
     private ResponseCreatedReposByMembers responseCreatedReposByMembers;
 
-    public Response() {
-    }
 
     public Response(ResponseOrganizationValidation responseOrganizationValidation) {
         this.responseOrganizationValidation = responseOrganizationValidation;
@@ -59,41 +62,5 @@ public class Response {
 
     public Response(ResponseOrganization responseOrganization) {
         this.responseOrganization = responseOrganization;
-    }
-
-    public ResponseOrganizationValidation getResponseOrganizationValidation() {
-        return responseOrganizationValidation;
-    }
-
-    public ResponseTeam getResponseTeam() {
-        return responseTeam;
-    }
-
-    public ResponseMemberID getResponseMemberID() {
-        return responseMemberID;
-    }
-
-    public ResponseOrganization getResponseOrganization() {
-        return responseOrganization;
-    }
-
-    public ResponseMemberPR getResponseMemberPR() {
-        return responseMemberPR;
-    }
-
-    public ResponseMember getResponseMember() {
-        return responseMember;
-    }
-
-    public ResponseRepository getResponseRepository() {
-        return responseRepository;
-    }
-
-    public ResponseExternalRepository getResponseExternalRepository() {
-        return responseExternalRepository;
-    }
-
-    public ResponseCreatedReposByMembers getResponseCreatedReposByMembers() {
-        return responseCreatedReposByMembers;
     }
 }

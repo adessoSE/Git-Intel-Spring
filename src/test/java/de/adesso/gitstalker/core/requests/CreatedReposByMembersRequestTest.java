@@ -34,6 +34,6 @@ public class CreatedReposByMembersRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.createdReposByMembersRequest.generateQuery();
-        assertEquals(this.createdReposByMemberResources.getExpectedQueryJSONResponse(), query.getQuery());
+        assertEquals(this.createdReposByMemberResources.getExpectedQueryJSONResponse(), query.getQueryContent());
     }
 }

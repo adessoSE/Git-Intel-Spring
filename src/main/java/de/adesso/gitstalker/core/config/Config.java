@@ -8,7 +8,7 @@ public class Config {
      */
 
     // API Configuration
-    public static final String API_TOKEN = "INSERT_TOKEN";
+    public static final String API_TOKEN = "4c8381e19003b1f7fbdb86a5b9bf6874099f4f0b";
     public static final String API_URL = "https://api.github.com/graphql";
 
     // Range of days for evaluation

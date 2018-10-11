@@ -1,20 +1,14 @@
 package de.adesso.gitstalker.core.resources.member_Resources;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Calendar;
 
+@Data
+@NoArgsConstructor
 public class NodesPullRequests {
 
     private Calendar createdAt;
     private String url;
-
-    public NodesPullRequests() {
-    }
-
-    public Calendar getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getUrl() {
-        return url;
-    }
 }

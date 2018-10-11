@@ -1,5 +1,10 @@
 package de.adesso.gitstalker.core.resources.externalRepo_Resources;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class NodesRepositories {
 
     private String name;
@@ -13,62 +18,4 @@ public class NodesRepositories {
     private DefaultBranchRef defaultBranchRef;
     private PullRequests pullRequests;
     private Issues issues;
-
-    public NodesRepositories() {}
-
-    public String getName() {
-        return name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getForkCount() {
-        return forkCount;
-    }
-
-    public Stargazers getStargazers() {
-        return stargazers;
-    }
-
-    public LicenseInfo getLicenseInfo() {
-        return licenseInfo;
-    }
-
-    public PrimaryLanguage getPrimaryLanguage() {
-        return primaryLanguage;
-    }
-
-    public DefaultBranchRef getDefaultBranchRef() {
-        return defaultBranchRef;
-    }
-
-    public PullRequests getPullRequests() {
-        return pullRequests;
-    }
-
-    public Issues getIssues() {
-        return issues;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setLicenseInfo(LicenseInfo licenseInfo) {
-        this.licenseInfo = licenseInfo;
-    }
-
-    public void setPrimaryLanguage(PrimaryLanguage primaryLanguage) {
-        this.primaryLanguage = primaryLanguage;
-    }
 }

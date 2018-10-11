@@ -1,5 +1,10 @@
 package de.adesso.gitstalker.core.resources.organisation_Resources;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class Organization {
 
     private String name;
@@ -11,42 +16,4 @@ public class Organization {
     private Members members;
     private Teams teams;
     private Repositories repositories;
-
-    public Organization() {}
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public String getWebsiteUrl() {
-        return websiteUrl;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Members getMembers() {
-        return members;
-    }
-
-    public Teams getTeams() {
-        return teams;
-    }
-
-    public Repositories getRepositories() {
-        return repositories;
-    }
 }

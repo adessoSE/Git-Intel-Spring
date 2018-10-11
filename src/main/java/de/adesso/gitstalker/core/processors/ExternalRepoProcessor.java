@@ -6,11 +6,17 @@ import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ExternalRepoProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -19,9 +25,6 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     private OrganizationWrapper organization;
 
     private HashMap<String, Repository> repositoriesMap = new HashMap<>();
-
-    public ExternalRepoProcessor() {
-    }
 
     protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
@@ -48,12 +51,12 @@ public class ExternalRepoProcessor extends ResponseProcessor {
                 for (String contributorID : externalRepos.get(externalRepoID)) {
                     Repository suitableExternalRepo = organization.getExternalRepos().containsKey(externalRepoID) ? organization.getExternalRepos().get(externalRepoID) : null;
                     if (suitableExternalRepo != null) {
-                        if (suitableExternalRepo.getContributor() != null) {
+                        if (suitableExternalRepo.getContributors() != null) {
                             suitableExternalRepo.addContributor(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
                         } else {
                             ArrayList<Member> contributors = new ArrayList<>();
                             contributors.add(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
-                            suitableExternalRepo.setContributor(contributors);
+                            suitableExternalRepo.setContributors(contributors);
                         }
                     }
                 }
@@ -112,27 +115,4 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         else return repo.getDescription();
     }
 
-    public RequestRepository getRequestRepository() {
-        return requestRepository;
-    }
-
-    public OrganizationRepository getOrganizationRepository() {
-        return organizationRepository;
-    }
-
-    public Query getRequestQuery() {
-        return requestQuery;
-    }
-
-    public OrganizationWrapper getOrganization() {
-        return organization;
-    }
-
-    public HashMap<String, Repository> getRepositoriesMap() {
-        return repositoriesMap;
-    }
-
-    public void setRepositoriesMap(HashMap<String, Repository> repositoriesMap) {
-        this.repositoriesMap = repositoriesMap;
-    }
 }

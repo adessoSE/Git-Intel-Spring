@@ -1,14 +1,13 @@
 package de.adesso.gitstalker.core.resources.member_Resources;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 
+@Data
+@NoArgsConstructor
 public class PullRequests {
 
     private ArrayList<NodesPullRequests> nodes;
-
-    public PullRequests() {}
-
-    public ArrayList<NodesPullRequests> getNodes() {
-        return nodes;
-    }
 }

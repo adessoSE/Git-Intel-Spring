@@ -8,12 +8,18 @@ import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.member_Resources.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class MemberProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -23,9 +29,6 @@ public class MemberProcessor extends ResponseProcessor {
 
     private HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
     private HashMap<String, Member> members = new HashMap<>();
-
-    public MemberProcessor() {
-    }
 
     protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
@@ -103,53 +106,5 @@ public class MemberProcessor extends ResponseProcessor {
                 this.generateChartJSData(commitsDates),
                 this.generateChartJSData(issuesDates),
                 this.generateChartJSData(pullRequestDates)));
-    }
-
-    public RequestRepository getRequestRepository() {
-        return requestRepository;
-    }
-
-    public void setRequestRepository(RequestRepository requestRepository) {
-        this.requestRepository = requestRepository;
-    }
-
-    public OrganizationRepository getOrganizationRepository() {
-        return organizationRepository;
-    }
-
-    public void setOrganizationRepository(OrganizationRepository organizationRepository) {
-        this.organizationRepository = organizationRepository;
-    }
-
-    public Query getRequestQuery() {
-        return requestQuery;
-    }
-
-    public void setRequestQuery(Query requestQuery) {
-        this.requestQuery = requestQuery;
-    }
-
-    public OrganizationWrapper getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(OrganizationWrapper organization) {
-        this.organization = organization;
-    }
-
-    public HashMap<String, ArrayList<Calendar>> getCommittedRepos() {
-        return committedRepos;
-    }
-
-    public void setCommittedRepos(HashMap<String, ArrayList<Calendar>> committedRepos) {
-        this.committedRepos = committedRepos;
-    }
-
-    public HashMap<String, Member> getMembers() {
-        return members;
-    }
-
-    public void setMembers(HashMap<String, Member> members) {
-        this.members = members;
     }
 }

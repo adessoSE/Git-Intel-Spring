@@ -34,6 +34,6 @@ public class MemberIDRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.memberIDRequest.generateQuery();
-        assertEquals(this.memberIDResources.getExpectedGeneratedQueryContent(), query.getQuery());
+        assertEquals(this.memberIDResources.getExpectedGeneratedQueryContent(), query.getQueryContent());
     }
 }

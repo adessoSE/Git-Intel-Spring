@@ -8,11 +8,13 @@ import de.adesso.gitstalker.core.objects.Repository;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.repository_Resources.*;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+@NoArgsConstructor
 public class RepositoryProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -21,9 +23,6 @@ public class RepositoryProcessor extends ResponseProcessor {
     private OrganizationWrapper organization;
 
     private HashMap<String, Repository> repositories = new HashMap<>();
-
-    public RepositoryProcessor() {
-    }
 
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
