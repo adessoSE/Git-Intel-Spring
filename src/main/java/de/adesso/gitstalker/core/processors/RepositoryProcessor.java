@@ -34,9 +34,10 @@ public class RepositoryProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseRepository().getData().getRateLimit(), requestQuery.getQueryRequestType());
-        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories());
-        this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories().getPageInfo(), requestQuery.getOrganizationName());
+        Data responseData = ((ResponseRepository) this.requestQuery.getQueryResponse()).getData();
+        super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(responseData.getOrganization().getRepositories());
+        this.processRequestForRemainingInformation(responseData.getOrganization().getRepositories().getPageInfo(), requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, this.organization, requestQuery, RequestType.REPOSITORY);
     }
 

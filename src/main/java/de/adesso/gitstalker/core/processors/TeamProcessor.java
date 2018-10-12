@@ -1,18 +1,10 @@
 package de.adesso.gitstalker.core.processors;
 
 import de.adesso.gitstalker.core.enums.RequestType;
-import de.adesso.gitstalker.core.objects.Member;
-import de.adesso.gitstalker.core.objects.OrganizationWrapper;
-import de.adesso.gitstalker.core.objects.Query;
-import de.adesso.gitstalker.core.objects.Repository;
-import de.adesso.gitstalker.core.objects.Team;
+import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.team_Resources.*;
-import de.adesso.gitstalker.core.resources.team_Resources.NodesRepositories;
-import de.adesso.gitstalker.core.resources.team_Resources.NodesTeams;
-import de.adesso.gitstalker.core.resources.team_Resources.PageInfo;
-import de.adesso.gitstalker.core.resources.team_Resources.Teams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,9 +45,10 @@ public class TeamProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseTeam().getData().getRateLimit(), requestQuery.getQueryRequestType());
-        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams());
-        this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseTeam().getData().getOrganization().getTeams().getPageInfo(), requestQuery.getOrganizationName());
+        Data responseData = ((ResponseTeam) this.requestQuery.getQueryResponse()).getData();
+        super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(responseData.getOrganization().getTeams());
+        this.processRequestForRemainingInformation(responseData.getOrganization().getTeams().getPageInfo(), requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.TEAM);
     }
 
@@ -102,7 +95,6 @@ public class TeamProcessor extends ResponseProcessor {
     }
 
     /**
-
      * Processing of the repositories of the teams and selection of the suitable repository object from the organization.
      *
      * @param repositories All repositories of the team.

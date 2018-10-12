@@ -36,8 +36,9 @@ public class MemberProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMember().getData().getRateLimit(), requestQuery.getQueryRequestType());
-        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseMember().getData().getNode());
+        Data responseData = ((ResponseMember) this.requestQuery.getQueryResponse()).getData();
+        super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(responseData.getNode());
         this.calculatesInternalOrganizationCommits();
         this.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.MEMBER);
     }

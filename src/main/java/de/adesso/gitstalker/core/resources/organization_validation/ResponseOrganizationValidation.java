@@ -1,6 +1,8 @@
 package de.adesso.gitstalker.core.resources.organization_validation;
 
-public class ResponseOrganizationValidation {
+import de.adesso.gitstalker.core.objects.Response;
+
+public class ResponseOrganizationValidation implements Response {
 
     private Data data;
 
