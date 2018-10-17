@@ -55,6 +55,6 @@ public class OrganizationDetailRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.organizationDetailRequest.generateQuery();
-        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
+        assertEquals(this.expectedGeneratedQueryContent, query.getQueryContent());
     }
 }

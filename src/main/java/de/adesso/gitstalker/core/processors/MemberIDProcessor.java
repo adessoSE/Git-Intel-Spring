@@ -6,10 +6,19 @@ import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
+import de.adesso.gitstalker.core.resources.memberID_Resources.Members;
+import de.adesso.gitstalker.core.resources.memberID_Resources.Nodes;
+import de.adesso.gitstalker.core.resources.memberID_Resources.PageInfo;
 import de.adesso.gitstalker.core.resources.memberID_Resources.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class MemberIDProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -18,9 +27,6 @@ public class MemberIDProcessor extends ResponseProcessor {
     private OrganizationWrapper organization;
 
     private ArrayList<String> memberIDs = new ArrayList<>();
-
-    public MemberIDProcessor() {
-    }
 
     protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
@@ -59,29 +65,5 @@ public class MemberIDProcessor extends ResponseProcessor {
         for (Nodes nodes : members.getNodes()) {
             this.memberIDs.add(nodes.getId());
         }
-    }
-
-    public RequestRepository getRequestRepository() {
-        return requestRepository;
-    }
-
-    public OrganizationRepository getOrganizationRepository() {
-        return organizationRepository;
-    }
-
-    public Query getRequestQuery() {
-        return requestQuery;
-    }
-
-    public OrganizationWrapper getOrganization() {
-        return organization;
-    }
-
-    public ArrayList<String> getMemberIDs() {
-        return memberIDs;
-    }
-
-    public void setMemberIDs(ArrayList<String> memberIDs) {
-        this.memberIDs = memberIDs;
     }
 }

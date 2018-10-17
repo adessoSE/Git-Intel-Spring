@@ -5,10 +5,16 @@ import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.team_Resources.*;
+import de.adesso.gitstalker.core.resources.team_Resources.NodesRepositories;
+import de.adesso.gitstalker.core.resources.team_Resources.NodesTeams;
+import de.adesso.gitstalker.core.resources.team_Resources.PageInfo;
+import de.adesso.gitstalker.core.resources.team_Resources.Teams;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@NoArgsConstructor
 public class TeamProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -17,9 +23,6 @@ public class TeamProcessor extends ResponseProcessor {
     private OrganizationWrapper organization;
 
     private HashMap<String, Team> teams = new HashMap<>();
-
-    public TeamProcessor() {
-    }
 
     /**
      * SetUp method to set up the necessary data for processing. Already selects the matching organization.

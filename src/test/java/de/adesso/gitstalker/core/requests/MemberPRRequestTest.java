@@ -58,6 +58,6 @@ public class MemberPRRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.memberPRRequest.generateQuery();
-        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
+        assertEquals(this.expectedGeneratedQueryContent, query.getQueryContent());
     }
 }

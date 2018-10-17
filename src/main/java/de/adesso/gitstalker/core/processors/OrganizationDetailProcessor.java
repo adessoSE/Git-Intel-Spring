@@ -9,16 +9,17 @@ import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.organisation_Resources.Data;
 import de.adesso.gitstalker.core.resources.organisation_Resources.Organization;
 import de.adesso.gitstalker.core.resources.organisation_Resources.ResponseOrganization;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
 public class OrganizationDetailProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
-
-    public OrganizationDetailProcessor() {
-    }
 
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;

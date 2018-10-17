@@ -90,6 +90,6 @@ public class MemberRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.memberRequest.generateQuery();
-        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
+        assertEquals(this.expectedGeneratedQueryContent, query.getQueryContent());
     }
 }

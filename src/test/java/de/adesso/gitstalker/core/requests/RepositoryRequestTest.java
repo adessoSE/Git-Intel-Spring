@@ -97,6 +97,6 @@ public class RepositoryRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.repositoryRequest.generateQuery();
-        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
+        assertEquals(this.expectedGeneratedQueryContent, query.getQueryContent());
     }
 }

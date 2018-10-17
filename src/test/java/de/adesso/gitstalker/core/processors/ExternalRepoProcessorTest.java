@@ -93,10 +93,10 @@ public class ExternalRepoProcessorTest {
         this.externalRepoProcessor.processExternalReposAndFindContributors(organizationWrapper, testQuery);
 
         //Then
-        assertNull(organizationWrapper.getExternalRepos().get("repositoryTestID").getContributor());
-        assertEquals(2 , organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributor().size());
-        assertEquals("memberName", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributor().get(0).getName());
-        assertEquals("memberName2", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributor().get(1).getName());
+        assertNull(organizationWrapper.getExternalRepos().get("repositoryTestID").getContributors());
+        assertEquals(2 , organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributors().size());
+        assertEquals("memberName", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributors().get(0).getName());
+        assertEquals("memberName2", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributors().get(1).getName());
     }
 
     @Test

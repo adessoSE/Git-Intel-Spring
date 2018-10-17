@@ -41,6 +41,6 @@ public class OrganizationValidationRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.organizationValidationRequest.generateQuery();
-        assertEquals(this.expectedGeneratedQueryContent, query.getQuery());
+        assertEquals(this.expectedGeneratedQueryContent, query.getQueryContent());
     }
 }

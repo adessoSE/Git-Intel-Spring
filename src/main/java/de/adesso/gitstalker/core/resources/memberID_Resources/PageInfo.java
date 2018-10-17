@@ -1,23 +1,12 @@
 package de.adesso.gitstalker.core.resources.memberID_Resources;
 
-public class PageInfo {
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+public class PageInfo {
 
     private boolean hasNextPage;
     private String endCursor;
-
-    public PageInfo() {}
-
-    public boolean isHasNextPage() {
-        return hasNextPage;
-    }
-
-    public void setHasNextPage(boolean hasNextPage) {
-        this.hasNextPage = hasNextPage;
-    }
-
-    public String getEndCursor() {
-        return endCursor;
-    }
-
 }

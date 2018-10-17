@@ -1,6 +1,10 @@
 package de.adesso.gitstalker.core.resources.member_Resources;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class User {
 
     private String name;
@@ -11,40 +15,4 @@ public class User {
     private RepositoriesContributedTo repositoriesContributedTo;
     private Issues issues;
     private PullRequests pullRequests;
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public RepositoriesContributedTo getRepositoriesContributedTo() {
-        return repositoriesContributedTo;
-    }
-
-    public Issues getIssues() {
-        return issues;
-    }
-
-    public PullRequests getPullRequests() {
-        return pullRequests;
-    }
-
-
-
-
 }

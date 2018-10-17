@@ -7,10 +7,18 @@ import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
+import de.adesso.gitstalker.core.resources.memberPR_Resources.Members;
+import de.adesso.gitstalker.core.resources.memberPR_Resources.NodesMember;
+import de.adesso.gitstalker.core.resources.memberPR_Resources.NodesPR;
+import de.adesso.gitstalker.core.resources.memberPR_Resources.PageInfo;
 import de.adesso.gitstalker.core.resources.memberPR_Resources.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.*;
 
+@NoArgsConstructor
 public class MemberPRProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -20,9 +28,6 @@ public class MemberPRProcessor extends ResponseProcessor {
 
     private HashMap<String, ArrayList<Calendar>> pullRequestsDates = new HashMap<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
-
-    public MemberPRProcessor() {
-    }
 
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;

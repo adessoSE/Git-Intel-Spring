@@ -54,6 +54,6 @@ public class ExternalRepoRequestTest {
     @Test
     public void checkIfQueryContentIsGeneratedCorretly() {
         Query query = this.externalRepoRequest.generateQuery();
-        assertEquals(this.externalRepoResources.getExpectedGeneratedQueryContent(this.externalRepoRequest.formatRepoIDs(Arrays.asList("testRepoID")), this.externalRepoRequest.getDateToStartCrawlingInISO8601UTC(new Date())), query.getQuery());
+        assertEquals(this.externalRepoResources.getExpectedGeneratedQueryContent(this.externalRepoRequest.formatRepoIDs(Arrays.asList("testRepoID")), this.externalRepoRequest.getDateToStartCrawlingInISO8601UTC(new Date())), query.getQueryContent());
     }
 }
