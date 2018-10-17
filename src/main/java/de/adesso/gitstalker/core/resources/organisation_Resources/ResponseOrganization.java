@@ -1,6 +1,8 @@
 package de.adesso.gitstalker.core.resources.organisation_Resources;
 
-public class ResponseOrganization {
+import de.adesso.gitstalker.core.objects.Response;
+
+public class ResponseOrganization implements Response {
 
     private Data data;
 

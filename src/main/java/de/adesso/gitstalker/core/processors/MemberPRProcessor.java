@@ -7,10 +7,7 @@ import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.Members;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.NodesMember;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.NodesPR;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.PageInfo;
+import de.adesso.gitstalker.core.resources.memberPR_Resources.*;
 
 import java.util.*;
 
@@ -42,9 +39,10 @@ public class MemberPRProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getRateLimit(), requestQuery.getQueryRequestType());
-        this.processQueryResponse();
-        this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
+        Data responseData = ((ResponseMemberPR) this.requestQuery.getQueryResponse()).getData();
+        super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(responseData);
+        this.processRequestForRemainingInformation(responseData.getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.MEMBER_PR);
     }
 
@@ -59,8 +57,8 @@ public class MemberPRProcessor extends ResponseProcessor {
     }
 
     private void processNumOfExternalRepoContributions() {
-            super.calculateExternalOrganizationPullRequestsChartJSData(organization, this.pullRequestsDates);
-            this.organization.getOrganizationDetail().setNumOfExternalRepoContributions(super.calculateExternalRepoContributions(this.organization).size());
+        super.calculateExternalOrganizationPullRequestsChartJSData(organization, this.pullRequestsDates);
+        this.organization.getOrganizationDetail().setNumOfExternalRepoContributions(super.calculateExternalRepoContributions(this.organization).size());
     }
 
     private void generateRequestsBasedOnMemberPR() {
@@ -73,8 +71,8 @@ public class MemberPRProcessor extends ResponseProcessor {
         }
     }
 
-    private void processQueryResponse() {
-        Members members = this.requestQuery.getQueryResponse().getResponseMemberPR().getData().getOrganization().getMembers();
+    private void processQueryResponse(Data responseData) {
+        Members members = responseData.getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
                 if (!pullRequests.getRepository().isFork() && checkIfPullRequestIsActiveSinceOneYear(pullRequests.getUpdatedAt().getTime())) {

@@ -6,9 +6,7 @@ import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
-import de.adesso.gitstalker.core.resources.memberID_Resources.Members;
-import de.adesso.gitstalker.core.resources.memberID_Resources.Nodes;
-import de.adesso.gitstalker.core.resources.memberID_Resources.PageInfo;
+import de.adesso.gitstalker.core.resources.memberID_Resources.*;
 
 import java.util.ArrayList;
 
@@ -33,10 +31,11 @@ public class MemberIDProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getRateLimit(), requestQuery.getQueryRequestType());
+        Data responseData = ((ResponseMemberID) this.requestQuery.getQueryResponse()).getData();
+        super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
 
-        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getOrganization().getMembers());
-        this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseMemberID().getData().getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
+        this.processQueryResponse(responseData.getOrganization().getMembers());
+        this.processRequestForRemainingInformation(responseData.getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.MEMBER_ID);
     }
 

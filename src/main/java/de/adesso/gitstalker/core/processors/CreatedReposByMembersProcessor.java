@@ -10,6 +10,7 @@ import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.Data;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.NodesRepositories;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.PageInfoRepositories;
+import de.adesso.gitstalker.core.resources.createdReposByMembers.ResponseCreatedReposByMembers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        Data response = this.requestQuery.getQueryResponse().getResponseCreatedReposByMembers().getData();
+        Data response = ((ResponseCreatedReposByMembers) this.requestQuery.getQueryResponse()).getData();
 
         this.processQueryResponse(response);
         super.updateRateLimit(response.getRateLimit(), this.requestQuery.getQueryRequestType());

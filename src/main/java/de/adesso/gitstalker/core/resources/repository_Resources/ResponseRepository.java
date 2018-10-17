@@ -1,7 +1,9 @@
 package de.adesso.gitstalker.core.resources.repository_Resources;
 
 
-public class ResponseRepository {
+import de.adesso.gitstalker.core.objects.Response;
+
+public class ResponseRepository implements Response {
 
     private Data data;
 

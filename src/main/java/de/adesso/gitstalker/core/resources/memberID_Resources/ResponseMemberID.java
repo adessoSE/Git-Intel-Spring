@@ -1,6 +1,8 @@
 package de.adesso.gitstalker.core.resources.memberID_Resources;
 
-public class ResponseMemberID {
+import de.adesso.gitstalker.core.objects.Response;
+
+public class ResponseMemberID implements Response {
 
     private Data data;
 
