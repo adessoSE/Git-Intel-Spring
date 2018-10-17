@@ -6,7 +6,9 @@ import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
+import de.adesso.gitstalker.core.resources.organisation_Resources.Data;
 import de.adesso.gitstalker.core.resources.organisation_Resources.Organization;
+import de.adesso.gitstalker.core.resources.organisation_Resources.ResponseOrganization;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,14 +29,15 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
     }
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
-        this.setUp(requestQuery,requestRepository,organizationRepository);
-        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseOrganization().getData().getRateLimit(), requestQuery.getQueryRequestType());
-        this.processQueryResponse();
+        this.setUp(requestQuery, requestRepository, organizationRepository);
+        Data responseData = ((ResponseOrganization) this.requestQuery.getQueryResponse()).getData();
+        super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(responseData);
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, this.organization, requestQuery, RequestType.ORGANIZATION_DETAIL);
     }
 
-    private void processQueryResponse(){
-        Organization organization = this.requestQuery.getQueryResponse().getResponseOrganization().getData().getOrganization();
+    private void processQueryResponse(Data responseData) {
+        Organization organization = responseData.getOrganization();
 
         this.organization.setOrganizationDetail(new OrganizationDetail(
                 organization.getName(),

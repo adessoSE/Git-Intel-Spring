@@ -2,7 +2,10 @@ package de.adesso.gitstalker.core.processors;
 
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestType;
-import de.adesso.gitstalker.core.objects.*;
+import de.adesso.gitstalker.core.objects.Member;
+import de.adesso.gitstalker.core.objects.OrganizationWrapper;
+import de.adesso.gitstalker.core.objects.Query;
+import de.adesso.gitstalker.core.objects.Repository;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.*;
@@ -35,7 +38,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
+        Data repositoriesData = ((ResponseExternalRepository) this.requestQuery.getQueryResponse()).getData();
 
         super.updateRateLimit(repositoriesData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(repositoriesData.getNodes());
@@ -64,7 +67,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         }
     }
 
-    protected void processQueryResponse(ArrayList<NodesRepositories> repositories){
+    protected void processQueryResponse(ArrayList<NodesRepositories> repositories) {
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
@@ -80,7 +83,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             String id = repo.getId();
 
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {
@@ -100,6 +103,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             this.repositoriesMap.put(id, new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
     }
+
     protected String getLicense(NodesRepositories repo) {
         if (repo.getLicenseInfo() == null) return "";
         else return repo.getLicenseInfo().getName();
