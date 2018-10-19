@@ -31,7 +31,6 @@ public class OrganizationController {
     /**
      * Check if organization is already stored in data base. If not, initiate GitHub crawl for requested organization.
      * <p>
-     * TODO Check if organization is valid before generating de.adesso.gitstalker.core.requests.
      *
      * @return
      */
@@ -92,7 +91,7 @@ public class OrganizationController {
     }
 
     /**
-     * Method used to check if there is already requested information available. If there are no de.adesso.gitstalker.core.requests running for the requested organization then the de.adesso.gitstalker.core.requests are generated.
+     * Method used to check if there is already requested information available. If there are no requests running for the requested organization then the de.adesso.gitstalker.core.de.adesso.gitstalker.requests are generated.
      *
      * @param organizationName Request organization name
      * @return boolean if there is data available
@@ -112,7 +111,6 @@ public class OrganizationController {
         System.out.println("Validating organization...");
         requestRepository.save(new RequestManager(organizationName).generateRequest(RequestType.ORGANIZATION_VALIDATION));
     }
-
 
     private String formatInput(String input) {
         return input.replaceAll("\\s+", "").toLowerCase();

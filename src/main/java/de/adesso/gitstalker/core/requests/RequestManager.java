@@ -67,9 +67,8 @@ public class RequestManager {
                 return new ExternalRepoRequest(organizationName, repoIDs).generateQuery();
             case CREATED_REPOS_BY_MEMBERS:
                 return new CreatedReposByMembersRequest(organizationName, memberID, endCursor).generateQuery();
-            default:
-                return null;
         }
+        return null;
     }
 
     public ArrayList<Query> generateAllRequests() {
@@ -88,7 +87,7 @@ public class RequestManager {
         return allRequestQuerys;
     }
 
-    private String formatInput(String input) {
+    protected String formatInput(String input) {
         return input.replaceAll("\\s+", "").toLowerCase();
     }
 }

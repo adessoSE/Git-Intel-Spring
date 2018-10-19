@@ -1,7 +1,9 @@
 package de.adesso.gitstalker.core.objects;
 
+import lombok.Data;
 import java.util.HashMap;
 
+@Data
 public class Member {
 
     private String name;
@@ -19,70 +21,18 @@ public class Member {
     private ChartJSData previousPullRequests;
 
     public Member(String name, String username, String avatarURL, String githubURL, HashMap<String, String> previousCommitsWithLink, HashMap<String, String> previousIssuesWithLink, HashMap<String, String> previousPullRequestsWithLink, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
-        this.name = name;
-        this.username = username;
-        this.avatarURL = avatarURL;
-        this.githubURL = githubURL;
-        this.previousCommitsWithLink = previousCommitsWithLink;
-        this.previousIssuesWithLink = previousIssuesWithLink;
-        this.previousPullRequestsWithLink = previousPullRequestsWithLink;
-        this.amountPreviousCommits = previousCommitsWithLink.size();
-        this.amountPreviousIssues = previousIssuesWithLink.size();
-        this.amountPreviousPullRequests = previousPullRequestsWithLink.size();
-        this.previousCommits = previousCommits;
-        this.previousIssues = previousIssues;
-        this.previousPullRequests = previousPullRequests;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getAvatarURL() {
-        return avatarURL;
-    }
-
-    public String getGithubURL() {
-        return githubURL;
-    }
-
-    public int getAmountPreviousCommits() {
-        return amountPreviousCommits;
-    }
-
-    public int getAmountPreviousIssues() {
-        return amountPreviousIssues;
-    }
-
-    public int getAmountPreviousPullRequests() {
-        return amountPreviousPullRequests;
-    }
-
-    public ChartJSData getPreviousCommits() {
-        return previousCommits;
-    }
-
-    public ChartJSData getPreviousIssues() {
-        return previousIssues;
-    }
-
-    public ChartJSData getPreviousPullRequests() {
-        return previousPullRequests;
-    }
-
-    public HashMap<String, String> getPreviousCommitsWithLink() {
-        return previousCommitsWithLink;
-    }
-
-    public HashMap<String, String> getPreviousIssuesWithLink() {
-        return previousIssuesWithLink;
-    }
-
-    public HashMap<String, String> getPreviousPullRequestsWithLink() {
-        return previousPullRequestsWithLink;
+        this.setName(name);
+        this.setUsername(username);
+        this.setAvatarURL(avatarURL);
+        this.setGithubURL(githubURL);
+        this.setPreviousCommitsWithLink(previousCommitsWithLink);
+        this.setPreviousIssuesWithLink(previousIssuesWithLink);
+        this.setPreviousPullRequestsWithLink(previousPullRequestsWithLink);
+        this.setAmountPreviousCommits(previousCommitsWithLink.size());
+        this.setAmountPreviousIssues(previousIssuesWithLink.size());
+        this.setAmountPreviousPullRequests(previousPullRequestsWithLink.size());
+        this.setPreviousCommits(previousCommits);
+        this.setPreviousIssues(previousIssues);
+        this.setPreviousPullRequests(previousPullRequests);
     }
 }

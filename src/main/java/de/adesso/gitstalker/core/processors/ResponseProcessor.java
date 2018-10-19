@@ -136,16 +136,16 @@ public abstract class ResponseProcessor {
     }
 
     /**
-     * Calculates the internal commits of the members in the own organization de.adesso.gitstalker.core.repositories. Generated as ChartJSData and saved in OrganizationDetail.
+     * Calculates the internal commits of the members in the own organization repositories. Generated as ChartJSData and saved in OrganizationDetail.
      *
      * @param organization
      */
-    public void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> comittedRepo) {
+    public void calculateInternalOrganizationCommitsChartJSData(OrganizationWrapper organization, HashMap<String, ArrayList<Calendar>> committedRepo) {
         Set<String> organizationRepoIDs = organization.getRepositories().keySet();
         ArrayList<Calendar> internalCommitsDates = new ArrayList<>();
         for (String id : organizationRepoIDs) {
-            if (comittedRepo.containsKey(id)) {
-                internalCommitsDates.addAll(comittedRepo.get(id));
+            if (committedRepo.containsKey(id)) {
+                internalCommitsDates.addAll(committedRepo.get(id));
             }
         }
 
@@ -154,7 +154,7 @@ public abstract class ResponseProcessor {
     }
 
     /**
-     * Calculates the external pull de.adesso.gitstalker.core.requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
+     * Calculates the external pull requests of the members. Generated as ChartJSData and saved in OrganizationDetail.
      *
      * @param organization
      */

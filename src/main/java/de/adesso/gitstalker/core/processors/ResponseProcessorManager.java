@@ -4,9 +4,11 @@ import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 
+@NoArgsConstructor
 public class ResponseProcessorManager {
 
     public static HashMap<String, OrganizationValidationProcessor> organizationValidationProcessorHashMap = new HashMap<>();
@@ -18,9 +20,6 @@ public class ResponseProcessorManager {
     public static HashMap<String, TeamProcessor> teamProcessorHashMap = new HashMap<>();
     public static HashMap<String, ExternalRepoProcessor> externalRepoProcessorHashMap = new HashMap<>();
     public static HashMap<String, CreatedReposByMembersProcessor> createdReposByMembersProcessorHashMap = new HashMap<>();
-
-    public ResponseProcessorManager() {
-    }
 
     public void processResponse(OrganizationRepository organizationRepository, RequestRepository requestRepository, Query requestQuery) {
         RequestType requestType = requestQuery.getQueryRequestType();

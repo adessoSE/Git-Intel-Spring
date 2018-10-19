@@ -8,11 +8,13 @@ import de.adesso.gitstalker.core.objects.Repository;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.repository_Resources.*;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+@NoArgsConstructor
 public class RepositoryProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -21,9 +23,6 @@ public class RepositoryProcessor extends ResponseProcessor {
     private OrganizationWrapper organization;
 
     private HashMap<String, Repository> repositories = new HashMap<>();
-
-    public RepositoryProcessor() {
-    }
 
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
@@ -34,9 +33,10 @@ public class RepositoryProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        super.updateRateLimit(this.requestQuery.getQueryResponse().getResponseRepository().getData().getRateLimit(), requestQuery.getQueryRequestType());
-        this.processQueryResponse(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories());
-        this.processRequestForRemainingInformation(this.requestQuery.getQueryResponse().getResponseRepository().getData().getOrganization().getRepositories().getPageInfo(), requestQuery.getOrganizationName());
+        Data responseData = ((ResponseRepository) this.requestQuery.getQueryResponse()).getData();
+        super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
+        this.processQueryResponse(responseData.getOrganization().getRepositories());
+        this.processRequestForRemainingInformation(responseData.getOrganization().getRepositories().getPageInfo(), requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, this.organization, requestQuery, RequestType.REPOSITORY);
     }
 

@@ -10,10 +10,17 @@ import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.Data;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.NodesRepositories;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.PageInfoRepositories;
+import de.adesso.gitstalker.core.resources.createdReposByMembers.ResponseCreatedReposByMembers;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -23,10 +30,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = new HashMap<>();
 
-    public CreatedReposByMembersProcessor() {
-    }
-
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -35,7 +39,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        Data response = this.requestQuery.getQueryResponse().getResponseCreatedReposByMembers().getData();
+        Data response = ((ResponseCreatedReposByMembers) this.requestQuery.getQueryResponse()).getData();
 
         this.processQueryResponse(response);
         super.updateRateLimit(response.getRateLimit(), this.requestQuery.getQueryRequestType());
@@ -44,19 +48,20 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS);
     }
 
-    private void checkIfRequestTypeIsFinished() {
+    protected void checkIfRequestTypeIsFinished() {
         if (super.checkIfQueryIsLastOfRequestType(this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS, this.requestRepository)) {
             this.organization.addCreatedReposByMembers(createdRepositoriesByMembers);
         }
     }
 
-    private void processRemainingRepositoriesOfMember(PageInfoRepositories pageInfo, String organizationName, String memberID) {
-        if (pageInfo.hasNextPage()) {
-            this.requestRepository.save(new RequestManager(organizationName, memberID, pageInfo.getEndCursor()).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
+    protected void processRemainingRepositoriesOfMember(PageInfoRepositories pageInfo, String organizationName, String memberID) {
+        if (pageInfo.isHasNextPage()) {
+            Query generatedNextQuery = new RequestManager(organizationName, memberID, pageInfo.getEndCursor()).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
+            this.requestRepository.save(generatedNextQuery);
         }
     }
 
-    private void processQueryResponse(Data response) {
+    protected void processQueryResponse(Data response) {
         ArrayList<Repository> createdRepositoriesByMember = new ArrayList<>();
 
         for (NodesRepositories repository : response.getNode().getRepositories().getNodes()) {
@@ -79,21 +84,21 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
         } else this.createdRepositoriesByMembers.put(response.getNode().getId(), createdRepositoriesByMember);
     }
 
-    private boolean checkIfMemberIsAlreadyAssigned(String memberID) {
+    protected boolean checkIfMemberIsAlreadyAssigned(String memberID) {
         return this.createdRepositoriesByMembers.containsKey(memberID);
     }
 
-    private String getLicense(NodesRepositories repository) {
+    protected String getLicense(NodesRepositories repository) {
         if (repository.getLicenseInfo() == null) return "";
         else return repository.getLicenseInfo().getName();
     }
 
-    private String getProgrammingLanguage(NodesRepositories repository) {
+    protected String getProgrammingLanguage(NodesRepositories repository) {
         if (repository.getPrimaryLanguage() == null) return "";
         else return repository.getPrimaryLanguage().getName();
     }
 
-    private String getDescription(NodesRepositories repository) {
+    protected String getDescription(NodesRepositories repository) {
         if (repository.getDescription() == null) return "";
         else return repository.getDescription();
     }

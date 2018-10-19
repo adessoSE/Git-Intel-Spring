@@ -1,14 +1,11 @@
 package de.adesso.gitstalker.core.resources.team_Resources;
 
+import de.adesso.gitstalker.core.objects.Response;
+import lombok.NoArgsConstructor;
 
-public class ResponseTeam {
+@lombok.Data
+@NoArgsConstructor
+public class ResponseTeam implements Response {
 
     private Data data;
-
-    public ResponseTeam() {
-    }
-
-    public Data getData() {
-        return data;
-    }
 }

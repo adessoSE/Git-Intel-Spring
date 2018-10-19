@@ -105,8 +105,8 @@ public abstract class Request {
      * @param entity
      */
     private void processOrganizationValidationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseOrganizationValidation.class));
-        if (response.getResponseOrganizationValidation().getData() != null) {
+        ResponseOrganizationValidation response = restTemplate.postForObject(Config.API_URL, entity, ResponseOrganizationValidation.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -120,8 +120,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processCreatedReposByMembers(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseCreatedReposByMembers.class));
-        if (response.getResponseCreatedReposByMembers().getData() != null) {
+        ResponseCreatedReposByMembers response = restTemplate.postForObject(Config.API_URL, entity, ResponseCreatedReposByMembers.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -135,8 +135,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processExternalRepos(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseExternalRepository.class));
-        if (response.getResponseExternalRepository().getData() != null) {
+        ResponseExternalRepository response = restTemplate.postForObject(Config.API_URL, entity, ResponseExternalRepository.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -150,8 +150,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processOrganizationTeams(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseTeam.class));
-        if (response.getResponseTeam().getData() != null) {
+        ResponseTeam response = restTemplate.postForObject(Config.API_URL, entity, ResponseTeam.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -165,8 +165,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processRespositoriesDetail(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseRepository.class));
-        if (response.getResponseRepository().getData() != null) {
+        ResponseRepository response = restTemplate.postForObject(Config.API_URL, entity, ResponseRepository.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -180,8 +180,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processOrganizationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) throws Exception {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseOrganization.class));
-        if (response.getResponseOrganization().getData() != null) {
+        ResponseOrganization response = restTemplate.postForObject(Config.API_URL, entity, ResponseOrganization.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -195,8 +195,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processMemberIDRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMemberID.class));
-        if (response.getResponseMemberID().getData() != null) {
+        ResponseMemberID response = restTemplate.postForObject(Config.API_URL, entity, ResponseMemberID.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -210,8 +210,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processMemberPRRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMemberPR.class));
-        if (response.getResponseMemberPR().getData() != null) {
+        ResponseMemberPR response = restTemplate.postForObject(Config.API_URL, entity, ResponseMemberPR.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
@@ -226,8 +226,8 @@ public abstract class Request {
      * @param entity       Configuration for the request
      */
     private void processMemberRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
-        Response response = new Response(restTemplate.postForObject(Config.API_URL, entity, ResponseMember.class));
-        if (response.getResponseMember().getData() != null) {
+        ResponseMember response = restTemplate.postForObject(Config.API_URL, entity, ResponseMember.class);
+        if (response.getData() != null) {
             requestQuery.setQueryResponse(response);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }

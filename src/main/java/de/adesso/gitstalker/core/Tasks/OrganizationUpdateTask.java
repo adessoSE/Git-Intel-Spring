@@ -21,8 +21,6 @@ public class OrganizationUpdateTask {
 
     /**
      * Scheduled task for generating queries in order to update saved organisation.
-     * Currently used for debugging the de.adesso.gitstalker.core.requests.
-     * TODO: Scheduled task should run at night time!
      */
     @Scheduled(fixedDelay = 5000, initialDelay = 5000)
     private void generateQuery() {

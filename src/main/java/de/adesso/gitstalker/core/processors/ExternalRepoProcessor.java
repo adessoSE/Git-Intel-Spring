@@ -2,15 +2,24 @@ package de.adesso.gitstalker.core.processors;
 
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestType;
-import de.adesso.gitstalker.core.objects.*;
+import de.adesso.gitstalker.core.objects.Member;
+import de.adesso.gitstalker.core.objects.OrganizationWrapper;
+import de.adesso.gitstalker.core.objects.Query;
+import de.adesso.gitstalker.core.objects.Repository;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ExternalRepoProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -20,10 +29,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
 
     private HashMap<String, Repository> repositoriesMap = new HashMap<>();
 
-    public ExternalRepoProcessor() {
-    }
-
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -32,7 +38,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
 
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
-        Data repositoriesData = this.requestQuery.getQueryResponse().getResponseExternalRepository().getData();
+        Data repositoriesData = ((ResponseExternalRepository) this.requestQuery.getQueryResponse()).getData();
 
         super.updateRateLimit(repositoriesData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(repositoriesData.getNodes());
@@ -40,7 +46,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, organization, requestQuery, RequestType.EXTERNAL_REPO);
     }
 
-    private void processExternalReposAndFindContributors(OrganizationWrapper organization, Query requestQuery) {
+    protected void processExternalReposAndFindContributors(OrganizationWrapper organization, Query requestQuery) {
         if (super.checkIfQueryIsLastOfRequestType(organization, requestQuery, RequestType.EXTERNAL_REPO, this.requestRepository)) {
             this.organization.addExternalRepos(this.repositoriesMap);
             HashMap<String, ArrayList<String>> externalRepos = super.calculateExternalRepoContributions(organization);
@@ -48,12 +54,12 @@ public class ExternalRepoProcessor extends ResponseProcessor {
                 for (String contributorID : externalRepos.get(externalRepoID)) {
                     Repository suitableExternalRepo = organization.getExternalRepos().containsKey(externalRepoID) ? organization.getExternalRepos().get(externalRepoID) : null;
                     if (suitableExternalRepo != null) {
-                        if (suitableExternalRepo.getContributor() != null) {
+                        if (suitableExternalRepo.getContributors() != null) {
                             suitableExternalRepo.addContributor(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
                         } else {
                             ArrayList<Member> contributors = new ArrayList<>();
                             contributors.add(organization.getMembers().containsKey(contributorID) ? organization.getMembers().get(contributorID) : null);
-                            suitableExternalRepo.setContributor(contributors);
+                            suitableExternalRepo.setContributors(contributors);
                         }
                     }
                 }
@@ -61,7 +67,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         }
     }
 
-    private void processQueryResponse(ArrayList<NodesRepositories> repositories){
+    protected void processQueryResponse(ArrayList<NodesRepositories> repositories) {
         ArrayList<Calendar> pullRequestDates = new ArrayList<>();
         ArrayList<Calendar> issuesDates = new ArrayList<>();
         ArrayList<Calendar> commitsDates = new ArrayList<>();
@@ -77,7 +83,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             String id = repo.getId();
 
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.DATE, cal.get(Calendar.DATE)-Config.PAST_DAYS_AMOUNT_TO_CRAWL);
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {
@@ -97,18 +103,20 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             this.repositoriesMap.put(id, new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
         }
     }
-    private String getLicense(NodesRepositories repo) {
+
+    protected String getLicense(NodesRepositories repo) {
         if (repo.getLicenseInfo() == null) return "";
         else return repo.getLicenseInfo().getName();
     }
 
-    private String getProgrammingLanguage(NodesRepositories repo) {
+    protected String getProgrammingLanguage(NodesRepositories repo) {
         if (repo.getPrimaryLanguage() == null) return "";
         else return repo.getPrimaryLanguage().getName();
     }
 
-    private String getDescription(NodesRepositories repo) {
+    protected String getDescription(NodesRepositories repo) {
         if (repo.getDescription() == null) return "";
         else return repo.getDescription();
     }
+
 }
