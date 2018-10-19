@@ -36,6 +36,15 @@ public class OrganizationWrapper {
         this.setOrganizationName(organizationName);
     }
 
+    public void setCompleteUpdateCost(int completeUpdateCost) {
+        this.completeUpdateCost += completeUpdateCost;
+    }
+
+    public void setLastUpdateTimestamp(Date lastUpdateTimestamp) {
+        this.lastUpdateTimestamp = lastUpdateTimestamp;
+        this.organizationDetail.setLastUpdate(lastUpdateTimestamp);
+    }
+
     public void addMemberIDs(ArrayList<String> memberIDs) {
         this.memberIDs.addAll(memberIDs);
     }
@@ -70,6 +79,11 @@ public class OrganizationWrapper {
 
     public void addCreatedReposByMembers(HashMap<String, ArrayList<Repository>> createdReposByMembers) {
         this.createdReposByMembers.putAll(createdReposByMembers);
+        int sumOfCreatedMemberRepos = 0;
+        for(ArrayList<Repository> memberRepos : createdReposByMembers.values()){
+            sumOfCreatedMemberRepos += memberRepos.size();
+        }
+        this.organizationDetail.setNumOfCreatedReposByMembers(sumOfCreatedMemberRepos);
     }
 
     public void prepareOrganizationForUpdate(OrganizationRepository organizationRepository){
@@ -86,9 +100,5 @@ public class OrganizationWrapper {
         this.lastUpdateTimestamp = null;
 
         organizationRepository.save(this);
-    }
-
-    public void setCompleteUpdateCost(int completeUpdateCost) {
-        this.completeUpdateCost += completeUpdateCost;
     }
 }

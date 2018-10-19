@@ -1,5 +1,6 @@
 package de.adesso.gitstalker.core.objects;
 
+import java.util.Date;
 import lombok.Data;
 
 @Data
@@ -15,8 +16,10 @@ public class OrganizationDetail {
     private int numOfTeams;
     private int numOfRepositories;
     private int numOfExternalRepoContributions;
+    private int numOfCreatedReposByMembers;
     private ChartJSData internalRepositoriesCommits;
     private ChartJSData externalRepositoriesPullRequests;
+    private Date lastUpdate;
 
     public OrganizationDetail(String name, String description, String websiteURL, String githubURL, String location, String avatarURL, int numOfMembers, int numOfRepositories, int numOfTeams) {
         this.setName(name);
