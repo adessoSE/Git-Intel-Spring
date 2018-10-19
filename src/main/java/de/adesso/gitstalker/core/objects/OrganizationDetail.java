@@ -1,5 +1,7 @@
 package de.adesso.gitstalker.core.objects;
 
+import java.util.Date;
+
 public class OrganizationDetail {
 
     private String name;
@@ -12,8 +14,10 @@ public class OrganizationDetail {
     private int numOfTeams;
     private int numOfRepositories;
     private int numOfExternalRepoContributions;
+    private int numOfCreatedReposByMembers;
     private ChartJSData internalRepositoriesCommits;
     private ChartJSData externalRepositoriesPullRequests;
+    private Date lastUpdate;
 
     public OrganizationDetail(String name, String description, String websiteURL, String githubURL, String location, String avatarURL, int numOfMembers, int numOfRepositories, int numOfTeams) {
         this.name = name;
@@ -85,5 +89,21 @@ public class OrganizationDetail {
 
     public void setExternalRepositoriesPullRequests(ChartJSData externalRepositoriesPullRequests) {
         this.externalRepositoriesPullRequests = externalRepositoriesPullRequests;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public int getNumOfCreatedReposByMembers() {
+        return numOfCreatedReposByMembers;
+    }
+
+    public void setNumOfCreatedReposByMembers(int numOfCreatedReposByMembers) {
+        this.numOfCreatedReposByMembers = numOfCreatedReposByMembers;
     }
 }
