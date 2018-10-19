@@ -2,6 +2,7 @@ package de.adesso.gitstalker.core.processors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.OrganizationDetail;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.objects.Repository;
@@ -200,10 +201,13 @@ public class CreatedReposByMembersProcessorTest {
     @Test
     public void checkIfRequestTypeIsFinishedAfterLastRequest() {
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        OrganizationDetail mockOrganizationDetail = mock(OrganizationDetail.class);
+        organizationWrapper.setOrganizationDetail(mockOrganizationDetail);
         ArrayList<Query> queries = new ArrayList<>();
         queries.add(testQuery);
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
         Mockito.when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, "adessoAG")).thenReturn(queries);
+        Mockito.doNothing().when(mockOrganizationDetail).setNumOfCreatedReposByMembers(0);
 
         this.createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository);
         this.createdReposByMembersProcessor.checkIfRequestTypeIsFinished();
