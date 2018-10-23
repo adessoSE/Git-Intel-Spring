@@ -2,7 +2,9 @@ package de.adesso.gitstalker.core.objects;
 
 import java.util.Date;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+@Accessors(chain = true)
 @Data
 public class OrganizationDetail {
 

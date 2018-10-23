@@ -2,9 +2,11 @@ package de.adesso.gitstalker.core.objects;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 
+@Accessors(chain = true)
 @Data
 @NoArgsConstructor
 public class Repository {
@@ -18,33 +20,12 @@ public class Repository {
     private ChartJSData previousCommits;
     private ChartJSData previousIssues;
     private ChartJSData previousPullRequests;
+    private int amountPreviousCommits;
+    private int amountPreviousIssues;
+    private int amountPreviousPullRequests;
     private ArrayList<Member> contributors;
-
-    public Repository(String name, String url, String description, String programmingLanguage, String license, int forks, int stars) {
-        this.setName(name);
-        this.setUrl(url);
-        this.setDescription(description);
-        this.setProgrammingLanguage(programmingLanguage);
-        this.setLicense(license);
-        this.setForks(forks);
-        this.setStars(stars);
-    }
-
-    public Repository(String name, String url, String description, String programmingLanguage, String license, int forks, int stars, ChartJSData previousCommits, ChartJSData previousIssues, ChartJSData previousPullRequests) {
-        this.setName(name);
-        this.setUrl(url);
-        this.setDescription(description);
-        this.setProgrammingLanguage(programmingLanguage);
-        this.setLicense(license);
-        this.setForks(forks);
-        this.setStars(stars);
-        this.setPreviousCommits(previousCommits);
-        this.setPreviousIssues(previousIssues);
-        this.setPreviousPullRequests(previousPullRequests);
-    }
 
     public void addContributor(Member contributor) {
         this.contributors.add(contributor);
     }
-
 }

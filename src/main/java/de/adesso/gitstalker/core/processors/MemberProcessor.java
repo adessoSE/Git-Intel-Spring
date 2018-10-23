@@ -96,16 +96,16 @@ public class MemberProcessor extends ResponseProcessor {
             }
         }
 
-        this.members.put(singleMember.getId(), new Member(
-                singleMember.getName(),
-                singleMember.getLogin(),
-                singleMember.getAvatarUrl(),
-                singleMember.getUrl(),
-                previousCommitsWithLink,
-                previousIssuesWithLink,
-                previousPullRequestsWithLink,
-                this.generateChartJSData(commitsDates),
-                this.generateChartJSData(issuesDates),
-                this.generateChartJSData(pullRequestDates)));
+        this.members.put(singleMember.getId(), new Member()
+                .setName(singleMember.getName())
+                .setUsername(singleMember.getLogin())
+                .setAvatarURL(singleMember.getAvatarUrl())
+                .setGithubURL(singleMember.getUrl())
+                .setPreviousCommitsWithLink(previousCommitsWithLink)
+                .setPreviousCommits(this.generateChartJSData(commitsDates))
+                .setPreviousIssuesWithLink(previousIssuesWithLink)
+                .setPreviousIssues(this.generateChartJSData(issuesDates))
+                .setPreviousPullRequestsWithLink(previousPullRequestsWithLink)
+                .setPreviousPullRequests(this.generateChartJSData(pullRequestDates)));
     }
 }

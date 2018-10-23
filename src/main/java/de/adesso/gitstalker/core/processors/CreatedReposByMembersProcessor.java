@@ -1,6 +1,7 @@
 package de.adesso.gitstalker.core.processors;
 
 import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.Member;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.objects.Repository;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 @Getter
@@ -69,15 +71,17 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
                 continue;
             }
 
-            int stars = repository.getStargazers().getTotalCount();
-            int forks = repository.getForkCount();
-            String url = repository.getUrl();
-            String license = getLicense(repository);
-            String programmingLanguage = getProgrammingLanguage(repository);
-            String description = getDescription(repository);
-            String name = repository.getName();
+            ArrayList<Member> repositoryOwner = new ArrayList<>(Arrays.asList(this.organizationRepository.findByOrganizationName(this.requestQuery.getOrganizationName()).getMembers().get(repository.getOwner().getId())));
 
-            createdRepositoriesByMember.add(new Repository(name, url, description, programmingLanguage, license, forks, stars));
+            createdRepositoriesByMember.add(new Repository()
+                    .setName(repository.getName())
+                    .setUrl(repository.getUrl())
+                    .setDescription(getDescription(repository))
+                    .setProgrammingLanguage(getProgrammingLanguage(repository))
+                    .setLicense(getLicense(repository))
+                    .setForks(repository.getForkCount())
+                    .setStars(repository.getStargazers().getTotalCount())
+                    .setContributors(repositoryOwner));
         }
         if (checkIfMemberIsAlreadyAssigned(response.getNode().getId())) {
             this.createdRepositoriesByMembers.get(response.getNode().getId()).addAll(createdRepositoriesByMember);
@@ -89,17 +93,17 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
     }
 
     protected String getLicense(NodesRepositories repository) {
-        if (repository.getLicenseInfo() == null) return "";
+        if (repository.getLicenseInfo() == null) return "No License deposited";
         else return repository.getLicenseInfo().getName();
     }
 
     protected String getProgrammingLanguage(NodesRepositories repository) {
-        if (repository.getPrimaryLanguage() == null) return "";
+        if (repository.getPrimaryLanguage() == null) return "/";
         else return repository.getPrimaryLanguage().getName();
     }
 
     protected String getDescription(NodesRepositories repository) {
-        if (repository.getDescription() == null) return "";
+        if (repository.getDescription() == null) return "No Description deposited";
         else return repository.getDescription();
     }
 }

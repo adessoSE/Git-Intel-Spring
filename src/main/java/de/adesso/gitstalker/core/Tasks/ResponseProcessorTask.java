@@ -33,7 +33,6 @@ public class ResponseProcessorTask extends ResponseProcessor {
                 if (this.checkIfNecessaryDataIsAvailable(processableQuery.getQueryRequestType(), processableQuery.getOrganizationName())) {
                     responseProcessorManager.processResponse(this.organizationRepository, this.requestRepository, processableQuery);
                     requestRepository.delete(processableQuery);
-                    break;
                 } else continue;
             }
         }
@@ -52,6 +51,8 @@ public class ResponseProcessorTask extends ResponseProcessor {
                 return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, organizationName).isEmpty() && this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.REPOSITORY, organizationName).isEmpty();
             case MEMBER_PR:
                 return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.REPOSITORY, organizationName).isEmpty();
+            case CREATED_REPOS_BY_MEMBERS:
+                return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, organizationName).isEmpty();
             default:
                 return true;
         }

@@ -5,16 +5,12 @@ import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
-import de.adesso.gitstalker.core.resources.memberID_Resources.ResponseMemberID;
 import de.adesso.gitstalker.core.resources.member_Resources.ResponseMember;
-import de.adesso.gitstalker.resources.MemberIDResources;
 import de.adesso.gitstalker.resources.MemberResources;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -43,7 +39,7 @@ public class MemberProcessorTest {
     public void checkIfQueryResponseIsProcessedCorrectly() {
         //Given
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2018,0,01);
+        calendar.set(2018, 0, 01);
         MemberProcessor memberProcessor = spy(this.memberProcessor);
         when(memberProcessor.configureCalendarToFitCrawlingPeriod()).thenReturn(calendar);
 
@@ -66,7 +62,7 @@ public class MemberProcessorTest {
         //TODO: Test fertig schreiben. ChartJSData muss gespyt werden. Umschreiben dass Calendar gemockt werden kann.
         //Given
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
-        OrganizationDetail organizationDetail = new OrganizationDetail("adessoAG", "testDescription", "testURL", "testURL", "testLocation", "testAvatarURL", 10, 10 ,10);
+        OrganizationDetail organizationDetail = new OrganizationDetail("adessoAG", "testDescription", "testURL", "testURL", "testLocation", "testAvatarURL", 10, 10, 10);
         organizationWrapper.setOrganizationDetail(organizationDetail);
         when(this.organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
 
@@ -77,18 +73,33 @@ public class MemberProcessorTest {
         this.memberProcessor.setUp(this.testQuery, this.requestRepository, this.organizationRepository);
 
         HashMap<String, Member> memberHashMap = new HashMap<>();
-        memberHashMap.put("memberTestKey", new Member("memberName", "memberUsername", "avatarURLTest", "githubURLTest", new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>())));
+        memberHashMap.put("memberTestKey", new Member()
+                .setName("memberName"));
         this.memberProcessor.setMembers(memberHashMap);
 
         HashMap<String, Repository> repositoryHashMap = new HashMap<>();
-        repositoryHashMap.put("repositoryTestKey", new Repository("repositoryTestName","testURL", "testDescription", "Java", "testLicense", 5, 10));
-        repositoryHashMap.put("repositoryTestKey2", new Repository("repositoryTestName","testURL", "testDescription", "Java", "testLicense", 5, 10));
+        repositoryHashMap.put("repositoryTestKey", new Repository()
+                .setName("repositoryTestName")
+                .setUrl("testURL")
+                .setDescription("testDescription")
+                .setProgrammingLanguage("Java")
+                .setLicense("testLicense")
+                .setForks(5)
+                .setStars(10));
+        repositoryHashMap.put("repositoryTestKey2", new Repository()
+                .setName("repositoryTestName")
+                .setUrl("testURL")
+                .setDescription("testDescription")
+                .setProgrammingLanguage("Java")
+                .setLicense("testLicense")
+                .setForks(5)
+                .setStars(10));
         this.memberProcessor.getOrganization().setRepositories(repositoryHashMap);
 
         HashMap<String, ArrayList<Calendar>> committedRepoHashMap = new HashMap<>();
         ArrayList<Calendar> calendars = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2018,0,01);
+        calendar.set(2018, 0, 01);
         calendars.add(calendar);
         committedRepoHashMap.put("repositoryTestKey", calendars);
 
