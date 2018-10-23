@@ -49,14 +49,14 @@ public class RepositoryProcessor extends ResponseProcessor {
     }
 
     private void processQueryResponse(Repositories repositoriesData) {
-        ArrayList<Calendar> pullRequestDates = new ArrayList<>();
-        ArrayList<Calendar> issuesDates = new ArrayList<>();
-        ArrayList<Calendar> commitsDates = new ArrayList<>();
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
-
         for (NodesRepositories repo : repositoriesData.getNodes()) {
+            ArrayList<Calendar> pullRequestDates = new ArrayList<>();
+            ArrayList<Calendar> issuesDates = new ArrayList<>();
+            ArrayList<Calendar> commitsDates = new ArrayList<>();
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
+
             int stars = repo.getStargazers().getTotalCount();
             int forks = repo.getForkCount();
             String url = repo.getUrl();
