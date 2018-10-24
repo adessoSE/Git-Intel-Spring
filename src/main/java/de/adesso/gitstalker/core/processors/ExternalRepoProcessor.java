@@ -68,11 +68,11 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     }
 
     protected void processQueryResponse(ArrayList<NodesRepositories> repositories) {
-        ArrayList<Calendar> pullRequestDates = new ArrayList<>();
-        ArrayList<Calendar> issuesDates = new ArrayList<>();
-        ArrayList<Calendar> commitsDates = new ArrayList<>();
-
         for (NodesRepositories repo : repositories) {
+            ArrayList<Calendar> pullRequestDates = new ArrayList<>();
+            ArrayList<Calendar> issuesDates = new ArrayList<>();
+            ArrayList<Calendar> commitsDates = new ArrayList<>();
+          
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
