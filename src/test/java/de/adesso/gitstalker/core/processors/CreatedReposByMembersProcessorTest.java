@@ -2,10 +2,7 @@ package de.adesso.gitstalker.core.processors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.gitstalker.core.enums.RequestType;
-import de.adesso.gitstalker.core.objects.OrganizationDetail;
-import de.adesso.gitstalker.core.objects.OrganizationWrapper;
-import de.adesso.gitstalker.core.objects.Query;
-import de.adesso.gitstalker.core.objects.Repository;
+import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.*;
@@ -47,6 +44,12 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfRepositoryAmountIsProcessedCorrectly() {
+        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository);
+        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        HashMap<String, Member> memberHashMap = new HashMap<>();
+        memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
+        organizationWrapper.setMembers(memberHashMap);
+        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
         createdReposByMembersProcessor.processQueryResponse(this.responseCreatedReposByMembers.getData());
         HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = createdReposByMembersProcessor.getCreatedRepositoriesByMembers();
 
@@ -55,8 +58,15 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfRepositoryIsAssignedCorrectlyToExistingMember(){
+        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository);
+        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        HashMap<String, Member> memberHashMap = new HashMap<>();
+        memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
+        organizationWrapper.setMembers(memberHashMap);
+        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+
         ArrayList<Repository> repositories = new ArrayList<>();
-        repositories.add(new Repository(null, null, null, null, null, 0, 0));
+        repositories.add(new Repository());
         HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = createdReposByMembersProcessor.getCreatedRepositoriesByMembers();
         createdRepositoriesByMembers.put("MDQ6VXNlcjkxOTkw", repositories);
         createdReposByMembersProcessor.setCreatedRepositoriesByMembers(createdRepositoriesByMembers);
@@ -68,6 +78,13 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfListContainsMemberID() {
+        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository);
+        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        HashMap<String, Member> memberHashMap = new HashMap<>();
+        memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
+        organizationWrapper.setMembers(memberHashMap);
+        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+
         createdReposByMembersProcessor.processQueryResponse(this.responseCreatedReposByMembers.getData());
 
         assertTrue(createdReposByMembersProcessor.checkIfMemberIsAlreadyAssigned("MDQ6VXNlcjkxOTkw"));
@@ -75,9 +92,23 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfRepositoryIsGeneratedCorrectly() {
+        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository);
+        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        HashMap<String, Member> memberHashMap = new HashMap<>();
+        memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
+        organizationWrapper.setMembers(memberHashMap);
+        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+
         createdReposByMembersProcessor.processQueryResponse(this.responseCreatedReposByMembers.getData());
 
-        Repository expectedRepo = new Repository("magento", "https://github.com/matthiasbalke/magento", "Magento Modules", "", "", 0, 1);
+        Repository expectedRepo = new Repository()
+                .setName("magento")
+                .setUrl("https://github.com/matthiasbalke/magento")
+                .setDescription("Magento Modules")
+                .setLicense("No License deposited")
+                .setProgrammingLanguage("/")
+                .setForks(0)
+                .setStars(1);
         Repository actualRepo = createdReposByMembersProcessor.getCreatedRepositoriesByMembers().get("MDQ6VXNlcjkxOTkw").get(0);
 
         assertEquals(expectedRepo.getName(), actualRepo.getName());
@@ -95,7 +126,7 @@ public class CreatedReposByMembersProcessorTest {
         nodesRepositories.setLicenseInfo(null);
 
         assertNotNull(createdReposByMembersProcessor.getLicense(nodesRepositories));
-        assertEquals("", createdReposByMembersProcessor.getLicense(nodesRepositories));
+        assertEquals("No License deposited", createdReposByMembersProcessor.getLicense(nodesRepositories));
     }
 
     @Test
@@ -115,7 +146,7 @@ public class CreatedReposByMembersProcessorTest {
         nodesRepositories.setPrimaryLanguage(null);
 
         assertNotNull(createdReposByMembersProcessor.getProgrammingLanguage(nodesRepositories));
-        assertEquals("", createdReposByMembersProcessor.getProgrammingLanguage(nodesRepositories));
+        assertEquals("/", createdReposByMembersProcessor.getProgrammingLanguage(nodesRepositories));
     }
 
     @Test
@@ -135,7 +166,7 @@ public class CreatedReposByMembersProcessorTest {
         nodesRepositories.setDescription(null);
 
         assertNotNull(createdReposByMembersProcessor.getDescription(nodesRepositories));
-        assertEquals("", createdReposByMembersProcessor.getDescription(nodesRepositories));
+        assertEquals("No Description deposited", createdReposByMembersProcessor.getDescription(nodesRepositories));
     }
 
     @Test
@@ -207,7 +238,7 @@ public class CreatedReposByMembersProcessorTest {
         queries.add(testQuery);
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
         Mockito.when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, "adessoAG")).thenReturn(queries);
-        Mockito.doNothing().when(mockOrganizationDetail).setNumOfCreatedReposByMembers(0);
+        //Mockito.doNothing().when(mockOrganizationDetail).setNumOfCreatedReposByMembers(0);
 
         this.createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository);
         this.createdReposByMembersProcessor.checkIfRequestTypeIsFinished();

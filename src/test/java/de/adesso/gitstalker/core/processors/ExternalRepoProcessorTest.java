@@ -45,7 +45,14 @@ public class ExternalRepoProcessorTest {
         externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
         externalRepoProcessor.processQueryResponse(this.responseExternalRepository.getData().getNodes());
 
-        Repository expectedRepository = new Repository("magento", "https://github.com/matthiasbalke/magento", "Magento Modules", "", "", 0, 1);
+        Repository expectedRepository = new Repository()
+                .setName("magento")
+                .setUrl("https://github.com/matthiasbalke/magento")
+                .setDescription("Magento Modules")
+                .setLicense("No License deposited")
+                .setProgrammingLanguage("/")
+                .setForks(0)
+                .setStars(1);
         Repository firstProcessedRepository = externalRepoProcessor.getRepositoriesMap().get("MDEwOlJlcG9zaXRvcnk2NDkzMzI=");
 
         assertEquals(expectedRepository.getName(), firstProcessedRepository.getName());
@@ -70,8 +77,22 @@ public class ExternalRepoProcessorTest {
         Mockito.when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, "adessoAG")).thenReturn(queries);
 
         HashMap<String, Repository> repositoriesMap = new HashMap<>();
-        repositoriesMap.put("repositoryTestID", new Repository("testRepository", "testURL", "testDescription", "Java", "MIT", 30, 5));
-        repositoriesMap.put("repositoryTestID2", new Repository("testRepository2", "testURL", "testDescription", "Java", "MIT", 34, 15));
+        repositoriesMap.put("repositoryTestID", new Repository()
+                .setName("testRepository")
+                .setUrl("testURL")
+                .setDescription("testDescription")
+                .setProgrammingLanguage("Java")
+                .setLicense("MIT")
+                .setForks(30)
+                .setStars(5));
+        repositoriesMap.put("repositoryTestID2", new Repository()
+                .setName("testRepository2")
+                .setUrl("testURL")
+                .setDescription("testDescription")
+                .setProgrammingLanguage("Java")
+                .setLicense("MIT")
+                .setForks(34)
+                .setStars(15));
         this.externalRepoProcessor.setRepositoriesMap(repositoriesMap);
 
         HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
@@ -81,12 +102,21 @@ public class ExternalRepoProcessorTest {
         organizationWrapper.setMemberPRRepoIDs(memberPRRepoIDs);
 
         HashMap<String, Repository> repositories = new HashMap<>();
-        repositories.put("repositoryTestID", new Repository("testRepository", "testURL", "testDescription", "Java", "MIT", 30, 5));
+        repositories.put("repositoryTestID", new Repository()
+                .setName("testRepository")
+                .setUrl("testURL")
+                .setDescription("testDescription")
+                .setProgrammingLanguage("Java")
+                .setLicense("MIT")
+                .setForks(30)
+                .setStars(5));
         organizationWrapper.setRepositories(repositories);
 
         HashMap<String, Member> members = new HashMap<>();
-        members.put("memberTestID", new Member("memberName", "memberUsername", "avatarURLTest", "githubURLTest", new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>())));
-        members.put("memberTestID2", new Member("memberName2", "memberUsername2", "avatarURLTest2", "githubURLTest2", new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>()), new ChartJSData(new ArrayList<String>(), new ArrayList<Integer>())));
+        members.put("memberTestID", new Member()
+                .setName("memberName"));
+        members.put("memberTestID2", new Member()
+                .setName("memberName2"));
         organizationWrapper.setMembers(members);
 
         //When
@@ -94,7 +124,7 @@ public class ExternalRepoProcessorTest {
 
         //Then
         assertNull(organizationWrapper.getExternalRepos().get("repositoryTestID").getContributors());
-        assertEquals(2 , organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributors().size());
+        assertEquals(2, organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributors().size());
         assertEquals("memberName", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributors().get(0).getName());
         assertEquals("memberName2", organizationWrapper.getExternalRepos().get("repositoryTestID2").getContributors().get(1).getName());
     }
@@ -148,7 +178,7 @@ public class ExternalRepoProcessorTest {
         nodesRepositories.setLicenseInfo(null);
 
         assertNotNull(externalRepoProcessor.getLicense(nodesRepositories));
-        assertEquals("", externalRepoProcessor.getLicense(nodesRepositories));
+        assertEquals("No License deposited", externalRepoProcessor.getLicense(nodesRepositories));
     }
 
     @Test
@@ -168,7 +198,7 @@ public class ExternalRepoProcessorTest {
         nodesRepositories.setPrimaryLanguage(null);
 
         assertNotNull(externalRepoProcessor.getProgrammingLanguage(nodesRepositories));
-        assertEquals("", externalRepoProcessor.getProgrammingLanguage(nodesRepositories));
+        assertEquals("/", externalRepoProcessor.getProgrammingLanguage(nodesRepositories));
     }
 
     @Test
@@ -188,7 +218,7 @@ public class ExternalRepoProcessorTest {
         nodesRepositories.setDescription(null);
 
         assertNotNull(externalRepoProcessor.getDescription(nodesRepositories));
-        assertEquals("", externalRepoProcessor.getDescription(nodesRepositories));
+        assertEquals("No Description deposited", externalRepoProcessor.getDescription(nodesRepositories));
     }
 
     @Test

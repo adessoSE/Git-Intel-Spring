@@ -57,14 +57,6 @@ public class RepositoryProcessor extends ResponseProcessor {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.DATE, cal.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
 
-            int stars = repo.getStargazers().getTotalCount();
-            int forks = repo.getForkCount();
-            String url = repo.getUrl();
-            String license = getLicense(repo);
-            String programmingLanguage = getProgrammingLanguage(repo);
-            String description = getDescription(repo);
-            String name = repo.getName();
-
             for (NodesPullRequests nodesPullRequests : repo.getPullRequests().getNodes()) {
                 if (cal.before(nodesPullRequests.getCreatedAt())) {
                     pullRequestDates.add(nodesPullRequests.getCreatedAt());
@@ -80,22 +72,35 @@ public class RepositoryProcessor extends ResponseProcessor {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
             }
-            repositories.put(repo.getId(), new Repository(name, url, description, programmingLanguage, license, forks, stars, this.generateChartJSData(commitsDates), this.generateChartJSData(issuesDates), this.generateChartJSData(pullRequestDates)));
+            repositories.put(repo.getId(), new Repository()
+                    .setName(repo.getName())
+                    .setUrl(repo.getUrl())
+                    .setDescription(getDescription(repo))
+                    .setProgrammingLanguage(getProgrammingLanguage(repo))
+                    .setLicense(getLicense(repo))
+                    .setForks(repo.getForkCount())
+                    .setStars(repo.getStargazers().getTotalCount())
+                    .setAmountPreviousCommits(commitsDates.size())
+                    .setPreviousCommits(this.generateChartJSData(commitsDates))
+                    .setAmountPreviousIssues(issuesDates.size())
+                    .setPreviousIssues(this.generateChartJSData(issuesDates))
+                    .setAmountPreviousPullRequests(pullRequestDates.size())
+                    .setPreviousPullRequests(this.generateChartJSData(pullRequestDates)));
         }
     }
 
     private String getLicense(NodesRepositories repo) {
-        if (repo.getLicenseInfo() == null) return "";
+        if (repo.getLicenseInfo() == null) return "No License deposited";
         else return repo.getLicenseInfo().getName();
     }
 
     private String getProgrammingLanguage(NodesRepositories repo) {
-        if (repo.getPrimaryLanguage() == null) return "";
+        if (repo.getPrimaryLanguage() == null) return "/";
         else return repo.getPrimaryLanguage().getName();
     }
 
     private String getDescription(NodesRepositories repo) {
-        if (repo.getDescription() == null) return "";
+        if (repo.getDescription() == null) return "No Description deposited";
         else return repo.getDescription();
     }
 }
