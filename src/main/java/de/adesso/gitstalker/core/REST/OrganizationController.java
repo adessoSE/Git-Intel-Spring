@@ -45,12 +45,23 @@ public class OrganizationController {
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
     }
+    public ResponseEntity<OrganizationDetail> retrieveOrganizationDetail(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
+
+        return (ResponseEntity<OrganizationDetail>) this.processResponseEntity(RequestType.ORGANIZATION_DETAIL, organization, this.checkStatusOfRequestedInformation(formattedName));
+    }
 
     @RequestMapping("/members/{organizationName}")
     public ResponseEntity<?> retrieveOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
         return this.processResponseEntity(RequestType.MEMBER,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
+    public ResponseEntity<Collection<Member>> retrieveOrganizationMembers(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
+
+        return (ResponseEntity<Collection<Member>>) this.processResponseEntity(RequestType.MEMBER, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/repositories/{organizationName}")
@@ -58,6 +69,11 @@ public class OrganizationController {
         return this.processResponseEntity(RequestType.REPOSITORY,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
+    public ResponseEntity<Collection<Repository>> retrieveOrganizationRepositories(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
+
+        return (ResponseEntity<Collection<Repository>>) this.processResponseEntity(RequestType.REPOSITORY, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/externalrepositories/{organizationName}")
@@ -65,6 +81,11 @@ public class OrganizationController {
         return this.processResponseEntity(RequestType.EXTERNAL_REPO,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
+    public ResponseEntity<Collection<Repository>> retrieveExternalRepositories(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
+
+        return (ResponseEntity<Collection<Repository>>) this.processResponseEntity(RequestType.EXTERNAL_REPO, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/teams/{organizationName}")
@@ -72,6 +93,11 @@ public class OrganizationController {
         return this.processResponseEntity(RequestType.TEAM,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
+    public ResponseEntity<Collection<Team>> retrieveOrganizationTeams(@PathVariable String organizationName) {
+        String formattedName = this.formatInput(organizationName);
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
+
+        return (ResponseEntity<Collection<Team>>) this.processResponseEntity(RequestType.TEAM, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/createdreposbymembers/{organizationName}")
@@ -87,6 +113,7 @@ public class OrganizationController {
     }
 
     private ResponseEntity<?> processResponseEntity(RequestType requestType, String organizationName, HttpStatus httpStatus) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    public ResponseEntity<Collection<ArrayList<Repository>>> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) {
         String formattedName = this.formatInput(organizationName);
         OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
 
@@ -117,6 +144,9 @@ public class OrganizationController {
             throw new InvalidOrganizationNameRequestException("The transferred organization name is incorrect.", formattedName);
         }
         return new ResponseEntity<>(httpStatus);
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
+
+        return (ResponseEntity<Collection<ArrayList<Repository>>>) this.processResponseEntity(RequestType.CREATED_REPOS_BY_MEMBERS, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @ExceptionHandler(InvalidOrganizationNameRequestException.class)
@@ -134,6 +164,37 @@ public class OrganizationController {
                 .setProcessingMessage(e.getMessage());
     }
 
+    @RequestMapping("/**")
+    public ResponseEntity<Object> response404Error() {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity<?> processResponseEntity(RequestType requestType, OrganizationWrapper organization, HttpStatus httpStatus){
+        if (httpStatus.is2xxSuccessful()) {
+            switch (requestType){
+                case TEAM:
+                    Collection<Team> teams = organization.getTeams().values();
+                    return new ResponseEntity<>(teams, httpStatus);
+                case CREATED_REPOS_BY_MEMBERS:
+                    Collection<ArrayList<Repository>> createdReposByMembers = organization.getCreatedReposByMembers().values();
+                    return new ResponseEntity<>(createdReposByMembers, httpStatus);
+                case EXTERNAL_REPO:
+                    Collection<Repository> externalRepositories = organization.getExternalRepos().values();
+                    return new ResponseEntity<>(externalRepositories, httpStatus);
+                case REPOSITORY:
+                    Collection<Repository> organizationRepositories = organization.getRepositories().values();
+                    return new ResponseEntity<>(organizationRepositories, httpStatus);
+                case MEMBER:
+                    Collection<Member> organizationMember = organization.getMembers().values();
+                    return new ResponseEntity<>(organizationMember, httpStatus);
+                case ORGANIZATION_DETAIL:
+                    OrganizationDetail organizationDetail = organization.getOrganizationDetail();
+                    return new ResponseEntity<>(organizationDetail, httpStatus);
+            }
+        }
+        return new ResponseEntity<>(httpStatus);
+    }
+
     /**
      * Method used to check if there is already requested information available.
      * If there are no requests running for the requested organization then the requests are generated, after validating if the transferred organization is valid.
@@ -147,9 +208,12 @@ public class OrganizationController {
                 this.deleteFinishedOrganizationProcessingInHashMap(organizationName);
                 return HttpStatus.OK;
             } else return this.validateOrganization(organizationName);
+                return HttpStatus.OK;
+            } else return this.validateOrganization(organizationName);
         } else {
             System.out.println("Data is still being gathered for this organization...");
             this.updateProcessingOrganizationInformation(organizationName);
+            return HttpStatus.PROCESSING;
             return HttpStatus.PROCESSING;
         }
     }
@@ -170,12 +234,19 @@ public class OrganizationController {
      * @return
      */
     private HttpStatus validateOrganization(String organizationName) {
+    private HttpStatus validateOrganization(String organizationName) {
         System.out.println("Validating organization...");
         Query queryOrganizationValidation = this.getOrganizationValidationResponse(organizationName);
         ResponseOrganizationValidation responseOrganizationValidation = (ResponseOrganizationValidation) queryOrganizationValidation.getQueryResponse();
         if (this.checkIfOrganizationIsValid(responseOrganizationValidation)) {
             this.addProcessingOrganizationInformationIfMissingForTheOrganization(organizationName, responseOrganizationValidation);
             this.requestRepository.save(queryOrganizationValidation);
+            return HttpStatus.PROCESSING;
+        } else return HttpStatus.BAD_REQUEST;
+        Query validationQuery = new RequestManager(organizationName).generateRequest(RequestType.ORGANIZATION_VALIDATION);
+        validationQuery.crawlQueryResponse();
+        this.requestRepository.save(validationQuery);
+        if(((ResponseOrganizationValidation) validationQuery.getQueryResponse()).getData().getOrganization() != null){
             return HttpStatus.PROCESSING;
         } else return HttpStatus.BAD_REQUEST;
     }
