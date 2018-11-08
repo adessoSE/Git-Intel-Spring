@@ -101,10 +101,13 @@ public class MemberProcessor extends ResponseProcessor {
                 .setUsername(singleMember.getLogin())
                 .setAvatarURL(singleMember.getAvatarUrl())
                 .setGithubURL(singleMember.getUrl())
+                .setAmountPreviousCommits(previousCommitsWithLink.size())
                 .setPreviousCommitsWithLink(previousCommitsWithLink)
                 .setPreviousCommits(this.generateChartJSData(commitsDates))
+                .setAmountPreviousIssues(previousIssuesWithLink.size())
                 .setPreviousIssuesWithLink(previousIssuesWithLink)
                 .setPreviousIssues(this.generateChartJSData(issuesDates))
+                .setAmountPreviousPullRequests(previousPullRequestsWithLink.size())
                 .setPreviousPullRequestsWithLink(previousPullRequestsWithLink)
                 .setPreviousPullRequests(this.generateChartJSData(pullRequestDates)));
     }

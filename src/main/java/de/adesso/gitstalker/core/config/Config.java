@@ -19,4 +19,7 @@ public class Config {
     //Update of organization information
     public static final int UPDATE_RATE_DAYS = 1;
     public static final long UPDATE_RATE_DAYS_IN_MS = UPDATE_RATE_DAYS * DAY_IN_MS;
+
+    //Processing Speed
+    public static final int PROCESSING_RATE_IN_MS = 500;
 }
