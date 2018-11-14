@@ -1,5 +1,6 @@
 package de.adesso.gitstalker.core.Tasks;
 
+import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
@@ -25,7 +26,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
      * Automatic process for processing queries with valid responses. The query is passed in to the ResponseProcessorManager, which finds the appropriate processor.
      * After processing, the query is deleted.
      */
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS)
     private void processCrawledQueryData() {
         if (!requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).isEmpty()) {
             ArrayList<Query> processableQueries = requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);

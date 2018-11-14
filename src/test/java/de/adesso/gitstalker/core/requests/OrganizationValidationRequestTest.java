@@ -12,7 +12,16 @@ public class OrganizationValidationRequestTest {
     private OrganizationValidationRequest organizationValidationRequest;
     private String expectedGeneratedQueryContent = "query {\n" +
             "organization(login:\"adessoAG\") {\n" +
-            "id\n" +
+            "name\n" +
+            "members(first: 1) {\n" +
+            "totalCount\n" +
+            "}\n" +
+            "repositories(first: 1) {\n" +
+            "totalCount\n" +
+            "}\n" +
+            "teams(first: 1) {\n" +
+            "totalCount\n" +
+            "}\n" +
             "}\n" +
             "rateLimit {\n" +
             "cost\n" +

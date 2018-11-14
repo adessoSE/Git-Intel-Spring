@@ -5,10 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Organization {
+public class Teams {
 
-    private String name;
-    private Members members;
-    private Repositories repositories;
-    private Teams teams;
+    private int totalCount;
 }
