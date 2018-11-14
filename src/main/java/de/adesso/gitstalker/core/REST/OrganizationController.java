@@ -1,9 +1,11 @@
 package de.adesso.gitstalker.core.REST;
 
 
-import de.adesso.gitstalker.core.REST.responses.InvalidOrganization;
+import de.adesso.gitstalker.core.REST.responses.ErrorMessage;
 import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
+import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.exceptions.InvalidGithubAPITokenException;
 import de.adesso.gitstalker.core.exceptions.InvalidOrganizationNameRequestException;
 import de.adesso.gitstalker.core.exceptions.ProcessingOrganizationException;
 import de.adesso.gitstalker.core.objects.*;
@@ -40,42 +42,42 @@ public class OrganizationController {
      * @return
      */
     @RequestMapping("/organizationdetail/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationDetail(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    public ResponseEntity<?> retrieveOrganizationDetail(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
         return this.processResponseEntity(RequestType.ORGANIZATION_DETAIL,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
     }
 
     @RequestMapping("/members/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    public ResponseEntity<?> retrieveOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
         return this.processResponseEntity(RequestType.MEMBER,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
     }
 
     @RequestMapping("/repositories/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    public ResponseEntity<?> retrieveOrganizationRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
         return this.processResponseEntity(RequestType.REPOSITORY,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
     }
 
     @RequestMapping("/externalrepositories/{organizationName}")
-    public ResponseEntity<?> retrieveExternalRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    public ResponseEntity<?> retrieveExternalRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
         return this.processResponseEntity(RequestType.EXTERNAL_REPO,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
     }
 
     @RequestMapping("/teams/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationTeams(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    public ResponseEntity<?> retrieveOrganizationTeams(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
         return this.processResponseEntity(RequestType.TEAM,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
     }
 
     @RequestMapping("/createdreposbymembers/{organizationName}")
-    public ResponseEntity<?> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    public ResponseEntity<?> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
         return this.processResponseEntity(RequestType.CREATED_REPOS_BY_MEMBERS,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
@@ -86,7 +88,7 @@ public class OrganizationController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    private ResponseEntity<?> processResponseEntity(RequestType requestType, String organizationName, HttpStatus httpStatus) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
+    private ResponseEntity<?> processResponseEntity(RequestType requestType, String organizationName, HttpStatus httpStatus) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
         String formattedName = this.formatInput(organizationName);
         OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
 
@@ -114,17 +116,32 @@ public class OrganizationController {
         } else if (httpStatus.is1xxInformational()) {
             throw new ProcessingOrganizationException("The transferred organization is being processed.", formattedName);
         } else if (httpStatus.is4xxClientError()) {
-            throw new InvalidOrganizationNameRequestException("The transferred organization name is incorrect.", formattedName);
+            switch (httpStatus) {
+                case UNAUTHORIZED:
+                    throw new InvalidGithubAPITokenException("The entered token in the back-end seems to be incorrect...", formattedName);
+                case BAD_REQUEST:
+                    throw new InvalidOrganizationNameRequestException("The transferred organization name is incorrect.", formattedName);
+            }
         }
         return new ResponseEntity<>(httpStatus);
     }
 
+    @ExceptionHandler(InvalidGithubAPITokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleInvalidGithubAPITokenException(InvalidGithubAPITokenException e) {
+        return new ErrorMessage()
+                .setSearchedOrganization(e.getSearchedOrganization())
+                .setErrorMessage(e.getMessage())
+                .setErrorName("Invalid Github Token");
+    }
+
     @ExceptionHandler(InvalidOrganizationNameRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public InvalidOrganization handleInvalidOrganizationNameRequestException(InvalidOrganizationNameRequestException e) {
-        return new InvalidOrganization()
+    public ErrorMessage handleInvalidOrganizationNameRequestException(InvalidOrganizationNameRequestException e) {
+        return new ErrorMessage()
                 .setSearchedOrganization(e.getSearchedOrganization())
-                .setErrorMessage(e.getMessage());
+                .setErrorMessage(e.getMessage())
+                .setErrorName("Invalid Organization");
     }
 
     @ExceptionHandler(ProcessingOrganizationException.class)
@@ -196,18 +213,14 @@ public class OrganizationController {
      * @return
      */
     private HttpStatus validateOrganization(String organizationName) {
-        System.out.println("Validating organization...");
         Query queryOrganizationValidation = this.getOrganizationValidationResponse(organizationName);
         ResponseOrganizationValidation responseOrganizationValidation = (ResponseOrganizationValidation) queryOrganizationValidation.getQueryResponse();
+        if (queryOrganizationValidation.getQueryStatus().equals(RequestStatus.ERROR_RECEIVED)){
+            return HttpStatus.UNAUTHORIZED;
+        }
         if (this.checkIfOrganizationIsValid(responseOrganizationValidation)) {
             this.addProcessingOrganizationInformationIfMissingForTheOrganization(organizationName, responseOrganizationValidation);
             this.requestRepository.save(queryOrganizationValidation);
-            return HttpStatus.PROCESSING;
-        }
-        Query validationQuery = new RequestManager(organizationName).generateRequest(RequestType.ORGANIZATION_VALIDATION);
-        validationQuery.crawlQueryResponse();
-        this.requestRepository.save(validationQuery);
-        if(((ResponseOrganizationValidation) validationQuery.getQueryResponse()).getData().getOrganization() != null){
             return HttpStatus.PROCESSING;
         } else return HttpStatus.BAD_REQUEST;
     }

@@ -7,7 +7,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
-public class InvalidOrganization {
+public class ErrorMessage {
     private String errorMessage;
     private String searchedOrganization;
+    private String errorName;
 }
