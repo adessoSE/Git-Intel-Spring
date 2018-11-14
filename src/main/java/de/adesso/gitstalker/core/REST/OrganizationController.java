@@ -242,16 +242,17 @@ public class OrganizationController {
         int teamTotalCount = organization.getTeams().getTotalCount();
         int repositoriesTotalCount = organization.getRepositories().getTotalCount();
 
-        return (memberTotalCount / 100) +     //Member ID Requests
+        return (memberTotalCount / 100) +                               //Member ID Requests
                 (memberTotalCount / 100) +                              //Member PR Requests
                 (memberTotalCount) +                                    //Member Requests
                 (repositoriesTotalCount / 100) +                        //Repositories Requests
                 (memberTotalCount / 2) +                                //External Repo Requests
                 (memberTotalCount) +                                    //Created Repos By Members Requests
                 (teamTotalCount / 50) +                                 //Team Requests
-                (2);
+                (2);                                                    //Organization Detail / Validation
     }
 
+    //TODO: Nullpointer exception if the token was not set or is invalid.
     private boolean checkIfOrganizationIsValid(ResponseOrganizationValidation responseOrganizationValidation) {
         return responseOrganizationValidation.getData().getOrganization() != null;
     }
