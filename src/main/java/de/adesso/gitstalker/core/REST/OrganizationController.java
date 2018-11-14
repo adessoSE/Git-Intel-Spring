@@ -23,9 +23,9 @@ import java.util.*;
 @CrossOrigin
 public class OrganizationController {
 
-    OrganizationRepository organizationRepository;
-    RequestRepository requestRepository;
-    HashMap<String, ProcessingOrganization> processingOrganizations;
+    private OrganizationRepository organizationRepository;
+    private RequestRepository requestRepository;
+    private HashMap<String, ProcessingOrganization> processingOrganizations;
 
     @Autowired
     public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository) {
@@ -45,23 +45,12 @@ public class OrganizationController {
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
     }
-    public ResponseEntity<OrganizationDetail> retrieveOrganizationDetail(@PathVariable String organizationName) {
-        String formattedName = this.formatInput(organizationName);
-        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
-
-        return (ResponseEntity<OrganizationDetail>) this.processResponseEntity(RequestType.ORGANIZATION_DETAIL, organization, this.checkStatusOfRequestedInformation(formattedName));
-    }
 
     @RequestMapping("/members/{organizationName}")
     public ResponseEntity<?> retrieveOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
         return this.processResponseEntity(RequestType.MEMBER,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
-    public ResponseEntity<Collection<Member>> retrieveOrganizationMembers(@PathVariable String organizationName) {
-        String formattedName = this.formatInput(organizationName);
-        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
-
-        return (ResponseEntity<Collection<Member>>) this.processResponseEntity(RequestType.MEMBER, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/repositories/{organizationName}")
@@ -69,11 +58,6 @@ public class OrganizationController {
         return this.processResponseEntity(RequestType.REPOSITORY,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
-    public ResponseEntity<Collection<Repository>> retrieveOrganizationRepositories(@PathVariable String organizationName) {
-        String formattedName = this.formatInput(organizationName);
-        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
-
-        return (ResponseEntity<Collection<Repository>>) this.processResponseEntity(RequestType.REPOSITORY, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/externalrepositories/{organizationName}")
@@ -81,11 +65,6 @@ public class OrganizationController {
         return this.processResponseEntity(RequestType.EXTERNAL_REPO,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
-    public ResponseEntity<Collection<Repository>> retrieveExternalRepositories(@PathVariable String organizationName) {
-        String formattedName = this.formatInput(organizationName);
-        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
-
-        return (ResponseEntity<Collection<Repository>>) this.processResponseEntity(RequestType.EXTERNAL_REPO, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/teams/{organizationName}")
@@ -93,11 +72,6 @@ public class OrganizationController {
         return this.processResponseEntity(RequestType.TEAM,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
-    public ResponseEntity<Collection<Team>> retrieveOrganizationTeams(@PathVariable String organizationName) {
-        String formattedName = this.formatInput(organizationName);
-        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
-
-        return (ResponseEntity<Collection<Team>>) this.processResponseEntity(RequestType.TEAM, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @RequestMapping("/createdreposbymembers/{organizationName}")
@@ -113,7 +87,6 @@ public class OrganizationController {
     }
 
     private ResponseEntity<?> processResponseEntity(RequestType requestType, String organizationName, HttpStatus httpStatus) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException {
-    public ResponseEntity<Collection<ArrayList<Repository>>> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) {
         String formattedName = this.formatInput(organizationName);
         OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
 
@@ -144,9 +117,6 @@ public class OrganizationController {
             throw new InvalidOrganizationNameRequestException("The transferred organization name is incorrect.", formattedName);
         }
         return new ResponseEntity<>(httpStatus);
-        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
-
-        return (ResponseEntity<Collection<ArrayList<Repository>>>) this.processResponseEntity(RequestType.CREATED_REPOS_BY_MEMBERS, organization, this.checkStatusOfRequestedInformation(formattedName));
     }
 
     @ExceptionHandler(InvalidOrganizationNameRequestException.class)
@@ -162,11 +132,6 @@ public class OrganizationController {
     public ProcessingOrganization handleProcessingOrganizationException(ProcessingOrganizationException e) {
         return processingOrganizations.get(e.getSearchedOrganization())
                 .setProcessingMessage(e.getMessage());
-    }
-
-    @RequestMapping("/**")
-    public ResponseEntity<Object> response404Error() {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     private ResponseEntity<?> processResponseEntity(RequestType requestType, OrganizationWrapper organization, HttpStatus httpStatus){
@@ -208,12 +173,9 @@ public class OrganizationController {
                 this.deleteFinishedOrganizationProcessingInHashMap(organizationName);
                 return HttpStatus.OK;
             } else return this.validateOrganization(organizationName);
-                return HttpStatus.OK;
-            } else return this.validateOrganization(organizationName);
         } else {
             System.out.println("Data is still being gathered for this organization...");
             this.updateProcessingOrganizationInformation(organizationName);
-            return HttpStatus.PROCESSING;
             return HttpStatus.PROCESSING;
         }
     }
@@ -234,7 +196,6 @@ public class OrganizationController {
      * @return
      */
     private HttpStatus validateOrganization(String organizationName) {
-    private HttpStatus validateOrganization(String organizationName) {
         System.out.println("Validating organization...");
         Query queryOrganizationValidation = this.getOrganizationValidationResponse(organizationName);
         ResponseOrganizationValidation responseOrganizationValidation = (ResponseOrganizationValidation) queryOrganizationValidation.getQueryResponse();
@@ -242,7 +203,7 @@ public class OrganizationController {
             this.addProcessingOrganizationInformationIfMissingForTheOrganization(organizationName, responseOrganizationValidation);
             this.requestRepository.save(queryOrganizationValidation);
             return HttpStatus.PROCESSING;
-        } else return HttpStatus.BAD_REQUEST;
+        }
         Query validationQuery = new RequestManager(organizationName).generateRequest(RequestType.ORGANIZATION_VALIDATION);
         validationQuery.crawlQueryResponse();
         this.requestRepository.save(validationQuery);
@@ -267,15 +228,13 @@ public class OrganizationController {
     private ProcessingOrganization generateProcessingOrganizationInformation(ResponseOrganizationValidation responseOrganizationValidation) {
         Organization organization = responseOrganizationValidation.getData().getOrganization();
 
-        ProcessingOrganization processingOrganizationInformation = new ProcessingOrganization()
+        return new ProcessingOrganization()
                 .setProcessingMessage("Currently the organization is still under processing.")
                 .setSearchedOrganization(organization.getName())
                 .setMissingRequestTypes(new HashSet<>(Arrays.asList(RequestType.values())))
                 .setFinishedRequestTypes(new HashSet<>())
                 .setTotalCountOfNeededRequests(this.calculateTotalCountOfNeededRequests(organization))
                 .setTotalCountOfRequestTypes(RequestType.values().length);
-
-        return processingOrganizationInformation;
     }
 
     private int calculateTotalCountOfNeededRequests(Organization organization) {
@@ -283,16 +242,14 @@ public class OrganizationController {
         int teamTotalCount = organization.getTeams().getTotalCount();
         int repositoriesTotalCount = organization.getRepositories().getTotalCount();
 
-        int totalCountOfNeededRequests = (memberTotalCount / 100) +     //Member ID Requests
+        return (memberTotalCount / 100) +     //Member ID Requests
                 (memberTotalCount / 100) +                              //Member PR Requests
                 (memberTotalCount) +                                    //Member Requests
                 (repositoriesTotalCount / 100) +                        //Repositories Requests
                 (memberTotalCount / 2) +                                //External Repo Requests
                 (memberTotalCount) +                                    //Created Repos By Members Requests
                 (teamTotalCount / 50) +                                 //Team Requests
-                (2);                                                    //Organization Detail & Validation Requests
-
-        return totalCountOfNeededRequests;
+                (2);
     }
 
     private boolean checkIfOrganizationIsValid(ResponseOrganizationValidation responseOrganizationValidation) {
