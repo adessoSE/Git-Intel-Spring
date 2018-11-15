@@ -17,4 +17,6 @@ public interface RequestRepository extends MongoRepository<Query, String> {
     ArrayList<Query> findByQueryStatus(RequestStatus status);
 
     ArrayList<Query> findByQueryRequestTypeAndOrganizationName(RequestType requestType, String organizationName);
+
+    ArrayList<Query> findByQueryStatusAndOrganizationName(RequestStatus status, String organizationName);
 }
