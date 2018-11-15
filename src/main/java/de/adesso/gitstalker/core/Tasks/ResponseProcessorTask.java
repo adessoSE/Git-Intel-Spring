@@ -1,5 +1,7 @@
 package de.adesso.gitstalker.core.Tasks;
 
+import de.adesso.gitstalker.core.REST.OrganizationController;
+import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
@@ -11,6 +13,7 @@ import de.adesso.gitstalker.core.processors.ResponseProcessorManager;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ResponseProcessorTask extends ResponseProcessor {
 
@@ -28,14 +31,17 @@ public class ResponseProcessorTask extends ResponseProcessor {
      */
     @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS)
     private void processCrawledQueryData() {
-        if (!requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED).isEmpty()) {
-            ArrayList<Query> processableQueries = requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
-            for (Query processableQuery : processableQueries) {
-                if (this.checkIfNecessaryDataIsAvailable(processableQuery.getQueryRequestType(), processableQuery.getOrganizationName())) {
-                    responseProcessorManager.processResponse(this.organizationRepository, this.requestRepository, processableQuery);
-                    requestRepository.delete(processableQuery);
-                } else continue;
-            }
+        ArrayList<Query> queriesToProcess;
+        if(!OrganizationController.processingOrganizations.isEmpty()){
+            Map.Entry<String, ProcessingOrganization> processingOrganization = OrganizationController.processingOrganizations.entrySet().iterator().next();
+            queriesToProcess = requestRepository.findByQueryStatusAndOrganizationName(RequestStatus.VALID_ANSWER_RECEIVED, processingOrganization.getKey());
+        } else queriesToProcess = requestRepository.findByQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
+
+        for (Query processableQuery : queriesToProcess) {
+            if (this.checkIfNecessaryDataIsAvailable(processableQuery.getQueryRequestType(), processableQuery.getOrganizationName())) {
+                responseProcessorManager.processResponse(this.organizationRepository, this.requestRepository, processableQuery);
+                requestRepository.delete(processableQuery);
+            } else continue;
         }
     }
 

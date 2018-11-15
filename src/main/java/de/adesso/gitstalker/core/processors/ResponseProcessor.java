@@ -1,5 +1,6 @@
 package de.adesso.gitstalker.core.processors;
 
+import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestType;
@@ -26,8 +27,6 @@ public abstract class ResponseProcessor {
         RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(), requestType);
 
         System.out.println("Rate Limit remaining: " + RateLimitConfig.getRemainingRateLimit());
-        System.out.println("Request Type: " + requestType);
-        System.out.println("Rate Limit Cost: " + RateLimitConfig.getPreviousRequestCostAndRequestType());
     }
 
     public ChartJSData generateChartJSData(ArrayList<Calendar> arrayOfDates) {
@@ -180,6 +179,7 @@ public abstract class ResponseProcessor {
         if (organization.getFinishedRequests().size() == RequestType.values().length) {
             organization.setLastUpdateTimestamp(new Date());
             this.removeFinishedResponseProcessors(organization.getOrganizationName());
+            OrganizationController.processingOrganizations.remove(organization.getOrganizationName());
             System.out.println("Complete Update Cost: " + organization.getCompleteUpdateCost());
         }
         organizationRepository.save(organization);

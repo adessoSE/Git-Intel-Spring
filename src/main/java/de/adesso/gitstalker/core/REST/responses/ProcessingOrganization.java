@@ -17,4 +17,5 @@ public class ProcessingOrganization {
     private Set<RequestType> missingRequestTypes;
     private int totalCountOfRequestTypes;
     private int totalCountOfNeededRequests;
+    private int currentPositionInQueue;
 }

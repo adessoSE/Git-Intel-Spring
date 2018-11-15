@@ -27,13 +27,13 @@ public class OrganizationController {
 
     private OrganizationRepository organizationRepository;
     private RequestRepository requestRepository;
-    private HashMap<String, ProcessingOrganization> processingOrganizations;
+    public static HashMap<String, ProcessingOrganization> processingOrganizations;
 
     @Autowired
     public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository) {
         this.organizationRepository = organizationRepository;
         this.requestRepository = requestRepository;
-        this.processingOrganizations = new HashMap<>();
+        this.processingOrganizations = new LinkedHashMap<>();
     }
 
     /**
@@ -187,7 +187,6 @@ public class OrganizationController {
     private HttpStatus checkStatusOfRequestedInformation(String organizationName) {
         if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
             if (organizationRepository.findByOrganizationName(organizationName) != null) {
-                this.deleteFinishedOrganizationProcessingInHashMap(organizationName);
                 return HttpStatus.OK;
             } else return this.validateOrganization(organizationName);
         } else {
@@ -195,13 +194,6 @@ public class OrganizationController {
             this.updateProcessingOrganizationInformation(organizationName);
             return HttpStatus.PROCESSING;
         }
-    }
-
-    /**
-     * Method to delete the OrganizationProcessing object after the data was requested successfully.
-     */
-    private void deleteFinishedOrganizationProcessingInHashMap(String organizationName) {
-        this.processingOrganizations.remove(organizationName);
     }
 
     /**
@@ -228,8 +220,22 @@ public class OrganizationController {
     private void updateProcessingOrganizationInformation(String organizationName){
         OrganizationWrapper organizationWrapper = this.organizationRepository.findByOrganizationName(organizationName);
         ProcessingOrganization processingOrganization = this.processingOrganizations.get(organizationName);
-        processingOrganization.setFinishedRequestTypes(organizationWrapper.getFinishedRequests());
-        processingOrganization.getMissingRequestTypes().removeAll(organizationWrapper.getFinishedRequests());
+        processingOrganization.setCurrentPositionInQueue(this.calculatePositionInLinkedHashMap(organizationName));
+        if (organizationWrapper != null){
+            processingOrganization.setFinishedRequestTypes(organizationWrapper.getFinishedRequests());
+            processingOrganization.getMissingRequestTypes().removeAll(organizationWrapper.getFinishedRequests());
+        }
+    }
+
+    private int calculatePositionInLinkedHashMap(String organizationName){
+        int calculatedPosition = 0;
+        for (String organizationKey : this.processingOrganizations.keySet()){
+            calculatedPosition += 1;
+            if (organizationKey.matches(organizationName)){
+                break;
+            }
+        }
+        return calculatedPosition;
     }
 
     private void addProcessingOrganizationInformationIfMissingForTheOrganization(String organizationName, ResponseOrganizationValidation responseOrganizationValidation) {
@@ -247,7 +253,8 @@ public class OrganizationController {
                 .setMissingRequestTypes(new HashSet<>(Arrays.asList(RequestType.values())))
                 .setFinishedRequestTypes(new HashSet<>())
                 .setTotalCountOfNeededRequests(this.calculateTotalCountOfNeededRequests(organization))
-                .setTotalCountOfRequestTypes(RequestType.values().length);
+                .setTotalCountOfRequestTypes(RequestType.values().length)
+                .setCurrentPositionInQueue(this.calculatePositionInLinkedHashMap(organization.getName())+1);
     }
 
     private int calculateTotalCountOfNeededRequests(Organization organization) {
