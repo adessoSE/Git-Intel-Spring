@@ -62,8 +62,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
                 return organization.getFinishedRequests().contains(RequestType.REPOSITORY);
             case CREATED_REPOS_BY_MEMBERS:
                 return organization.getFinishedRequests().contains(RequestType.MEMBER);
-            default:
-                return true;
         }
+        return true;
     }
 }
