@@ -5,6 +5,7 @@ import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,13 +54,14 @@ public class ResponseProcessorTask extends ResponseProcessor {
      * @return Returns if the query can be processed or not
      */
     private boolean checkIfNecessaryDataIsAvailable(RequestType requestType, String organizationName) {
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(organizationName);
         switch (requestType) {
             case TEAM:
-                return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, organizationName).isEmpty() && this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.REPOSITORY, organizationName).isEmpty();
+                return organization.getFinishedRequests().contains(RequestType.MEMBER) && organization.getFinishedRequests().contains(RequestType.REPOSITORY);
             case MEMBER_PR:
-                return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.REPOSITORY, organizationName).isEmpty();
+                return organization.getFinishedRequests().contains(RequestType.REPOSITORY);
             case CREATED_REPOS_BY_MEMBERS:
-                return this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, organizationName).isEmpty();
+                return organization.getFinishedRequests().contains(RequestType.MEMBER);
             default:
                 return true;
         }
