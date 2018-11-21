@@ -6,6 +6,10 @@ import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.exceptions.NoRemainingRateLimitException;
+import de.adesso.gitstalker.core.objects.Query;
+import de.adesso.gitstalker.core.resources.organization_validation.Organization;
+import de.adesso.gitstalker.core.resources.rateLimit_Resources.RateLimit;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
@@ -40,9 +44,21 @@ public class RequestProcessorTask {
         } else queriesToProcess = this.requestRepository.findByQueryStatus(RequestStatus.CREATED);
 
         if (!queriesToProcess.isEmpty() && RateLimitConfig.getRemainingRateLimit() != 0) {
-            Query queryToProcess = this.findProcessableQueryByRequestCostAndPriority(queriesToProcess);
-            this.processQuery(queryToProcess);
+            try {
+                this.processQuery(this.findProcessableQueryByRequestCost(queriesToProcess));
+            } catch (NoRemainingRateLimitException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private Query findProcessableQueryByRequestCost(ArrayList<Query> processingQueries) throws NoRemainingRateLimitException {
+        for (Query createdQuery : processingQueries) {
+            if (RateLimitConfig.getRemainingRateLimit() - createdQuery.getEstimatedQueryCost() >= 0) {
+                return createdQuery;
+            }
+        }
+        return null;
     }
 
     private boolean checkIfPrioritizedRequestsAreFinished(Query createdQuery) {
@@ -58,13 +74,13 @@ public class RequestProcessorTask {
         return true;
     }
 
-    private Query findProcessableQueryByRequestCostAndPriority(ArrayList<Query> processingQueries) {
+    private Query findProcessableQueryByRequestCostAndPriority(ArrayList<Query> processingQueries) throws NoRemainingRateLimitException {
         for (Query createdQuery : processingQueries) {
             if (RateLimitConfig.getRemainingRateLimit() - createdQuery.getEstimatedQueryCost() >= 0 && checkIfPrioritizedRequestsAreFinished(createdQuery)) {
                     return createdQuery;
             }
         }
-        return null;
+        throw new NoRemainingRateLimitException("Rate Limit exhausted. Processing is paused until " + RateLimitConfig.getRemainingRateLimit());
     }
 
     private void processQuery(Query queryToProcess) {
