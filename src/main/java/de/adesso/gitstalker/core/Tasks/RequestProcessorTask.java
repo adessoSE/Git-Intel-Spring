@@ -6,21 +6,23 @@ import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
+import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
-import de.adesso.gitstalker.core.resources.organization_validation.Organization;
+import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import de.adesso.gitstalker.core.repositories.RequestRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 public class RequestProcessorTask {
 
     @Autowired
     RequestRepository requestRepository;
+
+    @Autowired
+    OrganizationRepository organizationRepository;
 
     /**
      * Scheduled task checking for queries without crawled information.
@@ -29,29 +31,45 @@ public class RequestProcessorTask {
     @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS)
     private void crawlQueryData() {
         ArrayList<Query> queriesToProcess;
-        if(!OrganizationController.processingOrganizations.isEmpty()){
+        String organizationName;
+
+        if (!OrganizationController.processingOrganizations.isEmpty()) {
             Map.Entry<String, ProcessingOrganization> processingOrganization = OrganizationController.processingOrganizations.entrySet().iterator().next();
-            queriesToProcess = requestRepository.findByQueryStatusAndOrganizationName(RequestStatus.CREATED, processingOrganization.getKey());
-        } else queriesToProcess = requestRepository.findByQueryStatus(RequestStatus.CREATED);
+            organizationName = processingOrganization.getKey();
+            queriesToProcess = this.requestRepository.findByQueryStatusAndOrganizationName(RequestStatus.CREATED, organizationName);
+        } else queriesToProcess = this.requestRepository.findByQueryStatus(RequestStatus.CREATED);
 
         if (!queriesToProcess.isEmpty() && RateLimitConfig.getRemainingRateLimit() != 0) {
-            Query queryToProcess = this.findProcessableQueryByRequestCost(queriesToProcess);
+            Query queryToProcess = this.findProcessableQueryByRequestCostAndPriority(queriesToProcess);
             this.processQuery(queryToProcess);
         }
     }
 
-    private Query findProcessableQueryByRequestCost(ArrayList<Query> processingQuerys) {
-        for (Query createdQuery : processingQuerys) {
-            if (RateLimitConfig.getRemainingRateLimit() - createdQuery.getEstimatedQueryCost() >= 0) {
-                return createdQuery;
+    private boolean checkIfPrioritizedRequestsAreFinished(Query createdQuery) {
+        OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(createdQuery.getOrganizationName());
+        switch (createdQuery.getQueryRequestType()) {
+            case TEAM:
+                return organization.getFinishedRequests().contains(RequestType.MEMBER) && organization.getFinishedRequests().contains(RequestType.REPOSITORY);
+            case MEMBER_PR:
+                return organization.getFinishedRequests().contains(RequestType.REPOSITORY);
+            case CREATED_REPOS_BY_MEMBERS:
+                return organization.getFinishedRequests().contains(RequestType.MEMBER);
+        }
+        return true;
+    }
+
+    private Query findProcessableQueryByRequestCostAndPriority(ArrayList<Query> processingQueries) {
+        for (Query createdQuery : processingQueries) {
+            if (RateLimitConfig.getRemainingRateLimit() - createdQuery.getEstimatedQueryCost() >= 0 && checkIfPrioritizedRequestsAreFinished(createdQuery)) {
+                    return createdQuery;
             }
         }
         return null;
     }
 
     private void processQuery(Query queryToProcess) {
-            requestRepository.delete(queryToProcess);
-            queryToProcess.crawlQueryResponse();
-            requestRepository.save(queryToProcess);
+        this.requestRepository.delete(queryToProcess);
+        queryToProcess.crawlQueryResponse();
+        this.requestRepository.save(queryToProcess);
     }
 }
