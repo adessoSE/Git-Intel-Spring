@@ -58,6 +58,7 @@ public class RequestProcessorTask {
                 return createdQuery;
             }
         }
+        return null;
     }
 
     private boolean checkIfPrioritizedRequestsAreFinished(Query createdQuery) {
@@ -73,7 +74,7 @@ public class RequestProcessorTask {
         return true;
     }
 
-    private Query findProcessableQueryByRequestCostAndPriority(ArrayList<Query> processingQueries) {
+    private Query findProcessableQueryByRequestCostAndPriority(ArrayList<Query> processingQueries) throws NoRemainingRateLimitException {
         for (Query createdQuery : processingQueries) {
             if (RateLimitConfig.getRemainingRateLimit() - createdQuery.getEstimatedQueryCost() >= 0 && checkIfPrioritizedRequestsAreFinished(createdQuery)) {
                     return createdQuery;
