@@ -33,7 +33,7 @@ public class OrganizationController {
     public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository) {
         this.organizationRepository = organizationRepository;
         this.requestRepository = requestRepository;
-        this.processingOrganizations = new LinkedHashMap<>();
+        processingOrganizations = new LinkedHashMap<>();
     }
 
     /**
@@ -219,7 +219,7 @@ public class OrganizationController {
 
     private void updateProcessingOrganizationInformation(String organizationName){
         OrganizationWrapper organizationWrapper = this.organizationRepository.findByOrganizationName(organizationName);
-        ProcessingOrganization processingOrganization = this.processingOrganizations.get(organizationName);
+        ProcessingOrganization processingOrganization = processingOrganizations.get(organizationName);
         processingOrganization.setCurrentPositionInQueue(this.calculatePositionInLinkedHashMap(organizationName));
         if (organizationWrapper != null){
             processingOrganization.setFinishedRequestTypes(organizationWrapper.getFinishedRequests());
@@ -229,7 +229,7 @@ public class OrganizationController {
 
     private int calculatePositionInLinkedHashMap(String organizationName){
         int calculatedPosition = 0;
-        for (String organizationKey : this.processingOrganizations.keySet()){
+        for (String organizationKey : processingOrganizations.keySet()){
             calculatedPosition += 1;
             if (organizationKey.matches(organizationName)){
                 break;
@@ -240,7 +240,7 @@ public class OrganizationController {
 
     private void addProcessingOrganizationInformationIfMissingForTheOrganization(String organizationName, ResponseOrganizationValidation responseOrganizationValidation) {
         if (!processingOrganizations.containsKey(organizationName)) {
-            this.processingOrganizations.put(organizationName, this.generateProcessingOrganizationInformation(responseOrganizationValidation));
+            processingOrganizations.put(organizationName, this.generateProcessingOrganizationInformation(responseOrganizationValidation));
         }
     }
 
