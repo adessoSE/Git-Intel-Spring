@@ -29,6 +29,12 @@ public class MemberPRProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> pullRequestsDates = new HashMap<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
 
+    /**
+     * Setting up the necessary parameters for the response processing.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -51,6 +57,12 @@ public class MemberPRProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.MEMBER_PR);
     }
 
+    /**
+     * Creates the subsequent requests if it becomes clear during processing that information is still open in the section.
+     * If finished the amount of external contributions is calculated and new requests are generated.
+     * @param pageInfo Contains information required to define whether requests are still outstanding.
+     * @param organizationName Organization name for creating the appropriate request
+     */
     private void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
         if (pageInfo.isHasNextPage()) {
             this.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.MEMBER_PR, requestRepository);
@@ -61,11 +73,17 @@ public class MemberPRProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Calculates the amount of external contributions and saves it in the organization
+     */
     private void processNumOfExternalRepoContributions() {
         super.calculateExternalOrganizationPullRequestsChartJSData(organization, this.pullRequestsDates);
         this.organization.getOrganizationDetail().setNumOfExternalRepoContributions(super.calculateExternalRepoContributions(this.organization).size());
     }
 
+    /**
+     * Generates the following requests after the MemberPR requests are all processed. Saves the generated requests in the repository.
+     */
     private void generateRequestsBasedOnMemberPR() {
         Set<String> repoIDs = super.calculateExternalRepoContributions(this.organization).keySet();
         while (!repoIDs.isEmpty()) {
@@ -76,6 +94,10 @@ public class MemberPRProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Processes the response from the requests
+     * @param responseData Response information from the requests
+     */
     private void processQueryResponse(Data responseData) {
         Members members = responseData.getOrganization().getMembers();
         for (NodesMember nodes : members.getNodes()) {
@@ -104,6 +126,11 @@ public class MemberPRProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Checks if the selected updatedDate is within one year.
+     * @param updatedDate Date to check.
+     * @return Boolean if it's within one year or not.
+     */
     private boolean checkIfPullRequestIsActiveSinceOneYear(Date updatedDate) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.YEAR, -1);

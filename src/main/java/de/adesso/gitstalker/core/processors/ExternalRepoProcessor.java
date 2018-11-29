@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+/**
+ * This is the response processor used for ExternalRepo Request.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +32,12 @@ public class ExternalRepoProcessor extends ResponseProcessor {
 
     private HashMap<String, Repository> repositoriesMap = new HashMap<>();
 
+    /**
+     * Setting up the necessary parameters for the response processing.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -36,6 +45,12 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
+    /**
+     * Performs the complete processing of an answer.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         Data repositoriesData = ((ResponseExternalRepository) this.requestQuery.getQueryResponse()).getData();
@@ -46,6 +61,11 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, organization, requestQuery, RequestType.EXTERNAL_REPO);
     }
 
+    /**
+     * When all requests have been processed, a link is created from other collected information. This is done by linking the external repositories to the contributors.
+     * @param organization Complete organization object for other data.
+     * @param requestQuery Processed request query.
+     */
     protected void processExternalReposAndFindContributors(OrganizationWrapper organization, Query requestQuery) {
         if (super.checkIfQueryIsLastOfRequestType(organization, requestQuery, RequestType.EXTERNAL_REPO, this.requestRepository)) {
             this.organization.addExternalRepos(this.repositoriesMap);
@@ -67,6 +87,10 @@ public class ExternalRepoProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Processes the individual repositories that were returned as replies.
+     * @param repositories Repositories to be processed
+     */
     protected void processQueryResponse(ArrayList<NodesRepositories> repositories) {
         for (NodesRepositories repo : repositories) {
             ArrayList<Calendar> pullRequestDates = new ArrayList<>();

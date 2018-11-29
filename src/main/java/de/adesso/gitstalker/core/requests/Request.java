@@ -46,7 +46,6 @@ public abstract class Request {
         } catch (NullPointerException e) {
             requestQuery.setQueryStatus(RequestStatus.ERROR_RECEIVED);
             if (e.getMessage().equals("Invalid request content: Returned response null!")) {
-                //TODO: Add NullPointer Exception
                 requestQuery.setQueryError(new InvalidRequestContentException("The content of the request is invalid! The returned data is null."));
             }
         } catch (Exception e) {

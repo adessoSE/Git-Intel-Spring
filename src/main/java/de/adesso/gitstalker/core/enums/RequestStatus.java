@@ -7,6 +7,5 @@ public enum RequestStatus {
     CREATED,
     STARTED,
     VALID_ANSWER_RECEIVED,
-    ERROR_RECEIVED,
-    FINISHED
+    ERROR_RECEIVED
 }

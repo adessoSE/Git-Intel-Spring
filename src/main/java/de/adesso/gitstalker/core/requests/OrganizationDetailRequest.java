@@ -3,6 +3,9 @@ package de.adesso.gitstalker.core.requests;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
 
+/**
+ * This is the request used for requesting the organization details.
+ */
 public class OrganizationDetailRequest {
 
     private final int estimatedQueryCost = 1;
@@ -12,6 +15,11 @@ public class OrganizationDetailRequest {
 
     public OrganizationDetailRequest(String organizationName) {
         this.organizationName = organizationName;
+        /**
+         * GraphQL Request for the organization details.
+         * Requesting the relevant information for the requested organization.
+         * Requests the current rate limit of the token at the API.
+         */
         this.query = "query {\n" +
                 "organization(login:\"" + organizationName + "\") {\n" +
                 "name \n" +
@@ -40,6 +48,10 @@ public class OrganizationDetailRequest {
 
     }
 
+    /**
+     * Generates the query for the organizationDetail request.
+     * @return Generated query for the request type.
+     */
     public Query generateQuery() {
         return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }

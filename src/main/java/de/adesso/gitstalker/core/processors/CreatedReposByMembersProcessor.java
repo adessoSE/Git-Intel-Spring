@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * This is the response processor used for CreatedReposByMembers Request.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,6 +35,13 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = new HashMap<>();
 
+
+    /**
+     * Setting up the necessary parameters for the response processing.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -39,6 +49,12 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
         this.organization = this.organizationRepository.findByOrganizationName(this.requestQuery.getOrganizationName());
     }
 
+    /**
+     * Performs the complete processing of an answer.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         Data response = ((ResponseCreatedReposByMembers) this.requestQuery.getQueryResponse()).getData();
@@ -50,12 +66,21 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS);
     }
 
+    /**
+     * Checks whether the response processing was the last processing for the request types. If processing is complete, the collected information is saved.
+     */
     protected void checkIfRequestTypeIsFinished() {
         if (super.checkIfQueryIsLastOfRequestType(this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS, this.requestRepository)) {
             this.organization.addCreatedReposByMembers(createdRepositoriesByMembers);
         }
     }
 
+    /**
+     * Creates the subsequent requests if it becomes clear during processing that information is still open in the section.
+     * @param pageInfo Contains information required to define whether requests are still outstanding.
+     * @param organizationName Organization name for creating the appropriate request
+     * @param memberID MemberID for creating the appropriate request
+     */
     protected void processRemainingRepositoriesOfMember(PageInfoRepositories pageInfo, String organizationName, String memberID) {
         if (pageInfo.isHasNextPage()) {
             Query generatedNextQuery = new RequestManager(organizationName, memberID, pageInfo.getEndCursor()).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
@@ -63,6 +88,10 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Processing the response given by the Github API to the request.
+     * @param response
+     */
     protected void processQueryResponse(Data response) {
         ArrayList<Repository> createdRepositoriesByMember = new ArrayList<>();
 
@@ -88,6 +117,11 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
         } else this.createdRepositoriesByMembers.put(response.getNode().getId(), createdRepositoriesByMember);
     }
 
+    /**
+     * Check whether the processed member has already been processed once.
+     * @param memberID MemberID of the processed member
+     * @return Boolean whether the member has already been processed or not
+     */
     protected boolean checkIfMemberIsAlreadyAssigned(String memberID) {
         return this.createdRepositoriesByMembers.containsKey(memberID);
     }

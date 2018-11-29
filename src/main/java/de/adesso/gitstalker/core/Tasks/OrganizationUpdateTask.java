@@ -20,7 +20,7 @@ public class OrganizationUpdateTask {
     RequestRepository requestRepository;
 
     /**
-     * Scheduled task for generating queries in order to update saved organisation.
+     * Scheduled task for generating queries in order to update saved organisation. Preparing the organisation for the update.
      */
     @Scheduled(fixedDelay = 5000, initialDelay = 5000)
     private void generateQuery() {

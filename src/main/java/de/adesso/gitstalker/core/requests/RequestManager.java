@@ -71,6 +71,10 @@ public class RequestManager {
         return null;
     }
 
+    /**
+     * Generates all starting requests.
+     * @return All needed requests to start processing.
+     */
     public ArrayList<Query> generateAllRequests() {
         ArrayList<RequestType> startRequests = new ArrayList<>();
         startRequests.add(RequestType.ORGANIZATION_DETAIL);
@@ -87,6 +91,11 @@ public class RequestManager {
         return allRequestQuerys;
     }
 
+    /**
+     * Formats the input to fit request standards.
+     * @param input Unformatted organization name.
+     * @return Formatted organization name to fit request standards.
+     */
     protected String formatInput(String input) {
         return input.replaceAll("\\s+", "").toLowerCase();
     }

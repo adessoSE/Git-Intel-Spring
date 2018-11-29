@@ -3,6 +3,9 @@ package de.adesso.gitstalker.core.requests;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.enums.RequestType;
 
+/**
+ * This is the request used for requesting MemberPR.
+ */
 public class MemberPRRequest {
 
     private final int estimatedQueryCost = 1;
@@ -12,6 +15,11 @@ public class MemberPRRequest {
 
     public MemberPRRequest(String organizationName, String endCursor) {
         this.organizationName = organizationName;
+        /**
+         * GraphQL Request for the member pull requests.
+         * Requests of the organization the first 100 members. Checks if there are information left with pageInfo and gets the last 25 pull requests of each member.
+         * Requests the current rate limit of the token at the API.
+         */
         this.query = "query {\n" +
                 "organization(login:\"" + organizationName + "\") {\n" +
                 "members(first: 100, after: " + endCursor + ") {\n" +
@@ -42,6 +50,10 @@ public class MemberPRRequest {
         this.requestType = RequestType.MEMBER_PR;
     }
 
+    /**
+     * Generates the query for the member pull-requests request.
+     * @return Generated query for the request type.
+     */
     public Query generateQuery() {
         return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }

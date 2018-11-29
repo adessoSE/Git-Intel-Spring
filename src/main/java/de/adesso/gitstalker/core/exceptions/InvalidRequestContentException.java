@@ -5,10 +5,6 @@ package de.adesso.gitstalker.core.exceptions;
  */
 public class InvalidRequestContentException extends Exception {
 
-    public InvalidRequestContentException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public InvalidRequestContentException(String message) {
         super(message);
     }
