@@ -56,8 +56,14 @@ public class MemberIDProcessor extends ResponseProcessor {
 
     protected void generateNextRequestsBasedOnMemberIDs(ArrayList<String> memberIDs) {
         for (String memberID : memberIDs) {
-            requestRepository.save(new RequestManager(this.requestQuery.getOrganizationName(), memberID, RequestType.MEMBER).generateRequest(RequestType.MEMBER));
-            requestRepository.save(new RequestManager(this.requestQuery.getOrganizationName(), memberID, RequestType.CREATED_REPOS_BY_MEMBERS).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
+            requestRepository.save(new RequestManager()
+                    .setOrganizationName(this.requestQuery.getOrganizationName())
+                    .setMemberID(memberID)
+                    .generateRequest(RequestType.MEMBER));
+            requestRepository.save(new RequestManager()
+                    .setOrganizationName(this.requestQuery.getOrganizationName())
+                    .setMemberID(memberID)
+                    .generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS));
         }
     }
 

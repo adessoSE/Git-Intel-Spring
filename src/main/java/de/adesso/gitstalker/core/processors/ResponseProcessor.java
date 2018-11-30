@@ -215,7 +215,10 @@ public abstract class ResponseProcessor {
 
 
     public void generateNextRequests(String organizationName, String endCursor, RequestType requestType, RequestRepository requestRepository) {
-        requestRepository.save(new RequestManager(organizationName, endCursor).generateRequest(requestType));
+        requestRepository.save(new RequestManager()
+                .setOrganizationName(organizationName)
+                .setEndCursor(endCursor)
+                .generateRequest(requestType));
     }
 
     public boolean checkIfRequestTypeIsFinished(OrganizationWrapper organization, RequestType requestType) {
