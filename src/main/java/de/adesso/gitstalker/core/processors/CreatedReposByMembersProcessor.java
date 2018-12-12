@@ -58,7 +58,11 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     protected void processRemainingRepositoriesOfMember(PageInfoRepositories pageInfo, String organizationName, String memberID) {
         if (pageInfo.isHasNextPage()) {
-            Query generatedNextQuery = new RequestManager(organizationName, memberID, pageInfo.getEndCursor()).generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
+            Query generatedNextQuery = new RequestManager()
+                    .setOrganizationName(organizationName)
+                    .setMemberID(memberID)
+                    .setEndCursor(pageInfo.getEndCursor())
+                    .generateRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
             this.requestRepository.save(generatedNextQuery);
         }
     }

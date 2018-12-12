@@ -2,10 +2,16 @@ package de.adesso.gitstalker.core.requests;
 
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Accessors(chain = true)
+@Setter
+@NoArgsConstructor
 public class RequestManager {
 
     private String organizationName;
@@ -13,32 +19,9 @@ public class RequestManager {
     private String memberID;
     private List<String> repoIDs;
 
-    /**
-     * Declaration of different constructors to fit different request structures.
-     */
-    public RequestManager(String organizationName) {
-        this.organizationName = this.formatInput(organizationName);
-    }
-
-    public RequestManager(String organizationName, String endCursor) {
-        this.organizationName = this.formatInput(organizationName);
+    public RequestManager setEndCursor(String endCursor) {
         this.endCursor = "\"" + endCursor + "\"";
-    }
-
-    public RequestManager(String organizationName, String memberID, String endCursor){
-        this.organizationName = this.formatInput(organizationName);
-        this.endCursor = "\"" + endCursor + "\"";
-        this.memberID = memberID;
-    }
-
-    public RequestManager(String organizationName, String memberID, RequestType requestType) {
-        this.organizationName = this.formatInput(organizationName);
-        this.memberID = memberID;
-    }
-
-    public RequestManager(List<String> repoIDs, String organizationName) {
-        this.organizationName = this.formatInput(organizationName);
-        this.repoIDs = repoIDs;
+        return this;
     }
 
     /**

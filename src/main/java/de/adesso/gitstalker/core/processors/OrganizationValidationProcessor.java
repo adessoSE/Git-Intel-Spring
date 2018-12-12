@@ -30,7 +30,9 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
         Data responseData = ((ResponseOrganizationValidation) this.requestQuery.getQueryResponse()).getData();
         if (this.processQueryResponse(responseData)) {
             this.organization = this.generateOrganizationWrapper(this.requestQuery.getOrganizationName());
-            this.requestRepository.saveAll(new RequestManager(this.requestQuery.getOrganizationName()).generateAllRequests());
+            this.requestRepository.saveAll(new RequestManager()
+                    .setOrganizationName(this.requestQuery.getOrganizationName())
+                    .generateAllRequests());
             super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
             super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.ORGANIZATION_VALIDATION);
         }

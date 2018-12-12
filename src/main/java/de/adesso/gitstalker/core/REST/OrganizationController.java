@@ -278,7 +278,8 @@ public class OrganizationController {
     }
 
     private Query getOrganizationValidationResponse(String organizationName) {
-        Query validationQuery = new RequestManager(organizationName).generateRequest(RequestType.ORGANIZATION_VALIDATION);
+        RequestManager requestManager = new RequestManager().setOrganizationName(organizationName);
+        Query validationQuery = requestManager.generateRequest(RequestType.ORGANIZATION_VALIDATION);
         validationQuery.crawlQueryResponse();
         return validationQuery;
     }

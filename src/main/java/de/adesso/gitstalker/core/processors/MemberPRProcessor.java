@@ -71,7 +71,10 @@ public class MemberPRProcessor extends ResponseProcessor {
         while (!repoIDs.isEmpty()) {
             Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
             List<String> targetList = new ArrayList<>(subSet);
-            this.requestRepository.save(new RequestManager(targetList, this.requestQuery.getOrganizationName()).generateRequest(RequestType.EXTERNAL_REPO));
+            this.requestRepository.save(new RequestManager()
+                    .setOrganizationName(this.requestQuery.getOrganizationName())
+                    .setRepoIDs(targetList)
+                    .generateRequest(RequestType.EXTERNAL_REPO));
             repoIDs.removeAll(subSet);
         }
     }

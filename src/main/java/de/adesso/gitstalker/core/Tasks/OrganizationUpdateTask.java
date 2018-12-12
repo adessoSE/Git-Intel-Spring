@@ -26,7 +26,9 @@ public class OrganizationUpdateTask {
     private void generateQuery() {
         for (OrganizationWrapper wrapper : organizationRepository.findAllByLastUpdateTimestampLessThanEqual(new Date(System.currentTimeMillis() - Config.UPDATE_RATE_DAYS_IN_MS))){
             wrapper.prepareOrganizationForUpdate(organizationRepository);
-            requestRepository.save(new RequestManager(wrapper.getOrganizationName()).generateRequest(RequestType.ORGANIZATION_VALIDATION));
+            requestRepository.save(new RequestManager()
+                    .setOrganizationName(wrapper.getOrganizationName())
+                    .generateRequest(RequestType.ORGANIZATION_VALIDATION));
         }
     }
 }
