@@ -1,6 +1,5 @@
 package de.adesso.gitstalker.core.processors;
 
-import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestType;
@@ -8,6 +7,7 @@ import de.adesso.gitstalker.core.objects.ChartJSData;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.rateLimit_Resources.RateLimit;
@@ -175,11 +175,11 @@ public abstract class ResponseProcessor {
         return externalContributions;
     }
 
-    private void checkIfOrganizationUpdateIsFinished(OrganizationWrapper organization, OrganizationRepository organizationRepository) {
+    private void checkIfOrganizationUpdateIsFinished(OrganizationWrapper organization, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         if (organization.getFinishedRequests().size() == RequestType.values().length) {
             organization.setLastUpdateTimestamp(new Date());
             this.removeFinishedResponseProcessors(organization.getOrganizationName());
-            OrganizationController.processingOrganizations.remove(organization.getOrganizationName());
+            processingRepository.deleteByInternalOrganizationName(organization.getOrganizationName());
             System.out.println("Complete Update Cost: " + organization.getCompleteUpdateCost());
         }
         organizationRepository.save(organization);
@@ -206,11 +206,11 @@ public abstract class ResponseProcessor {
     }
 
 
-    public void doFinishingQueryProcedure(RequestRepository requestRepository, OrganizationRepository organizationRepository, OrganizationWrapper organization, Query processingQuery, RequestType requestType) {
+    public void doFinishingQueryProcedure(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository, OrganizationWrapper organization, Query processingQuery, RequestType requestType) {
         organizationRepository.save(organization);
         organization.setCompleteUpdateCost(RateLimitConfig.getPreviousRequestCostAndRequestType().get(requestType));
         this.checkIfQueryIsLastOfRequestType(organization, processingQuery, requestType, requestRepository);
-        this.checkIfOrganizationUpdateIsFinished(organization, organizationRepository);
+        this.checkIfOrganizationUpdateIsFinished(organization, organizationRepository, processingRepository);
     }
 
 

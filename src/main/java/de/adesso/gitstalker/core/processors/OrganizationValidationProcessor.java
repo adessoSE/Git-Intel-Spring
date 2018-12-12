@@ -4,6 +4,7 @@ import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.organization_validation.Data;
@@ -15,6 +16,7 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
 
@@ -24,10 +26,11 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
      * @param requestRepository RequestRepository for accessing requests.
      * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
+        this.processingRepository = processingRepository;
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
@@ -37,8 +40,8 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
      * @param requestRepository RequestRepository for accessing requests.
      * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository);
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
         Data responseData = ((ResponseOrganizationValidation) this.requestQuery.getQueryResponse()).getData();
         if (this.processQueryResponse(responseData)) {
             this.organization = this.generateOrganizationWrapper(this.requestQuery.getOrganizationName());
@@ -46,7 +49,7 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
                     .setOrganizationName(this.requestQuery.getOrganizationName())
                     .generateAllRequests());
             super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
-            super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.ORGANIZATION_VALIDATION);
+            super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.processingRepository, this.organization, this.requestQuery, RequestType.ORGANIZATION_VALIDATION);
         }
     }
 

@@ -9,7 +9,9 @@ import de.adesso.gitstalker.core.exceptions.InvalidGithubAPITokenException;
 import de.adesso.gitstalker.core.exceptions.InvalidOrganizationNameRequestException;
 import de.adesso.gitstalker.core.exceptions.ProcessingOrganizationException;
 import de.adesso.gitstalker.core.objects.*;
+import de.adesso.gitstalker.core.processors.ProcessingInformationProcessor;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.organization_validation.Organization;
@@ -19,7 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 @RestController
 @CrossOrigin
@@ -27,13 +32,13 @@ public class OrganizationController {
 
     private OrganizationRepository organizationRepository;
     private RequestRepository requestRepository;
-    public static HashMap<String, ProcessingOrganization> processingOrganizations;
+    private ProcessingRepository processingRepository;
 
     @Autowired
-    public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository) {
+    public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository, ProcessingRepository processingRepository) {
         this.organizationRepository = organizationRepository;
         this.requestRepository = requestRepository;
-        processingOrganizations = new LinkedHashMap<>();
+        this.processingRepository = processingRepository;
     }
 
     /**
@@ -219,8 +224,34 @@ public class OrganizationController {
     @ExceptionHandler(ProcessingOrganizationException.class)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ProcessingOrganization handleProcessingOrganizationException(ProcessingOrganizationException e) {
-        return processingOrganizations.get(e.getSearchedOrganization())
+        return this.processingRepository.findByInternalOrganizationName(e.getSearchedOrganization())
                 .setProcessingMessage(e.getMessage());
+    }
+
+    private ResponseEntity<?> processResponseEntity(RequestType requestType, OrganizationWrapper organization, HttpStatus httpStatus){
+        if (httpStatus.is2xxSuccessful()) {
+            switch (requestType){
+                case TEAM:
+                    Collection<Team> teams = organization.getTeams().values();
+                    return new ResponseEntity<>(teams, httpStatus);
+                case CREATED_REPOS_BY_MEMBERS:
+                    Collection<ArrayList<Repository>> createdReposByMembers = organization.getCreatedReposByMembers().values();
+                    return new ResponseEntity<>(createdReposByMembers, httpStatus);
+                case EXTERNAL_REPO:
+                    Collection<Repository> externalRepositories = organization.getExternalRepos().values();
+                    return new ResponseEntity<>(externalRepositories, httpStatus);
+                case REPOSITORY:
+                    Collection<Repository> organizationRepositories = organization.getRepositories().values();
+                    return new ResponseEntity<>(organizationRepositories, httpStatus);
+                case MEMBER:
+                    Collection<Member> organizationMember = organization.getMembers().values();
+                    return new ResponseEntity<>(organizationMember, httpStatus);
+                case ORGANIZATION_DETAIL:
+                    OrganizationDetail organizationDetail = organization.getOrganizationDetail();
+                    return new ResponseEntity<>(organizationDetail, httpStatus);
+            }
+        }
+        return new ResponseEntity<>(httpStatus);
     }
 
     /**
@@ -231,13 +262,17 @@ public class OrganizationController {
      * @return HttpStatus Status if there is data available (200 - OK), if the data is processed (202 - Accepted) or if the organization is invalid (400 - Bad Request)
      */
     private HttpStatus checkStatusOfRequestedInformation(String organizationName) {
+        ProcessingInformationProcessor processingInformationProcessor;
         if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
             if (organizationRepository.findByOrganizationName(organizationName) != null) {
                 return HttpStatus.OK;
-            } else return this.validateOrganization(organizationName);
+            } else { processingInformationProcessor = new ProcessingInformationProcessor(organizationName, processingRepository, organizationRepository, requestRepository);
+                return this.validateOrganization(processingInformationProcessor);
+            }
         } else {
             System.out.println("Data is still being gathered for this organization...");
-            this.updateProcessingOrganizationInformation(organizationName);
+            processingInformationProcessor = new ProcessingInformationProcessor(organizationName, processingRepository, organizationRepository, requestRepository);
+            processingInformationProcessor.updateProcessingOrganizationInformation();
             return HttpStatus.PROCESSING;
         }
     }
@@ -247,128 +282,19 @@ public class OrganizationController {
      * If the transferred organization name is valid the processing is started by creating a ProcessingOrganization object and saving the validation query for processing. Then the methods return the HttpStatus 102 - Processing.
      * If the transferred organization name is invalid the HttpStatus 400 - Bad Request is returned.
      *
-     * @param organizationName
      * @return
      */
-    private HttpStatus validateOrganization(String organizationName) {
-        Query queryOrganizationValidation = this.getOrganizationValidationResponse(organizationName);
-        ResponseOrganizationValidation responseOrganizationValidation = (ResponseOrganizationValidation) queryOrganizationValidation.getQueryResponse();
-        if (queryOrganizationValidation.getQueryStatus().equals(RequestStatus.ERROR_RECEIVED)){
+    private HttpStatus validateOrganization(ProcessingInformationProcessor processingInformationProcessor) {
+        Query queryOrganizationValidation = processingInformationProcessor.getOrganizationValidationResponse();
+        if (queryOrganizationValidation.getQueryStatus().equals(RequestStatus.ERROR_RECEIVED)) {
             return HttpStatus.UNAUTHORIZED;
         }
-        if (this.checkIfOrganizationIsValid(responseOrganizationValidation)) {
-            this.addProcessingOrganizationInformationIfMissingForTheOrganization(organizationName, responseOrganizationValidation);
-            this.requestRepository.save(queryOrganizationValidation);
+        if (processingInformationProcessor.checkIfOrganizationIsValid()) {
+            processingInformationProcessor.addProcessingOrganizationInformationIfMissingForTheOrganization();
             return HttpStatus.PROCESSING;
         } else return HttpStatus.BAD_REQUEST;
     }
 
-    /**
-     * Updating of processing information to display queue position, completed and open requests.
-     * @param organizationName Transferred organization name at the interface
-     */
-    private void updateProcessingOrganizationInformation(String organizationName){
-        OrganizationWrapper organizationWrapper = this.organizationRepository.findByOrganizationName(organizationName);
-        ProcessingOrganization processingOrganization = processingOrganizations.get(organizationName);
-        processingOrganization.setCurrentPositionInQueue(this.calculatePositionInLinkedHashMap(organizationName));
-        if (organizationWrapper != null){
-            processingOrganization.setFinishedRequestTypes(organizationWrapper.getFinishedRequests());
-            processingOrganization.getMissingRequestTypes().removeAll(organizationWrapper.getFinishedRequests());
-        }
-    }
-
-    /**
-     * Required calculation to determine the position in the LinkedHashMap.
-     * @param organizationName Organization name for which the position is to be determined.
-     * @return Position of the organization in the queue.
-     */
-    private int calculatePositionInLinkedHashMap(String organizationName){
-        int calculatedPosition = 0;
-        for (String organizationKey : processingOrganizations.keySet()){
-            calculatedPosition += 1;
-            if (organizationKey.matches(organizationName)){
-                break;
-            }
-        }
-        return calculatedPosition;
-    }
-
-    /**
-     * Creates a new processing object if no processing object exists yet.
-     * @param organizationName Organization name that is used as unique key.
-     * @param responseOrganizationValidation Validation information for creating the processing object.
-     */
-    private void addProcessingOrganizationInformationIfMissingForTheOrganization(String organizationName, ResponseOrganizationValidation responseOrganizationValidation) {
-        if (!processingOrganizations.containsKey(organizationName)) {
-            processingOrganizations.put(organizationName, this.generateProcessingOrganizationInformation(responseOrganizationValidation));
-        }
-    }
-
-    /**
-     * Generates the processing object from the information of the validation request.
-     * @param responseOrganizationValidation Response of the validation request.
-     * @return Matching processing object.
-     */
-    private ProcessingOrganization generateProcessingOrganizationInformation(ResponseOrganizationValidation responseOrganizationValidation) {
-        Organization organization = responseOrganizationValidation.getData().getOrganization();
-
-        return new ProcessingOrganization()
-                .setProcessingMessage("Currently the organization is still under processing.")
-                .setSearchedOrganization(organization.getName())
-                .setMissingRequestTypes(new HashSet<>(Arrays.asList(RequestType.values())))
-                .setFinishedRequestTypes(new HashSet<>())
-                .setTotalCountOfNeededRequests(this.calculateTotalCountOfNeededRequests(organization))
-                .setTotalCountOfRequestTypes(RequestType.values().length)
-                .setCurrentPositionInQueue(this.calculatePositionInLinkedHashMap(organization.getName())+1);
-    }
-
-    /**
-     * Calculation of the approximate number of requests required to complete the complete organisation request.
-     * @param organization Organisation object from the validation request.
-     * @return Amount of needed requests to finish the organisation.
-     */
-    private int calculateTotalCountOfNeededRequests(Organization organization) {
-        int memberTotalCount = organization.getMembers().getTotalCount();
-        int teamTotalCount = organization.getTeams().getTotalCount();
-        int repositoriesTotalCount = organization.getRepositories().getTotalCount();
-
-        return (memberTotalCount / 100) +                               //Member ID Requests
-                (memberTotalCount / 100) +                              //Member PR Requests
-                (memberTotalCount) +                                    //Member Requests
-                (repositoriesTotalCount / 100) +                        //Repositories Requests
-                (memberTotalCount / 2) +                                //External Repo Requests
-                (memberTotalCount) +                                    //Created Repos By Members Requests
-                (teamTotalCount / 50) +                                 //Team Requests
-                (2);                                                    //Organization Detail / Validation
-    }
-
-    /**
-     * Checks if the organization is valid by checking if information has been returned.
-     * @param responseOrganizationValidation Response of the validation request.
-     * @return Boolean whether valid or not
-     */
-    //TODO: Nullpointer exception if the token was not set or is invalid.
-    private boolean checkIfOrganizationIsValid(ResponseOrganizationValidation responseOrganizationValidation) {
-        return responseOrganizationValidation.getData().getOrganization() != null;
-    }
-
-    /**
-     * Initializes the request for the organizations validation and executes the request.
-     * @param organizationName Organization to be validated
-     * @return Query that contains the answer to the validation.
-     */
-    private Query getOrganizationValidationResponse(String organizationName) {
-        RequestManager requestManager = new RequestManager().setOrganizationName(organizationName);
-        Query validationQuery = requestManager.generateRequest(RequestType.ORGANIZATION_VALIDATION);
-        validationQuery.crawlQueryResponse();
-        return validationQuery;
-    }
-
-    /**
-     * Formatting the input.
-     * @param input Input to format.
-     * @return Formatted input.
-     */
     private String formatInput(String input) {
         return input.replaceAll("\\s+", "").toLowerCase();
     }

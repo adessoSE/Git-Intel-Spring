@@ -5,6 +5,7 @@ import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.memberID_Resources.PageInfo;
 import de.adesso.gitstalker.core.resources.memberID_Resources.ResponseMemberID;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -25,6 +27,7 @@ public class MemberIDProcessorTest {
     private MemberIDProcessor memberIDProcessor;
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.MEMBER_ID, 1);
     private ResponseMemberID responseMemberID;
     private MemberIDResources memberIDResources;
@@ -33,14 +36,15 @@ public class MemberIDProcessorTest {
     public void setUp() throws Exception {
         this.memberIDResources = new MemberIDResources();
         this.responseMemberID = new ObjectMapper().readValue(this.memberIDResources.getExpectedQueryJSONResponse(), ResponseMemberID.class);
-        this.requestRepository = Mockito.mock(RequestRepository.class);
-        this.organizationRepository = Mockito.mock(OrganizationRepository.class);
+        this.requestRepository = mock(RequestRepository.class);
+        this.organizationRepository = mock(OrganizationRepository.class);
+        this.processingRepository = mock(ProcessingRepository.class);
         this.memberIDProcessor = new MemberIDProcessor();
     }
 
     @Test
     public void checkIfMemberIDsAreProcessedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         memberIDProcessor.processQueryResponse(this.responseMemberID.getData().getOrganization().getMembers());
 
         assertEquals(79, memberIDProcessor.getMemberIDs().size());
@@ -50,7 +54,7 @@ public class MemberIDProcessorTest {
     @Test
     public void checkIfFollowingRequestsAreGenerated() {
         //Given
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         memberIDProcessor.processQueryResponse(this.responseMemberID.getData().getOrganization().getMembers());
 
         //When
@@ -63,7 +67,7 @@ public class MemberIDProcessorTest {
     @Test
     public void checkIfRequestForRemainingInformationWillBeGenerated() {
         //Given
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         PageInfo pageInfo = new PageInfo();
         pageInfo.setHasNextPage(true);
 
@@ -79,7 +83,7 @@ public class MemberIDProcessorTest {
         //Given
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
 
         ArrayList<String> memberIDs = new ArrayList<>();
         memberIDs.add("testMemberID1");
@@ -101,19 +105,19 @@ public class MemberIDProcessorTest {
 
     @Test
     public void checkIfRequestQueryIsAssignedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(testQuery, memberIDProcessor.getRequestQuery());
     }
 
     @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.requestRepository, memberIDProcessor.getRequestRepository());
     }
 
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.organizationRepository, memberIDProcessor.getOrganizationRepository());
     }
 
@@ -122,7 +126,7 @@ public class MemberIDProcessorTest {
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
 
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
 
         assertSame(organizationWrapper, memberIDProcessor.getOrganization());
     }

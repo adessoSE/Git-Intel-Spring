@@ -5,16 +5,11 @@ import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.Members;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.NodesMember;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.NodesPR;
-import de.adesso.gitstalker.core.resources.memberPR_Resources.PageInfo;
 import de.adesso.gitstalker.core.resources.memberPR_Resources.*;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.*;
 
@@ -23,6 +18,7 @@ public class MemberPRProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
 
@@ -35,10 +31,11 @@ public class MemberPRProcessor extends ResponseProcessor {
      * @param requestRepository RequestRepository for accessing requests.
      * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
+        this.processingRepository = processingRepository;
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
@@ -48,13 +45,13 @@ public class MemberPRProcessor extends ResponseProcessor {
      *
      * @return ResponseWrapper containing the MemberPR object.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository);
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
         Data responseData = ((ResponseMemberPR) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData);
         this.processRequestForRemainingInformation(responseData.getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
-        super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.MEMBER_PR);
+        super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.processingRepository, organization, requestQuery, RequestType.MEMBER_PR);
     }
 
     /**
@@ -86,6 +83,7 @@ public class MemberPRProcessor extends ResponseProcessor {
      */
     private void generateRequestsBasedOnMemberPR() {
         Set<String> repoIDs = super.calculateExternalRepoContributions(this.organization).keySet();
+        if(!repoIDs.isEmpty()){
         while (!repoIDs.isEmpty()) {
             Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
             List<String> targetList = new ArrayList<>(subSet);
@@ -95,6 +93,7 @@ public class MemberPRProcessor extends ResponseProcessor {
                     .generateRequest(RequestType.EXTERNAL_REPO));
             repoIDs.removeAll(subSet);
         }
+        } else organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
     }
 
     /**

@@ -6,6 +6,7 @@ import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.objects.Repository;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.repository_Resources.*;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class RepositoryProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
 
@@ -30,10 +32,11 @@ public class RepositoryProcessor extends ResponseProcessor {
      * @param requestRepository RequestRepository for accessing requests.
      * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
+        this.processingRepository = processingRepository;
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
@@ -43,13 +46,13 @@ public class RepositoryProcessor extends ResponseProcessor {
      * @param requestRepository RequestRepository for accessing requests.
      * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository);
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
         Data responseData = ((ResponseRepository) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData.getOrganization().getRepositories());
         this.processRequestForRemainingInformation(responseData.getOrganization().getRepositories().getPageInfo(), requestQuery.getOrganizationName());
-        super.doFinishingQueryProcedure(requestRepository, organizationRepository, this.organization, requestQuery, RequestType.REPOSITORY);
+        super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.processingRepository, this.organization, requestQuery, RequestType.REPOSITORY);
     }
 
     /**

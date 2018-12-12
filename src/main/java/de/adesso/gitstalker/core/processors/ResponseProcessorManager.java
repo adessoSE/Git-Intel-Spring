@@ -3,6 +3,7 @@ package de.adesso.gitstalker.core.processors;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import lombok.NoArgsConstructor;
 
@@ -35,62 +36,62 @@ public class ResponseProcessorManager {
      * @param requestRepository RequestRepository for accessing requests.
      * @param requestQuery Query to be processed.
      */
-    public void processResponse(OrganizationRepository organizationRepository, RequestRepository requestRepository, Query requestQuery) {
+    public void processResponse(OrganizationRepository organizationRepository, RequestRepository requestRepository, ProcessingRepository processingRepository, Query requestQuery) {
         RequestType requestType = requestQuery.getQueryRequestType();
         switch (requestType) {
             case ORGANIZATION_VALIDATION:
                 if (!organizationValidationProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     organizationValidationProcessorHashMap.put(requestQuery.getOrganizationName(), new OrganizationValidationProcessor());
                 }
-                organizationValidationProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                organizationValidationProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case ORGANIZATION_DETAIL:
                 if (!organizationDetailProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     organizationDetailProcessorHashMap.put(requestQuery.getOrganizationName(), new OrganizationDetailProcessor());
                 }
-                organizationDetailProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                organizationDetailProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case MEMBER_ID:
                 if (!memberIDProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     memberIDProcessorHashMap.put(requestQuery.getOrganizationName(), new MemberIDProcessor());
                 }
-                memberIDProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                memberIDProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case MEMBER:
                 if (!memberProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     memberProcessorHashMap.put(requestQuery.getOrganizationName(), new MemberProcessor());
                 }
-                memberProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                memberProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case MEMBER_PR:
                 if (!memberPRProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     memberPRProcessorHashMap.put(requestQuery.getOrganizationName(), new MemberPRProcessor());
                 }
-                memberPRProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                memberPRProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case REPOSITORY:
                 if (!repositoryProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     repositoryProcessorHashMap.put(requestQuery.getOrganizationName(), new RepositoryProcessor());
                 }
-                repositoryProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                repositoryProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case TEAM:
                 if (!teamProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     teamProcessorHashMap.put(requestQuery.getOrganizationName(), new TeamProcessor());
                 }
-                teamProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                teamProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case EXTERNAL_REPO:
                 if (!externalRepoProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     externalRepoProcessorHashMap.put(requestQuery.getOrganizationName(), new ExternalRepoProcessor());
                 }
-                externalRepoProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                externalRepoProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
             case CREATED_REPOS_BY_MEMBERS:
                 if (!createdReposByMembersProcessorHashMap.containsKey(requestQuery.getOrganizationName())) {
                     createdReposByMembersProcessorHashMap.put(requestQuery.getOrganizationName(), new CreatedReposByMembersProcessor());
                 }
-                createdReposByMembersProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository);
+                createdReposByMembersProcessorHashMap.get(requestQuery.getOrganizationName()).processResponse(requestQuery, requestRepository, organizationRepository, processingRepository);
                 break;
         }
     }

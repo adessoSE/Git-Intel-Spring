@@ -11,7 +11,7 @@ public class MemberIDResources {
                 "organization(login: \"adessoAG\") {\n" +
                 "members(first: 100 after: testEndCursor) {\n" +
                 "pageInfo {\n" +
-                " hasNextPage\n" +
+                "hasNextPage\n" +
                 "endCursor\n" +
                 "}\n" +
                 "nodes {\n" +

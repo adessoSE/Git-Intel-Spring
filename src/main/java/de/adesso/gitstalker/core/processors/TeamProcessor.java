@@ -3,6 +3,7 @@ package de.adesso.gitstalker.core.processors;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.team_Resources.*;
 import de.adesso.gitstalker.core.resources.team_Resources.NodesRepositories;
@@ -19,6 +20,7 @@ public class TeamProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
 
@@ -31,10 +33,11 @@ public class TeamProcessor extends ResponseProcessor {
      * @param requestRepository      RequestRepository for saving and checking outstanding requests.
      * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
      */
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
+        this.processingRepository = processingRepository;
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
@@ -46,13 +49,13 @@ public class TeamProcessor extends ResponseProcessor {
      * @param requestRepository      RequestRepository for saving and checking outstanding requests.
      * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository);
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
         Data responseData = ((ResponseTeam) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData.getOrganization().getTeams());
         this.processRequestForRemainingInformation(responseData.getOrganization().getTeams().getPageInfo(), requestQuery.getOrganizationName());
-        super.doFinishingQueryProcedure(requestRepository, organizationRepository, organization, requestQuery, RequestType.TEAM);
+        super.doFinishingQueryProcedure(requestRepository, organizationRepository, processingRepository, organization, requestQuery, RequestType.TEAM);
     }
 
     /**

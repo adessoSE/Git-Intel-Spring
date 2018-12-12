@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.member_Resources.ResponseMember;
 import de.adesso.gitstalker.resources.MemberResources;
@@ -22,6 +23,7 @@ public class MemberProcessorTest {
     private MemberProcessor memberProcessor;
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.MEMBER, 1);
     private ResponseMember responseMember;
     private MemberResources memberResources;
@@ -32,6 +34,7 @@ public class MemberProcessorTest {
         this.responseMember = new ObjectMapper().readValue(this.memberResources.getExpectedQueryJSONResponse(), ResponseMember.class);
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
+        this.processingRepository = mock(ProcessingRepository.class);
         this.memberProcessor = new MemberProcessor();
     }
 
@@ -70,7 +73,7 @@ public class MemberProcessorTest {
         queries.add(testQuery);
         when(this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, "adessoAG")).thenReturn(queries);
 
-        this.memberProcessor.setUp(this.testQuery, this.requestRepository, this.organizationRepository);
+        this.memberProcessor.setUp(this.testQuery, this.requestRepository, this.organizationRepository, processingRepository);
 
         HashMap<String, Member> memberHashMap = new HashMap<>();
         memberHashMap.put("memberTestKey", new Member()
@@ -113,19 +116,19 @@ public class MemberProcessorTest {
 
     @Test
     public void checkIfRequestQueryIsAssignedCorrectly() {
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(testQuery, memberProcessor.getRequestQuery());
     }
 
     @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.requestRepository, memberProcessor.getRequestRepository());
     }
 
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.organizationRepository, memberProcessor.getOrganizationRepository());
     }
 
@@ -134,7 +137,7 @@ public class MemberProcessorTest {
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
 
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
 
         assertSame(organizationWrapper, memberProcessor.getOrganization());
     }
