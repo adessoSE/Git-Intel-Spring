@@ -49,7 +49,7 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
     }
 
     /**
-     * Generates a organization wrapper object if the organization isn't assigned already.
+     * Generates an organization wrapper object if the organization isn't assigned already.
      * @param organizationName Name assigned to the wrapper object
      * @return The assigned OrganizationWrapper or a new generated one.
      */
