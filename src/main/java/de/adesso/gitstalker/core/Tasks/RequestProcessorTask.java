@@ -54,7 +54,7 @@ public class RequestProcessorTask {
     }
 
     /**
-     * Check whether prioritized requests have already been completed. Favors the application flow so that paused requests are not processed.
+     * Check whether prioritized requests have already been completed. Prioritizes the application flow so that paused requests are not processed.
      * @param createdQuery Query to be checked
      * @return Boolean whether it is approved or not
      */
