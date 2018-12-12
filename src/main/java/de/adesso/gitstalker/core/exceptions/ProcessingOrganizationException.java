@@ -2,6 +2,9 @@ package de.adesso.gitstalker.core.exceptions;
 
 import lombok.Getter;
 
+/**
+ * This Exception is used, if the requested organization is still being processed.
+ */
 public class ProcessingOrganizationException extends Exception {
 
     @Getter

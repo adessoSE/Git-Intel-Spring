@@ -24,6 +24,12 @@ public class RepositoryProcessor extends ResponseProcessor {
 
     private HashMap<String, Repository> repositories = new HashMap<>();
 
+    /**
+     * Setting up the necessary parameters for the response processing.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -31,6 +37,12 @@ public class RepositoryProcessor extends ResponseProcessor {
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
+    /**
+     * Performs the complete processing of an answer.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         Data responseData = ((ResponseRepository) this.requestQuery.getQueryResponse()).getData();
@@ -40,6 +52,12 @@ public class RepositoryProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, this.organization, requestQuery, RequestType.REPOSITORY);
     }
 
+    /**
+     * Creates the subsequent requests if it becomes clear during processing that information is still open in the section.
+     * If finished the repositories are added to the organization.
+     * @param pageInfo Contains information required to define whether requests are still outstanding.
+     * @param organizationName Organization name for creating the appropriate request
+     */
     private void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
         if (pageInfo.isHasNextPage()) {
             super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.REPOSITORY, requestRepository);
@@ -48,6 +66,10 @@ public class RepositoryProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Processes the response of the requests.
+     * @param repositoriesData Response information of the request
+     */
     private void processQueryResponse(Repositories repositoriesData) {
         for (NodesRepositories repo : repositoriesData.getNodes()) {
             ArrayList<Calendar> pullRequestDates = new ArrayList<>();

@@ -21,6 +21,12 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
     private Query requestQuery;
     private OrganizationWrapper organization;
 
+    /**
+     * Setting up the necessary parameters for the response processing.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -28,6 +34,12 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
+    /**
+     * Performs the complete processing of an answer.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         Data responseData = ((ResponseOrganization) this.requestQuery.getQueryResponse()).getData();
@@ -36,6 +48,10 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
         super.doFinishingQueryProcedure(requestRepository, organizationRepository, this.organization, requestQuery, RequestType.ORGANIZATION_DETAIL);
     }
 
+    /**
+     * Processes the response of the requests.
+     * @param responseData Response information of the request
+     */
     private void processQueryResponse(Data responseData) {
         Organization organization = responseData.getOrganization();
 

@@ -4,6 +4,9 @@ package de.adesso.gitstalker.core.requests;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.Query;
 
+/**
+ * This is the request used for requesting CreatedReposByMembers.
+ */
 public class CreatedReposByMembersRequest extends Request {
 
     private final int estimatedQueryCost = 1;
@@ -14,6 +17,12 @@ public class CreatedReposByMembersRequest extends Request {
 
     public CreatedReposByMembersRequest(String organizationName, String memberID, String endCursor) {
         this.organizationName = organizationName;
+        /**
+         * GraphQL Request for the created repositories of the organization members.
+         * Requesting the first 100 repositories for each member of the organization. Checks if there is information left with the pageInfo.
+         * For each repository it's collecting relevant information.
+         * Requests the current rate limit of the token at the API.
+         */
         this.query = "{\n" +
                 "node(id: \"" + memberID + "\") {\n" +
                 "... on User {\n" +
@@ -56,6 +65,10 @@ public class CreatedReposByMembersRequest extends Request {
         this.requestType = RequestType.CREATED_REPOS_BY_MEMBERS;
     }
 
+    /**
+     * Generates the query for the CreatedReposByMembers request.
+     * @return Generated query for the request type.
+     */
     public Query generateQuery() {
         return new Query(this.organizationName, this.query, this.requestType, this.estimatedQueryCost);
     }

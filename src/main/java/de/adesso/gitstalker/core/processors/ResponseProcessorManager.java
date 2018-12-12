@@ -8,6 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 
+//TODO: Still relevant?
+/**
+ * This is the Response manager that carries the different processors within itself.
+ * A separate processor is created for each organization.
+ */
 @NoArgsConstructor
 public class ResponseProcessorManager {
 
@@ -21,6 +26,15 @@ public class ResponseProcessorManager {
     public static HashMap<String, ExternalRepoProcessor> externalRepoProcessorHashMap = new HashMap<>();
     public static HashMap<String, CreatedReposByMembersProcessor> createdReposByMembersProcessorHashMap = new HashMap<>();
 
+    /**
+     * The central routing of requests to processors is controlled here.
+     * A separate processor is created for each organization so that no information can be mixed.
+     * The processors are held as long as the organization is still being processed.
+     * The processors are removed on completion.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param requestQuery Query to be processed.
+     */
     public void processResponse(OrganizationRepository organizationRepository, RequestRepository requestRepository, Query requestQuery) {
         RequestType requestType = requestQuery.getQueryRequestType();
         switch (requestType) {

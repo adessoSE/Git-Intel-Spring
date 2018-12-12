@@ -30,6 +30,12 @@ public class MemberProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
     private HashMap<String, Member> members = new HashMap<>();
 
+    /**
+     * Setting up the necessary parameters for the response processing.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -37,6 +43,12 @@ public class MemberProcessor extends ResponseProcessor {
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
+    /**
+     * Performs the complete processing of an answer.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         Data responseData = ((ResponseMember) this.requestQuery.getQueryResponse()).getData();
@@ -46,6 +58,9 @@ public class MemberProcessor extends ResponseProcessor {
         this.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.MEMBER);
     }
 
+    /**
+     * Adds the members to the organization when the request type is completed and calculates the internal activity data for the Chart-JS graphs.
+     */
     protected void calculatesInternalOrganizationCommits() {
         if (this.checkIfQueryIsLastOfRequestType(this.organization, this.requestQuery, RequestType.MEMBER, requestRepository)) {
             organization.addMembers(this.members);
@@ -53,12 +68,20 @@ public class MemberProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Configurates a Calender Instance to fit the crawling period.
+     * @return Configurated Calender Instance according to crawling period
+     */
     protected Calendar configureCalendarToFitCrawlingPeriod() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - Config.PAST_DAYS_AMOUNT_TO_CRAWL);
         return calendar;
     }
 
+    /**
+     * Processes the response from the requests
+     * @param singleMember Member information from the requests
+     */
     protected void processQueryResponse(User singleMember) {
 
         HashMap<String, String> previousCommitsWithLink = new HashMap<>();

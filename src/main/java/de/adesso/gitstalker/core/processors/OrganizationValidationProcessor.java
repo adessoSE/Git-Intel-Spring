@@ -18,6 +18,12 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
     private Query requestQuery;
     private OrganizationWrapper organization;
 
+    /**
+     * Setting up the necessary parameters for the response processing.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
@@ -25,6 +31,12 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
         this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
+    /**
+     * Performs the complete processing of an answer.
+     * @param requestQuery Query to be processed.
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param organizationRepository OrganizationRepository for accessing organization.
+     */
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository);
         Data responseData = ((ResponseOrganizationValidation) this.requestQuery.getQueryResponse()).getData();
@@ -38,12 +50,21 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
         }
     }
 
+    /**
+     * Generates an organization wrapper object if the organization isn't assigned already.
+     * @param organizationName Name assigned to the wrapper object
+     * @return The assigned OrganizationWrapper or a new generated one.
+     */
     private OrganizationWrapper generateOrganizationWrapper(String organizationName) {
         if (this.organization != null) {
             return this.organization;
         } else return new OrganizationWrapper(organizationName);
     }
 
+    /**
+     * Processes the response of the requests.
+     * @param responseData Response information of the request
+     */
     private boolean processQueryResponse(Data responseData) {
         return responseData.getOrganization() != null;
     }

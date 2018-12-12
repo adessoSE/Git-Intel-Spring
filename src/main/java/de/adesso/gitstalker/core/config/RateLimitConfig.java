@@ -8,6 +8,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ * Overview of the complete rate limit, which is checked before each request. After each query an update takes place.
+ */
 @Data
 public class RateLimitConfig {
 
