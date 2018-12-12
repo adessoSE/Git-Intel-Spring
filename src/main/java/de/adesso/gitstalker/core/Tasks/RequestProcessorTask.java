@@ -1,24 +1,19 @@
 package de.adesso.gitstalker.core.Tasks;
 
-import de.adesso.gitstalker.core.REST.OrganizationController;
-import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.exceptions.NoRemainingRateLimitException;
-import de.adesso.gitstalker.core.objects.Query;
-import de.adesso.gitstalker.core.resources.organization_validation.Organization;
-import de.adesso.gitstalker.core.resources.rateLimit_Resources.RateLimit;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class RequestProcessorTask {
 
@@ -27,6 +22,9 @@ public class RequestProcessorTask {
 
     @Autowired
     OrganizationRepository organizationRepository;
+
+    @Autowired
+    ProcessingRepository processingRepository;
 
     /**
      * Scheduled task checking for queries without crawled information.
@@ -38,9 +36,8 @@ public class RequestProcessorTask {
         ArrayList<Query> queriesToProcess;
         String organizationName;
 
-        if (!OrganizationController.processingOrganizations.isEmpty()) {
-            Map.Entry<String, ProcessingOrganization> processingOrganization = OrganizationController.processingOrganizations.entrySet().iterator().next();
-            organizationName = processingOrganization.getKey();
+        if (!this.processingRepository.findAll().isEmpty()) {
+            organizationName = this.processingRepository.findAll().get(0).getInternalOrganizationName();
             queriesToProcess = this.requestRepository.findByQueryStatusAndOrganizationName(RequestStatus.CREATED, organizationName);
         } else queriesToProcess = this.requestRepository.findByQueryStatus(RequestStatus.CREATED);
 
@@ -80,7 +77,7 @@ public class RequestProcessorTask {
     private Query findProcessableQueryByRequestCostAndPriority(ArrayList<Query> processingQueries) throws NoRemainingRateLimitException {
         for (Query createdQuery : processingQueries) {
             if (RateLimitConfig.getRemainingRateLimit() - createdQuery.getEstimatedQueryCost() >= 0 && checkIfPrioritizedRequestsAreFinished(createdQuery)) {
-                    return createdQuery;
+                return createdQuery;
             }
         }
         throw new NoRemainingRateLimitException("Rate Limit exhausted. Processing is paused until " + RateLimitConfig.getRemainingRateLimit());

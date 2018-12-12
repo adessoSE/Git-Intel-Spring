@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.LicenseInfo;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.NodesRepositories;
@@ -27,6 +28,7 @@ public class ExternalRepoProcessorTest {
     private ExternalRepoProcessor externalRepoProcessor;
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.EXTERNAL_REPO, 1);
     private ResponseExternalRepository responseExternalRepository;
     private ExternalRepoResources externalRepoResources;
@@ -37,12 +39,13 @@ public class ExternalRepoProcessorTest {
         this.responseExternalRepository = new ObjectMapper().readValue(this.externalRepoResources.getExpectedQueryJSONResponse(), ResponseExternalRepository.class);
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
+        this.processingRepository = mock(ProcessingRepository.class);
         this.externalRepoProcessor = new ExternalRepoProcessor();
     }
 
     @Test
     public void checkIfRepositoriesAreProcessedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         externalRepoProcessor.processQueryResponse(this.responseExternalRepository.getData().getNodes());
 
         Repository expectedRepository = new Repository()
@@ -71,7 +74,7 @@ public class ExternalRepoProcessorTest {
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
 
-        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         ArrayList<Query> queries = new ArrayList<>();
         queries.add(testQuery);
         Mockito.when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, "adessoAG")).thenReturn(queries);
@@ -132,7 +135,7 @@ public class ExternalRepoProcessorTest {
     @Test
     public void checkIfExternalRepoAndContributorAreProcessedWhenRequestIsStillRunning() {
         //Given
-        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         ArrayList<Query> queries = new ArrayList<>();
         when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, "adessoAG")).thenReturn(queries);
@@ -146,19 +149,19 @@ public class ExternalRepoProcessorTest {
 
     @Test
     public void checkIfRequestQueryIsAssignedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(testQuery, externalRepoProcessor.getRequestQuery());
     }
 
     @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.requestRepository, externalRepoProcessor.getRequestRepository());
     }
 
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.organizationRepository, externalRepoProcessor.getOrganizationRepository());
     }
 
@@ -167,7 +170,7 @@ public class ExternalRepoProcessorTest {
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
 
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository);
+        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
 
         assertSame(organizationWrapper, externalRepoProcessor.getOrganization());
     }

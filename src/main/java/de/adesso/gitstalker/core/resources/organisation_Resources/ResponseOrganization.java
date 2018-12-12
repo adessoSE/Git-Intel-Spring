@@ -8,4 +8,5 @@ import lombok.NoArgsConstructor;
 public class ResponseOrganization implements Response {
 
     private Data data;
+    private Errors errors;
 }

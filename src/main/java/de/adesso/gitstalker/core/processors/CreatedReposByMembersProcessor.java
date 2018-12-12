@@ -6,6 +6,7 @@ import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.objects.Repository;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
+import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.Data;
@@ -30,6 +31,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
+    private ProcessingRepository processingRepository;
     private Query requestQuery;
     private OrganizationWrapper organization;
 
@@ -37,15 +39,16 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
 
     /**
-     * Setting up the necessary parameters for the response processing.
-     * @param requestQuery Query to be processed.
-     * @param requestRepository RequestRepository for accessing requests.
      * @param organizationRepository OrganizationRepository for accessing organization.
-     */
-    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
+     * @param requestRepository RequestRepository for accessing requests.
+     * @param requestQuery Query to be processed.
+     * Setting up the necessary parameters for the response processing.
+    */
+    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestQuery = requestQuery;
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
+        this.processingRepository = processingRepository;
         this.organization = this.organizationRepository.findByOrganizationName(this.requestQuery.getOrganizationName());
     }
 
@@ -55,15 +58,15 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
      * @param requestRepository RequestRepository for accessing requests.
      * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository);
+    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
         Data response = ((ResponseCreatedReposByMembers) this.requestQuery.getQueryResponse()).getData();
 
         this.processQueryResponse(response);
         super.updateRateLimit(response.getRateLimit(), this.requestQuery.getQueryRequestType());
         this.processRemainingRepositoriesOfMember(response.getNode().getRepositories().getPageInfo(), this.requestQuery.getOrganizationName(), response.getNode().getId());
         this.checkIfRequestTypeIsFinished();
-        super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS);
+        super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.processingRepository, this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS);
     }
 
     /**
