@@ -62,7 +62,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     }
 
     /**
-     * When all requests have been processed, a link is created from other collected information. This is done by linking the external repositories to the contributors.
+     * When all requests have been processed, a link is created to other collected information. This is done by linking the external repositories to the contributors.
      * @param organization Complete organization object for other data.
      * @param requestQuery Processed request query.
      */
