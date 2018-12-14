@@ -10,6 +10,8 @@ import de.adesso.gitstalker.core.processors.ProcessingInformationProcessor;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import lombok.experimental.Accessors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
@@ -18,6 +20,8 @@ import de.adesso.gitstalker.core.requests.RequestManager;
 import java.util.Date;
 
 public class OrganizationUpdateTask {
+
+    Logger logger = LoggerFactory.getLogger(OrganizationUpdateTask.class);
 
     @Autowired
     OrganizationRepository organizationRepository;
@@ -34,6 +38,7 @@ public class OrganizationUpdateTask {
     @Scheduled(fixedDelay = 5000, initialDelay = 5000)
     private void generateQuery() {
         for (OrganizationWrapper wrapper : organizationRepository.findAllByLastUpdateTimestampLessThanEqual(new Date(System.currentTimeMillis() - Config.UPDATE_RATE_DAYS_IN_MS))){
+            logger.info("Started Update for organisation: " + wrapper.getOrganizationName());
             wrapper.prepareOrganizationForUpdate(organizationRepository);
             ProcessingInformationProcessor processingInformationProcessor = new ProcessingInformationProcessor(wrapper.getOrganizationName(), processingRepository, organizationRepository, requestRepository);
             processingInformationProcessor.getOrganizationValidationResponse();

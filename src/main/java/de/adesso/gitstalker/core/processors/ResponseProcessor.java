@@ -1,5 +1,6 @@
 package de.adesso.gitstalker.core.processors;
 
+import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestType;
@@ -11,6 +12,8 @@ import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.rateLimit_Resources.RateLimit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -20,13 +23,14 @@ import java.util.*;
 public abstract class ResponseProcessor {
 
     private Date dateToStartCrawling = new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS);
+    Logger logger = LoggerFactory.getLogger(ResponseProcessor.class);
 
     public void updateRateLimit(RateLimit rateLimit, RequestType requestType) {
         RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
         RateLimitConfig.setResetRateLimitAt(rateLimit.getResetAt());
         RateLimitConfig.addPreviousRequestCostAndRequestType(rateLimit.getCost(), requestType);
 
-        System.out.println("Rate Limit remaining: " + RateLimitConfig.getRemainingRateLimit());
+        logger.info("Rate Limit remaining: " + RateLimitConfig.getRemainingRateLimit());
     }
 
     public ChartJSData generateChartJSData(ArrayList<Calendar> arrayOfDates) {
@@ -180,7 +184,7 @@ public abstract class ResponseProcessor {
             organization.setLastUpdateTimestamp(new Date());
             this.removeFinishedResponseProcessors(organization.getOrganizationName());
             processingRepository.deleteByInternalOrganizationName(organization.getOrganizationName());
-            System.out.println("Complete Update Cost: " + organization.getCompleteUpdateCost());
+            logger.info("Complete Update Cost: " + organization.getCompleteUpdateCost());
         }
         organizationRepository.save(organization);
     }
