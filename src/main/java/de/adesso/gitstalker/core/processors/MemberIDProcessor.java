@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 @Getter
 @Setter
@@ -93,6 +94,7 @@ public class MemberIDProcessor extends ResponseProcessor {
         } else {
             organization.addFinishedRequest(RequestType.MEMBER);
             organization.addFinishedRequest(RequestType.CREATED_REPOS_BY_MEMBERS);
+            organization.getOrganizationDetail().setInternalRepositoriesCommits(super.generateChartJSData(new ArrayList<>()));
         }
 
     }
