@@ -11,6 +11,6 @@ import java.util.Date;
  */
 public interface OrganizationRepository extends MongoRepository<OrganizationWrapper, String> {
     OrganizationWrapper findByOrganizationName(String organizationName);
-    ArrayList<OrganizationWrapper> findAllByLastUpdateTimestampLessThanEqual(Date date);
+    ArrayList<OrganizationWrapper> findAllByLastUpdateTimestampBefore(Date date);
 }
 
