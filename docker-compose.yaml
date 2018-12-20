@@ -1,0 +1,31 @@
+version: '3.1'
+
+services:
+  springboot:
+    build: .
+    # image: registry.gitlab.com/idgst/springboot-mongo-demo:latest
+    restart: always
+    container_name: git-intel-springboot
+    ports:
+      - 8081:8080
+    working_dir: /opt/app
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: git-intel-mongo
+#    ports:  # for demo/debug purpose only
+#      - 27018:27017
+    volumes:
+      - $HOME/data/git-intel-mongo-data:/data/db
+      - $HOME/data/git-intel-mongo-bkp:/data/bkp
+    restart: always
+
+  angular:
+    image: darioadesso/git-intel-angular:1.0
+    container_name: git-intel-angular
+    ports:
+      - 3000:80
+    depends_on:
+      - springboot
