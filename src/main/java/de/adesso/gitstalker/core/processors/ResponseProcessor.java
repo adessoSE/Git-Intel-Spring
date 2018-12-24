@@ -1,6 +1,5 @@
 package de.adesso.gitstalker.core.processors;
 
-import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestType;

@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class MemberProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -32,28 +31,19 @@ public class MemberProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
     private HashMap<String, Member> members = new HashMap<>();
 
-    /**
-     * Setting up the necessary parameters for the response processing.
-     * @param requestQuery Query to be processed.
-     * @param requestRepository RequestRepository for accessing requests.
-     * @param organizationRepository OrganizationRepository for accessing organization.
-     */
-    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.requestQuery = requestQuery;
+    public MemberProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
+        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
      * Performs the complete processing of an answer.
      * @param requestQuery Query to be processed.
-     * @param requestRepository RequestRepository for accessing requests.
-     * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
+    public void processResponse(Query requestQuery) {
+        this.requestQuery = requestQuery;
         Data responseData = ((ResponseMember) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData.getNode());

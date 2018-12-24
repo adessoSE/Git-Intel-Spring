@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@NoArgsConstructor
+
 public class TeamProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -26,19 +26,11 @@ public class TeamProcessor extends ResponseProcessor {
 
     private HashMap<String, Team> teams = new HashMap<>();
 
-    /**
-     * SetUp method to set up the necessary data for processing. Already selects the matching organization.
-     *
-     * @param requestQuery           Contains the necessary information, for example the TeamRequest response.
-     * @param requestRepository      RequestRepository for saving and checking outstanding requests.
-     * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
-     */
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.requestQuery = requestQuery;
+    public TeamProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
+        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -46,11 +38,9 @@ public class TeamProcessor extends ResponseProcessor {
      * Update of the RateLimit from the Github API. Check whether it is the last request of the type.
      *
      * @param requestQuery           Contains the necessary information, for example the TeamRequest response.
-     * @param requestRepository      RequestRepository for saving and checking outstanding requests.
-     * @param organizationRepository OrganizationRepository for saving and extracting other stored information.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
+    public void processResponse(Query requestQuery) {
+        this.requestQuery = requestQuery;
         Data responseData = ((ResponseTeam) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData.getOrganization().getTeams());

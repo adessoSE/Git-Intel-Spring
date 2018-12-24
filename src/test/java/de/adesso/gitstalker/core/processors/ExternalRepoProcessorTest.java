@@ -32,6 +32,7 @@ public class ExternalRepoProcessorTest {
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.EXTERNAL_REPO, 1);
     private ResponseExternalRepository responseExternalRepository;
     private ExternalRepoResources externalRepoResources;
+    private OrganizationWrapper organizationWrapper;
 
     @Before
     public void setUp() throws Exception {
@@ -40,12 +41,13 @@ public class ExternalRepoProcessorTest {
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
         this.processingRepository = mock(ProcessingRepository.class);
-        this.externalRepoProcessor = new ExternalRepoProcessor();
+        this.organizationWrapper = new OrganizationWrapper("adessoAG");
+        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.externalRepoProcessor = new ExternalRepoProcessor("adessoAG", this.requestRepository, this.organizationRepository, processingRepository);
     }
 
     @Test
     public void checkIfRepositoriesAreProcessedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         externalRepoProcessor.processQueryResponse(this.responseExternalRepository.getData().getNodes());
 
         Repository expectedRepository = new Repository()
@@ -70,11 +72,6 @@ public class ExternalRepoProcessorTest {
 
     @Test
     public void checkIfExternalRepoAndContributorAreProcessedCorrectly() {
-        //Given
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
-        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-
-        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         ArrayList<Query> queries = new ArrayList<>();
         queries.add(testQuery);
         Mockito.when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, "adessoAG")).thenReturn(queries);
@@ -135,8 +132,6 @@ public class ExternalRepoProcessorTest {
     @Test
     public void checkIfExternalRepoAndContributorAreProcessedWhenRequestIsStillRunning() {
         //Given
-        this.externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         ArrayList<Query> queries = new ArrayList<>();
         when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.EXTERNAL_REPO, "adessoAG")).thenReturn(queries);
 
@@ -148,30 +143,17 @@ public class ExternalRepoProcessorTest {
     }
 
     @Test
-    public void checkIfRequestQueryIsAssignedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-        assertSame(testQuery, externalRepoProcessor.getRequestQuery());
-    }
-
-    @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.requestRepository, externalRepoProcessor.getRequestRepository());
     }
 
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.organizationRepository, externalRepoProcessor.getOrganizationRepository());
     }
 
     @Test
     public void checkIfOrganizationIsAssignedCorrectly() {
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
-        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-
-        externalRepoProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-
         assertSame(organizationWrapper, externalRepoProcessor.getOrganization());
     }
 

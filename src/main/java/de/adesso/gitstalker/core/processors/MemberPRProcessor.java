@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
-@NoArgsConstructor
 public class MemberPRProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -25,18 +24,11 @@ public class MemberPRProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> pullRequestsDates = new HashMap<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
 
-    /**
-     * Setting up the necessary parameters for the response processing.
-     * @param requestQuery Query to be processed.
-     * @param requestRepository RequestRepository for accessing requests.
-     * @param organizationRepository OrganizationRepository for accessing organization.
-     */
-    private void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.requestQuery = requestQuery;
+    public MemberPRProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
+        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -45,8 +37,8 @@ public class MemberPRProcessor extends ResponseProcessor {
      *
      * @return ResponseWrapper containing the MemberPR object.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
+    public void processResponse(Query requestQuery) {
+        this.requestQuery = requestQuery;
         Data responseData = ((ResponseMemberPR) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData);

@@ -27,6 +27,7 @@ public class MemberProcessorTest {
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.MEMBER, 1);
     private ResponseMember responseMember;
     private MemberResources memberResources;
+    private OrganizationWrapper organizationWrapper;
 
     @Before
     public void setUp() throws Exception {
@@ -35,7 +36,10 @@ public class MemberProcessorTest {
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
         this.processingRepository = mock(ProcessingRepository.class);
-        this.memberProcessor = new MemberProcessor();
+        this.organizationWrapper = new OrganizationWrapper("adessoAG");
+        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.memberProcessor = new MemberProcessor("adessoAG", this.requestRepository, this.organizationRepository, processingRepository);
+
     }
 
     @Test
@@ -64,16 +68,14 @@ public class MemberProcessorTest {
     public void checkIfInternalOrganizationCommitsAreProcessedCorrectlyAndMembersAreAssignedWhenQueryFinished() {
         //TODO: Test fertig schreiben. ChartJSData muss gespyt werden. Umschreiben dass Calendar gemockt werden kann.
         //Given
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
+        this.memberProcessor.setRequestQuery(testQuery);
+
         OrganizationDetail organizationDetail = new OrganizationDetail("adessoAG", "testDescription", "testURL", "testURL", "testLocation", "testAvatarURL", 10, 10, 10);
-        organizationWrapper.setOrganizationDetail(organizationDetail);
-        when(this.organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.organizationWrapper.setOrganizationDetail(organizationDetail);
 
         ArrayList<Query> queries = new ArrayList<>();
         queries.add(testQuery);
         when(this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.MEMBER, "adessoAG")).thenReturn(queries);
-
-        this.memberProcessor.setUp(this.testQuery, this.requestRepository, this.organizationRepository, processingRepository);
 
         HashMap<String, Member> memberHashMap = new HashMap<>();
         memberHashMap.put("memberTestKey", new Member()
@@ -115,30 +117,17 @@ public class MemberProcessorTest {
     }
 
     @Test
-    public void checkIfRequestQueryIsAssignedCorrectly() {
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-        assertSame(testQuery, memberProcessor.getRequestQuery());
-    }
-
-    @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.requestRepository, memberProcessor.getRequestRepository());
     }
 
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.organizationRepository, memberProcessor.getOrganizationRepository());
     }
 
     @Test
     public void checkIfOrganizationIsAssignedCorrectly() {
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
-        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-
-        memberProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-
         assertSame(organizationWrapper, memberProcessor.getOrganization());
     }
 }
