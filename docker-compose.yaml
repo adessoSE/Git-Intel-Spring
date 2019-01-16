@@ -23,7 +23,7 @@ services:
     restart: always
 
   angular:
-    image: darioadesso/git-intel-angular:1.0
+    image: darioadesso/git-intel-angular:latest
     container_name: git-intel-angular
     ports:
       - 3000:80
