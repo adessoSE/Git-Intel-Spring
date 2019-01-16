@@ -42,8 +42,8 @@ To modify and test the application as it is now, we recommend the following appr
     Try removing all entries from the *query* collection inside your mongoDB. If this does not solve the problem, try clearing all three     collections ```query```, ```organizationWrapper``` and ```processingOrganization```.
     
 + **The ```docker-compose up``` command throws an error.**
-  * Try restarting Docker and run the command againg.  
-  if this does not solve the problem, try removing all the containers associated with the Git-Intel project, restart Docker and run the
+  * Try restarting Docker and run the command again.  
+  If this does not solve the problem, try removing all the containers associated with the Git-Intel project, restart Docker and run the
   command again.
   
 * **An authorization error occurs when using the project without Docker.**
