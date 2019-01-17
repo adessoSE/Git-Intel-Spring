@@ -19,14 +19,12 @@ import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrgan
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Transient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 @RestController
 @CrossOrigin
@@ -36,7 +34,8 @@ public class OrganizationController {
     private RequestRepository requestRepository;
     private ProcessingRepository processingRepository;
 
-    Logger logger = LoggerFactory.getLogger(OrganizationController.class);
+    @Transient
+    private Logger logger = LoggerFactory.getLogger(OrganizationController.class);
 
     @Autowired
     public OrganizationController(OrganizationRepository organizationRepository, RequestRepository requestRepository, ProcessingRepository processingRepository) {
@@ -268,7 +267,7 @@ public class OrganizationController {
     private HttpStatus checkStatusOfRequestedInformation(String organizationName) {
         ProcessingInformationProcessor processingInformationProcessor;
         if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
-            if (organizationRepository.findByOrganizationName(organizationName) != null) {
+            if (Objects.nonNull(organizationRepository.findByOrganizationName(organizationName))) {
                 return HttpStatus.OK;
             } else { processingInformationProcessor = new ProcessingInformationProcessor(organizationName, processingRepository, organizationRepository, requestRepository);
                 return this.validateOrganization(processingInformationProcessor);

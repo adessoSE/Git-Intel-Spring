@@ -9,13 +9,15 @@ import de.adesso.gitstalker.core.repositories.RequestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Transient;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.Date;
 
 public class OrganizationUpdateTask {
 
-    Logger logger = LoggerFactory.getLogger(OrganizationUpdateTask.class);
+    @Transient
+    private Logger logger = LoggerFactory.getLogger(OrganizationUpdateTask.class);
 
     @Autowired
     OrganizationRepository organizationRepository;

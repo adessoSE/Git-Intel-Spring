@@ -11,7 +11,8 @@ import de.adesso.gitstalker.core.resources.organization_validation.Data;
 import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrganizationValidation;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+import java.util.Objects;
+
 public class OrganizationValidationProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -43,7 +44,7 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
     public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
         Data responseData = ((ResponseOrganizationValidation) this.requestQuery.getQueryResponse()).getData();
-        if (this.processQueryResponse(responseData)) {
+        if (Objects.nonNull(responseData)) {
             this.organization = this.generateOrganizationWrapper(this.requestQuery.getOrganizationName());
             this.requestRepository.saveAll(new RequestManager()
                     .setOrganizationName(this.requestQuery.getOrganizationName())
@@ -59,16 +60,8 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
      * @return The assigned OrganizationWrapper or a new generated one.
      */
     private OrganizationWrapper generateOrganizationWrapper(String organizationName) {
-        if (this.organization != null) {
+        if (Objects.nonNull(this.organization)) {
             return this.organization;
         } else return new OrganizationWrapper(organizationName);
-    }
-
-    /**
-     * Processes the response of the requests.
-     * @param responseData Response information of the request
-     */
-    private boolean processQueryResponse(Data responseData) {
-        return responseData.getOrganization() != null;
     }
 }

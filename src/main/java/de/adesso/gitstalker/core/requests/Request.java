@@ -1,11 +1,15 @@
 package de.adesso.gitstalker.core.requests;
 
+import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.exceptions.InvalidGithubAPITokenException;
 import de.adesso.gitstalker.core.exceptions.InvalidRequestContentException;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.objects.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
@@ -20,9 +24,10 @@ import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrgan
 import de.adesso.gitstalker.core.resources.repository_Resources.ResponseRepository;
 import de.adesso.gitstalker.core.resources.team_Resources.ResponseTeam;
 
+import java.util.Objects;
+
 
 public abstract class Request {
-
 
     /**
      * Starting of the request to the GraphQL GitHub API. Setting up the fundamental structure of the request and processing the request.
@@ -64,7 +69,7 @@ public abstract class Request {
      * @param restTemplate RestTemplate created for the request
      * @param entity       Configuration for the request
      */
-    private void processRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) throws Exception {
+    private void processRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         switch (requestQuery.getQueryRequestType()) {
             case ORGANIZATION_VALIDATION:
                 processOrganizationValidationRequest(requestQuery, restTemplate, entity);
@@ -94,20 +99,17 @@ public abstract class Request {
                 processCreatedReposByMembers(requestQuery, restTemplate, entity);
                 break;
         }
-        requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
     }
 
     /**
      * Processing of the request for validating an organization's name.
-     * @param requestQuery
-     * @param restTemplate
-     * @param entity
+     * @param requestQuery Query used for the request
+     * @param restTemplate RestTemplate created for the request
+     * @param entity       Configuration for the request
      */
     private void processOrganizationValidationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseOrganizationValidation response = restTemplate.postForObject(Config.API_URL, entity, ResponseOrganizationValidation.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
     /**
@@ -120,9 +122,7 @@ public abstract class Request {
      */
     private void processCreatedReposByMembers(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseCreatedReposByMembers response = restTemplate.postForObject(Config.API_URL, entity, ResponseCreatedReposByMembers.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
     /**
@@ -135,9 +135,7 @@ public abstract class Request {
      */
     private void processExternalRepos(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseExternalRepository response = restTemplate.postForObject(Config.API_URL, entity, ResponseExternalRepository.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
     /**
@@ -150,9 +148,7 @@ public abstract class Request {
      */
     private void processOrganizationTeams(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseTeam response = restTemplate.postForObject(Config.API_URL, entity, ResponseTeam.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
     /**
@@ -165,9 +161,7 @@ public abstract class Request {
      */
     private void processRespositoriesDetail(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseRepository response = restTemplate.postForObject(Config.API_URL, entity, ResponseRepository.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
     /**
@@ -178,11 +172,9 @@ public abstract class Request {
      * @param restTemplate RestTemplate created for the request
      * @param entity       Configuration for the request
      */
-    private void processOrganizationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) throws Exception {
+    private void processOrganizationRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseOrganization response = restTemplate.postForObject(Config.API_URL, entity, ResponseOrganization.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
     /**
@@ -195,9 +187,7 @@ public abstract class Request {
      */
     private void processMemberIDRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseMemberID response = restTemplate.postForObject(Config.API_URL, entity, ResponseMemberID.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
     /**
@@ -210,9 +200,7 @@ public abstract class Request {
      */
     private void processMemberPRRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseMemberPR response = restTemplate.postForObject(Config.API_URL, entity, ResponseMemberPR.class);
-        if (response.getData() != null) {
-            requestQuery.setQueryResponse(response);
-        } else throw new NullPointerException("Invalid request content: Returned response null!");
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
 
@@ -226,8 +214,13 @@ public abstract class Request {
      */
     private void processMemberRequest(Query requestQuery, RestTemplate restTemplate, HttpEntity entity) {
         ResponseMember response = restTemplate.postForObject(Config.API_URL, entity, ResponseMember.class);
-        if (response.getData() != null) {
+        this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
+    }
+
+    private void setQueryResponseInRequestQuery(Query requestQuery, Response response, boolean isValidResponse){
+        if (isValidResponse) {
             requestQuery.setQueryResponse(response);
+            requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);
         } else throw new NullPointerException("Invalid request content: Returned response null!");
     }
 }
