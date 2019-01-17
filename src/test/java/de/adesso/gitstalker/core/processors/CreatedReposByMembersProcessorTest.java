@@ -29,6 +29,7 @@ public class CreatedReposByMembersProcessorTest {
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.MEMBER, 1);
     private ResponseCreatedReposByMembers responseCreatedReposByMembers;
     private CreatedReposByMemberResources createdReposByMemberResources;
+    private OrganizationWrapper organizationWrapper;
 
     @Before
     public void setUp() throws Exception {
@@ -37,7 +38,10 @@ public class CreatedReposByMembersProcessorTest {
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
         this.processingRepository = mock(ProcessingRepository.class);
-        this.createdReposByMembersProcessor = new CreatedReposByMembersProcessor();
+        this.organizationWrapper = new OrganizationWrapper("adessoAG");
+        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.createdReposByMembersProcessor = new CreatedReposByMembersProcessor(requestRepository, organizationRepository, processingRepository);
+        this.createdReposByMembersProcessor.setRequestQuery(testQuery);
     }
 
     @Test
@@ -47,12 +51,10 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfRepositoryAmountIsProcessedCorrectly() {
-        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository, processingRepository);
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         HashMap<String, Member> memberHashMap = new HashMap<>();
         memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
-        organizationWrapper.setMembers(memberHashMap);
-        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.organizationWrapper.setMembers(memberHashMap);
+
         createdReposByMembersProcessor.processQueryResponse(this.responseCreatedReposByMembers.getData());
         HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = createdReposByMembersProcessor.getCreatedRepositoriesByMembers();
 
@@ -61,12 +63,9 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfRepositoryIsAssignedCorrectlyToExistingMember(){
-        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository, processingRepository);
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         HashMap<String, Member> memberHashMap = new HashMap<>();
         memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
-        organizationWrapper.setMembers(memberHashMap);
-        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.organizationWrapper.setMembers(memberHashMap);
 
         ArrayList<Repository> repositories = new ArrayList<>();
         repositories.add(new Repository());
@@ -81,7 +80,6 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfListContainsMemberID() {
-        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository, processingRepository);
         OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         HashMap<String, Member> memberHashMap = new HashMap<>();
         memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
@@ -95,12 +93,9 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfRepositoryIsGeneratedCorrectly() {
-        createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository, processingRepository);
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         HashMap<String, Member> memberHashMap = new HashMap<>();
         memberHashMap.put("MDQ6VXNlcjkxOTkw", new Member());
-        organizationWrapper.setMembers(memberHashMap);
-        when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.organizationWrapper.setMembers(memberHashMap);
 
         createdReposByMembersProcessor.processQueryResponse(this.responseCreatedReposByMembers.getData());
 
@@ -183,38 +178,19 @@ public class CreatedReposByMembersProcessorTest {
     }
 
     @Test
-    public void checkIfRequestQueryIsAssignedCorrectly() {
-        createdReposByMembersProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-        assertSame(testQuery, createdReposByMembersProcessor.getRequestQuery());
-    }
-
-    @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
-        createdReposByMembersProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.requestRepository, createdReposByMembersProcessor.getRequestRepository());
     }
 
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
-        createdReposByMembersProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.organizationRepository, createdReposByMembersProcessor.getOrganizationRepository());
-    }
-
-    @Test
-    public void checkIfOrganizationIsAssignedCorrectly() {
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
-        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-
-        createdReposByMembersProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-
-        assertSame(organizationWrapper, createdReposByMembersProcessor.getOrganization());
     }
 
     @Test
     public void checkIfStopAfterProcessingAllRepositories() {
         PageInfoRepositories pageInfoRepositories = new PageInfoRepositories();
         pageInfoRepositories.setHasNextPage(false);
-        this.createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository, processingRepository);
         this.createdReposByMembersProcessor.processRemainingRepositoriesOfMember(pageInfoRepositories, "adessoAG", "MDQ6VXNlcjkxOTkw");
 
         assertTrue(this.requestRepository.findAll().isEmpty());
@@ -226,7 +202,6 @@ public class CreatedReposByMembersProcessorTest {
         PageInfoRepositories pageInfoRepositories = new PageInfoRepositories();
         pageInfoRepositories.setHasNextPage(true);
         pageInfoRepositories.setEndCursor("testEndCursor");
-        this.createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository, processingRepository);
         this.createdReposByMembersProcessor.processRemainingRepositoriesOfMember(pageInfoRepositories, "adessoAG", "MDQ6VXNlcjkxOTkw");
 
         verify(requestRepository, times(1)).save(Mockito.any(Query.class));
@@ -234,16 +209,13 @@ public class CreatedReposByMembersProcessorTest {
 
     @Test
     public void checkIfRequestTypeIsFinishedAfterLastRequest() {
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
         OrganizationDetail mockOrganizationDetail = mock(OrganizationDetail.class);
-        organizationWrapper.setOrganizationDetail(mockOrganizationDetail);
+        this.organizationWrapper.setOrganizationDetail(mockOrganizationDetail);
         ArrayList<Query> queries = new ArrayList<>();
         queries.add(testQuery);
-        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-        Mockito.when(requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, "adessoAG")).thenReturn(queries);
-        //Mockito.doNothing().when(mockOrganizationDetail).setNumOfCreatedReposByMembers(0);
+        Mockito.when(this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, "adessoAG")).thenReturn(queries);
+        this.createdReposByMembersProcessor.setOrganization(this.organizationWrapper);
 
-        this.createdReposByMembersProcessor.setUp(testQuery, requestRepository, organizationRepository, processingRepository);
         this.createdReposByMembersProcessor.checkIfRequestTypeIsFinished();
 
         assertTrue(organizationWrapper.getFinishedRequests().contains(RequestType.CREATED_REPOS_BY_MEMBERS));

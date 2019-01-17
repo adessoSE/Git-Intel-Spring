@@ -24,7 +24,6 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-@NoArgsConstructor
 public class ExternalRepoProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -35,28 +34,19 @@ public class ExternalRepoProcessor extends ResponseProcessor {
 
     private HashMap<String, Repository> repositoriesMap = new HashMap<>();
 
-    /**
-     * Setting up the necessary parameters for the response processing.
-     * @param requestQuery Query to be processed.
-     * @param requestRepository RequestRepository for accessing requests.
-     * @param organizationRepository OrganizationRepository for accessing organization.
-     */
-    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.requestQuery = requestQuery;
+    public ExternalRepoProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
     }
 
     /**
      * Performs the complete processing of an answer.
      * @param requestQuery Query to be processed.
-     * @param requestRepository RequestRepository for accessing requests.
-     * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
+    public void processResponse(Query requestQuery) {
+        this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data repositoriesData = ((ResponseExternalRepository) this.requestQuery.getQueryResponse()).getData();
 
         super.updateRateLimit(repositoriesData.getRateLimit(), requestQuery.getQueryRequestType());

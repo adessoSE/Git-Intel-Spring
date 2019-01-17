@@ -27,7 +27,6 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-@NoArgsConstructor
 public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -38,29 +37,19 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = new HashMap<>();
 
-
-    /**
-     * @param organizationRepository OrganizationRepository for accessing organization.
-     * @param requestRepository RequestRepository for accessing requests.
-     * @param requestQuery Query to be processed.
-     * Setting up the necessary parameters for the response processing.
-    */
-    protected void setUp(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.requestQuery = requestQuery;
+    public CreatedReposByMembersProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(this.requestQuery.getOrganizationName());
     }
 
     /**
      * Performs the complete processing of an answer.
      * @param requestQuery Query to be processed.
-     * @param requestRepository RequestRepository for accessing requests.
-     * @param organizationRepository OrganizationRepository for accessing organization.
      */
-    public void processResponse(Query requestQuery, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.setUp(requestQuery, requestRepository, organizationRepository, processingRepository);
+    public void processResponse(Query requestQuery) {
+        this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data response = ((ResponseCreatedReposByMembers) this.requestQuery.getQueryResponse()).getData();
 
         this.processQueryResponse(response);

@@ -269,12 +269,12 @@ public class OrganizationController {
         if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
             if (Objects.nonNull(organizationRepository.findByOrganizationName(organizationName))) {
                 return HttpStatus.OK;
-            } else { processingInformationProcessor = new ProcessingInformationProcessor(organizationName, processingRepository, organizationRepository, requestRepository);
+            } else { processingInformationProcessor = new ProcessingInformationProcessor(organizationName, this.processingRepository, organizationRepository, requestRepository);
                 return this.validateOrganization(processingInformationProcessor);
             }
         } else {
             logger.info("Data is still being gathered for this organization...");
-            processingInformationProcessor = new ProcessingInformationProcessor(organizationName, processingRepository, organizationRepository, requestRepository);
+            processingInformationProcessor = new ProcessingInformationProcessor(organizationName, this.processingRepository, organizationRepository, requestRepository);
             processingInformationProcessor.updateProcessingOrganizationInformation();
             return HttpStatus.PROCESSING;
         }

@@ -31,6 +31,7 @@ public class MemberIDProcessorTest {
     private Query testQuery = new Query("adessoAG", "testContent", RequestType.MEMBER_ID, 1);
     private ResponseMemberID responseMemberID;
     private MemberIDResources memberIDResources;
+    private OrganizationWrapper organizationWrapper;
 
     @Before
     public void setUp() throws Exception {
@@ -39,12 +40,13 @@ public class MemberIDProcessorTest {
         this.requestRepository = mock(RequestRepository.class);
         this.organizationRepository = mock(OrganizationRepository.class);
         this.processingRepository = mock(ProcessingRepository.class);
-        this.memberIDProcessor = new MemberIDProcessor();
+        this.organizationWrapper = new OrganizationWrapper("adessoAG");
+        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
+        this.memberIDProcessor = new MemberIDProcessor(this.requestRepository, this.organizationRepository, processingRepository);
     }
 
     @Test
     public void checkIfMemberIDsAreProcessedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         memberIDProcessor.processQueryResponse(this.responseMemberID.getData().getOrganization().getMembers());
 
         assertEquals(79, memberIDProcessor.getMemberIDs().size());
@@ -54,7 +56,7 @@ public class MemberIDProcessorTest {
     @Test
     public void checkIfFollowingRequestsAreGenerated() {
         //Given
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
+        memberIDProcessor.setRequestQuery(testQuery);
         memberIDProcessor.processQueryResponse(this.responseMemberID.getData().getOrganization().getMembers());
 
         //When
@@ -67,7 +69,6 @@ public class MemberIDProcessorTest {
     @Test
     public void checkIfRequestForRemainingInformationWillBeGenerated() {
         //Given
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         PageInfo pageInfo = new PageInfo();
         pageInfo.setHasNextPage(true);
 
@@ -81,19 +82,17 @@ public class MemberIDProcessorTest {
     @Test
     public void checkIfAfterCollectingAllInformationAreSavedAndRequestsAreGenerated() {
         //Given
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
-        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-
         ArrayList<String> memberIDs = new ArrayList<>();
         memberIDs.add("testMemberID1");
         memberIDs.add("testMemberID2");
         memberIDs.add("testMemberID3");
         memberIDProcessor.setMemberIDs(memberIDs);
+        memberIDProcessor.setRequestQuery(testQuery);
 
         PageInfo pageInfo = new PageInfo();
         pageInfo.setHasNextPage(false);
 
+        this.memberIDProcessor.setOrganization(this.organizationWrapper);
 
         //When
         memberIDProcessor.processRequestForRemainingInformation(pageInfo, "adessoAG");
@@ -104,30 +103,12 @@ public class MemberIDProcessorTest {
     }
 
     @Test
-    public void checkIfRequestQueryIsAssignedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-        assertSame(testQuery, memberIDProcessor.getRequestQuery());
-    }
-
-    @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.requestRepository, memberIDProcessor.getRequestRepository());
     }
 
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
         assertSame(this.organizationRepository, memberIDProcessor.getOrganizationRepository());
-    }
-
-    @Test
-    public void checkIfOrganizationIsAssignedCorrectly() {
-        OrganizationWrapper organizationWrapper = new OrganizationWrapper("adessoAG");
-        Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-
-        memberIDProcessor.setUp(testQuery, this.requestRepository, this.organizationRepository, processingRepository);
-
-        assertSame(organizationWrapper, memberIDProcessor.getOrganization());
     }
 }
