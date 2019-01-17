@@ -20,6 +20,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * This is the response processor used for CreatedReposByMembers Request.
@@ -134,17 +135,17 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
     }
 
     protected String getLicense(NodesRepositories repository) {
-        if (repository.getLicenseInfo() == null) return "No License deposited";
+        if (Objects.isNull(repository.getLicenseInfo())) return "No License deposited";
         else return repository.getLicenseInfo().getName();
     }
 
     protected String getProgrammingLanguage(NodesRepositories repository) {
-        if (repository.getPrimaryLanguage() == null) return "/";
+        if (Objects.isNull(repository.getPrimaryLanguage())) return "/";
         else return repository.getPrimaryLanguage().getName();
     }
 
     protected String getDescription(NodesRepositories repository) {
-        if (repository.getDescription() == null) return "No Description deposited";
+        if (Objects.isNull(repository.getDescription())) return "No Description deposited";
         else return repository.getDescription();
     }
 }

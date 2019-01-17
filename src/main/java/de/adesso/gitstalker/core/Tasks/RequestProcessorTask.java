@@ -1,5 +1,6 @@
 package de.adesso.gitstalker.core.Tasks;
 
+import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestStatus;
@@ -10,7 +11,10 @@ import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Transient;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
@@ -25,6 +29,9 @@ public class RequestProcessorTask {
 
     @Autowired
     ProcessingRepository processingRepository;
+
+    @Transient
+    private Logger logger = LoggerFactory.getLogger(RequestProcessorTask.class);
 
     /**
      * Scheduled task checking for queries without crawled information.
@@ -45,7 +52,7 @@ public class RequestProcessorTask {
             try {
                 this.processQuery(this.findProcessableQueryByRequestCostAndPriority(queriesToProcess));
             } catch (NoRemainingRateLimitException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }
