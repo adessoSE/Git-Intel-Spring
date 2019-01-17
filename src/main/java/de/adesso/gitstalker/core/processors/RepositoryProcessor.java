@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 public class RepositoryProcessor extends ResponseProcessor {
@@ -83,7 +84,7 @@ public class RepositoryProcessor extends ResponseProcessor {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
-            if (repo.getDefaultBranchRef() != null) {
+            if (Objects.nonNull(repo.getDefaultBranchRef())) {
                 for (NodesHistory nodesHistory : repo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
@@ -106,17 +107,17 @@ public class RepositoryProcessor extends ResponseProcessor {
     }
 
     private String getLicense(NodesRepositories repo) {
-        if (repo.getLicenseInfo() == null) return "No License deposited";
+        if (Objects.isNull(repo.getLicenseInfo())) return "No License deposited";
         else return repo.getLicenseInfo().getName();
     }
 
     private String getProgrammingLanguage(NodesRepositories repo) {
-        if (repo.getPrimaryLanguage() == null) return "/";
+        if (Objects.isNull(repo.getPrimaryLanguage())) return "/";
         else return repo.getPrimaryLanguage().getName();
     }
 
     private String getDescription(NodesRepositories repo) {
-        if (repo.getDescription() == null) return "No Description deposited";
+        if (Objects.isNull(repo.getDescription())) return "No Description deposited";
         else return repo.getDescription();
     }
 }

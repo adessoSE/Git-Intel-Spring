@@ -17,6 +17,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * This is the response processor used for ExternalRepo Request.
@@ -66,8 +67,8 @@ public class ExternalRepoProcessor extends ResponseProcessor {
             for (String externalRepoID : externalRepos.keySet()) {
                 for (String contributorID : externalRepos.get(externalRepoID)) {
                     Repository suitableExternalRepo = organization.getExternalRepos().getOrDefault(externalRepoID, null);
-                    if (suitableExternalRepo != null) {
-                        if (suitableExternalRepo.getContributors() != null) {
+                    if (Objects.nonNull(suitableExternalRepo)) {
+                        if (Objects.nonNull(suitableExternalRepo.getContributors())) {
                             suitableExternalRepo.addContributor(organization.getMembers().getOrDefault(contributorID, null));
                         } else {
                             ArrayList<Member> contributors = new ArrayList<>();
@@ -103,7 +104,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
                     issuesDates.add(nodesIssues.getCreatedAt());
                 }
             }
-            if (repo.getDefaultBranchRef() != null) {
+            if (Objects.nonNull(repo.getDefaultBranchRef())) {
                 for (NodesHistory nodesHistory : repo.getDefaultBranchRef().getTarget().getHistory().getNodes()) {
                     commitsDates.add(nodesHistory.getCommittedDate());
                 }
@@ -126,17 +127,17 @@ public class ExternalRepoProcessor extends ResponseProcessor {
     }
 
     protected String getLicense(NodesRepositories repo) {
-        if (repo.getLicenseInfo() == null) return "No License deposited";
+        if (Objects.isNull(repo.getLicenseInfo())) return "No License deposited";
         else return repo.getLicenseInfo().getName();
     }
 
     protected String getProgrammingLanguage(NodesRepositories repo) {
-        if (repo.getPrimaryLanguage() == null) return "/";
+        if (Objects.isNull(repo.getPrimaryLanguage())) return "/";
         else return repo.getPrimaryLanguage().getName();
     }
 
     protected String getDescription(NodesRepositories repo) {
-        if (repo.getDescription() == null) return "No Description deposited";
+        if (Objects.isNull(repo.getDescription())) return "No Description deposited";
         else return repo.getDescription();
     }
 

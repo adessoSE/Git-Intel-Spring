@@ -2,6 +2,7 @@ package de.adesso.gitstalker.core.processors;
 
 
 import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
+import de.adesso.gitstalker.core.Tasks.RequestProcessorTask;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
@@ -12,9 +13,13 @@ import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.organization_validation.Organization;
 import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrganizationValidation;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class ProcessingInformationProcessor {
 
@@ -37,7 +42,7 @@ public class ProcessingInformationProcessor {
         OrganizationWrapper organizationWrapper = this.organizationRepository.findByOrganizationName(this.organizationName);
         ProcessingOrganization processingOrganization = this.processingRepository.findByInternalOrganizationName(this.organizationName);
         processingOrganization.setCurrentPositionInQueue(this.calculatePositionInLinkedHashMap());
-        if (organizationWrapper != null) {
+        if (Objects.nonNull(organizationWrapper)) {
             processingOrganization.setFinishedRequestTypes(organizationWrapper.getFinishedRequests());
             processingOrganization.getMissingRequestTypes().removeAll(organizationWrapper.getFinishedRequests());
         }
@@ -59,18 +64,18 @@ public class ProcessingInformationProcessor {
         this.validationQuery = new RequestManager()
                 .setOrganizationName(this.organizationName)
                 .generateRequest(RequestType.ORGANIZATION_VALIDATION);
-        validationQuery.crawlQueryResponse();
-        this.responseOrganizationValidation = (ResponseOrganizationValidation) validationQuery.getQueryResponse();
-        return validationQuery;
+        this.validationQuery.crawlQueryResponse();
+        this.responseOrganizationValidation = (ResponseOrganizationValidation) this.validationQuery.getQueryResponse();
+        return this.validationQuery;
     }
 
     //TODO: Nullpointer exception if the token was not set or is invalid.
     public boolean checkIfOrganizationIsValid() {
-        return this.responseOrganizationValidation.getData().getOrganization() != null;
+        return Objects.nonNull(this.responseOrganizationValidation.getData().getOrganization());
     }
 
     public void addProcessingOrganizationInformationIfMissingForTheOrganization() {
-        if (this.processingRepository.findByInternalOrganizationName(this.organizationName) == null) {
+        if (Objects.isNull(this.processingRepository.findByInternalOrganizationName(this.organizationName))) {
             this.processingRepository.save(this.generateProcessingOrganizationInformation(this.responseOrganizationValidation));
         }
         this.requestRepository.save(this.validationQuery);

@@ -13,6 +13,7 @@ import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.rateLimit_Resources.RateLimit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -22,7 +23,8 @@ import java.util.*;
 public abstract class ResponseProcessor {
 
     private Date dateToStartCrawling = new Date(System.currentTimeMillis() - Config.PAST_DAYS_TO_CRAWL_IN_MS);
-    Logger logger = LoggerFactory.getLogger(ResponseProcessor.class);
+    @Transient
+    private Logger logger = LoggerFactory.getLogger(ResponseProcessor.class);
 
     public void updateRateLimit(RateLimit rateLimit, RequestType requestType) {
         RateLimitConfig.setRemainingRateLimit(rateLimit.getRemaining());
@@ -98,7 +100,7 @@ public abstract class ResponseProcessor {
             selectedDateFormatted = formatter.parse(formatter.format(selectedCalendar.getTime()));
             oneWeekAgoFormatted = formatter.parse(formatter.format(dateToStartCrawling));
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         if (oneWeekAgoFormatted.getTime() < selectedDateFormatted.getTime() && arrayOfCalendars.indexOf(selectedCalendar) == 0) {
