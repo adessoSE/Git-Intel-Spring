@@ -43,7 +43,7 @@ public class ExternalRepoProcessorTest {
         this.processingRepository = mock(ProcessingRepository.class);
         this.organizationWrapper = new OrganizationWrapper("adessoAG");
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-        this.externalRepoProcessor = new ExternalRepoProcessor("adessoAG", this.requestRepository, this.organizationRepository, processingRepository);
+        this.externalRepoProcessor = new ExternalRepoProcessor(this.requestRepository, this.organizationRepository, processingRepository);
     }
 
     @Test
@@ -118,6 +118,7 @@ public class ExternalRepoProcessorTest {
         members.put("memberTestID2", new Member()
                 .setName("memberName2"));
         organizationWrapper.setMembers(members);
+        this.externalRepoProcessor.setOrganization(this.organizationWrapper);
 
         //When
         this.externalRepoProcessor.processExternalReposAndFindContributors(organizationWrapper, testQuery);
@@ -150,11 +151,6 @@ public class ExternalRepoProcessorTest {
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
         assertSame(this.organizationRepository, externalRepoProcessor.getOrganizationRepository());
-    }
-
-    @Test
-    public void checkIfOrganizationIsAssignedCorrectly() {
-        assertSame(organizationWrapper, externalRepoProcessor.getOrganization());
     }
 
     @Test

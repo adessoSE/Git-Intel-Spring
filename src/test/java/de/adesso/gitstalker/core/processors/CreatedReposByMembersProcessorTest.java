@@ -40,7 +40,7 @@ public class CreatedReposByMembersProcessorTest {
         this.processingRepository = mock(ProcessingRepository.class);
         this.organizationWrapper = new OrganizationWrapper("adessoAG");
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-        this.createdReposByMembersProcessor = new CreatedReposByMembersProcessor("adessoAG", requestRepository, organizationRepository, processingRepository);
+        this.createdReposByMembersProcessor = new CreatedReposByMembersProcessor(requestRepository, organizationRepository, processingRepository);
         this.createdReposByMembersProcessor.setRequestQuery(testQuery);
     }
 
@@ -188,11 +188,6 @@ public class CreatedReposByMembersProcessorTest {
     }
 
     @Test
-    public void checkIfOrganizationIsAssignedCorrectly() {
-        assertSame(organizationWrapper, createdReposByMembersProcessor.getOrganization());
-    }
-
-    @Test
     public void checkIfStopAfterProcessingAllRepositories() {
         PageInfoRepositories pageInfoRepositories = new PageInfoRepositories();
         pageInfoRepositories.setHasNextPage(false);
@@ -219,6 +214,7 @@ public class CreatedReposByMembersProcessorTest {
         ArrayList<Query> queries = new ArrayList<>();
         queries.add(testQuery);
         Mockito.when(this.requestRepository.findByQueryRequestTypeAndOrganizationName(RequestType.CREATED_REPOS_BY_MEMBERS, "adessoAG")).thenReturn(queries);
+        this.createdReposByMembersProcessor.setOrganization(this.organizationWrapper);
 
         this.createdReposByMembersProcessor.checkIfRequestTypeIsFinished();
 

@@ -36,11 +36,10 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = new HashMap<>();
 
-    public CreatedReposByMembersProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+    public CreatedReposByMembersProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -49,6 +48,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery) {
         this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data response = ((ResponseCreatedReposByMembers) this.requestQuery.getQueryResponse()).getData();
 
         this.processQueryResponse(response);

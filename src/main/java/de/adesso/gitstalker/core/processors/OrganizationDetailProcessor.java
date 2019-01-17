@@ -23,11 +23,10 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
     private Query requestQuery;
     private OrganizationWrapper organization;
 
-    public OrganizationDetailProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+    public OrganizationDetailProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -36,6 +35,7 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery) {
         this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data responseData = ((ResponseOrganization) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData);

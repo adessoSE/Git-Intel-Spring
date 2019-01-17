@@ -30,11 +30,10 @@ public class MemberIDProcessor extends ResponseProcessor {
 
     private ArrayList<String> memberIDs = new ArrayList<>();
 
-    public MemberIDProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+    public MemberIDProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -43,6 +42,7 @@ public class MemberIDProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery) {
         this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data responseData = ((ResponseMemberID) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
 

@@ -38,7 +38,7 @@ public class MemberProcessorTest {
         this.processingRepository = mock(ProcessingRepository.class);
         this.organizationWrapper = new OrganizationWrapper("adessoAG");
         when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-        this.memberProcessor = new MemberProcessor("adessoAG", this.requestRepository, this.organizationRepository, processingRepository);
+        this.memberProcessor = new MemberProcessor(this.requestRepository, this.organizationRepository, processingRepository);
 
     }
 
@@ -72,6 +72,7 @@ public class MemberProcessorTest {
 
         OrganizationDetail organizationDetail = new OrganizationDetail("adessoAG", "testDescription", "testURL", "testURL", "testLocation", "testAvatarURL", 10, 10, 10);
         this.organizationWrapper.setOrganizationDetail(organizationDetail);
+        this.memberProcessor.setOrganization(this.organizationWrapper);
 
         ArrayList<Query> queries = new ArrayList<>();
         queries.add(testQuery);
@@ -124,10 +125,5 @@ public class MemberProcessorTest {
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
         assertSame(this.organizationRepository, memberProcessor.getOrganizationRepository());
-    }
-
-    @Test
-    public void checkIfOrganizationIsAssignedCorrectly() {
-        assertSame(organizationWrapper, memberProcessor.getOrganization());
     }
 }

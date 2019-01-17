@@ -42,7 +42,7 @@ public class MemberIDProcessorTest {
         this.processingRepository = mock(ProcessingRepository.class);
         this.organizationWrapper = new OrganizationWrapper("adessoAG");
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
-        this.memberIDProcessor = new MemberIDProcessor("adessoAG", this.requestRepository, this.organizationRepository, processingRepository);
+        this.memberIDProcessor = new MemberIDProcessor(this.requestRepository, this.organizationRepository, processingRepository);
     }
 
     @Test
@@ -92,6 +92,7 @@ public class MemberIDProcessorTest {
         PageInfo pageInfo = new PageInfo();
         pageInfo.setHasNextPage(false);
 
+        this.memberIDProcessor.setOrganization(this.organizationWrapper);
 
         //When
         memberIDProcessor.processRequestForRemainingInformation(pageInfo, "adessoAG");
@@ -109,10 +110,5 @@ public class MemberIDProcessorTest {
     @Test
     public void checkIfOrganizationRepositoryIsAssignedCorrectly() {
         assertSame(this.organizationRepository, memberIDProcessor.getOrganizationRepository());
-    }
-
-    @Test
-    public void checkIfOrganizationIsAssignedCorrectly() {
-        assertSame(this.organizationWrapper, memberIDProcessor.getOrganization());
     }
 }

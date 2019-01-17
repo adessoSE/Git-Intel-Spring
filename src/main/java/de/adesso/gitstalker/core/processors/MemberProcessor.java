@@ -31,11 +31,10 @@ public class MemberProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
     private HashMap<String, Member> members = new HashMap<>();
 
-    public MemberProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+    public MemberProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -44,6 +43,7 @@ public class MemberProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery) {
         this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data responseData = ((ResponseMember) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData.getNode());

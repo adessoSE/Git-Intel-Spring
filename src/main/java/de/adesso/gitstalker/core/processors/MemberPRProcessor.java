@@ -24,11 +24,10 @@ public class MemberPRProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> pullRequestsDates = new HashMap<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
 
-    public MemberPRProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+    public MemberPRProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -39,6 +38,7 @@ public class MemberPRProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery) {
         this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data responseData = ((ResponseMemberPR) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData);

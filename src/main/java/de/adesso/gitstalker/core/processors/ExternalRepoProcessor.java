@@ -33,11 +33,10 @@ public class ExternalRepoProcessor extends ResponseProcessor {
 
     private HashMap<String, Repository> repositoriesMap = new HashMap<>();
 
-    public ExternalRepoProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+    public ExternalRepoProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -46,6 +45,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery) {
         this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data repositoriesData = ((ResponseExternalRepository) this.requestQuery.getQueryResponse()).getData();
 
         super.updateRateLimit(repositoriesData.getRateLimit(), requestQuery.getQueryRequestType());

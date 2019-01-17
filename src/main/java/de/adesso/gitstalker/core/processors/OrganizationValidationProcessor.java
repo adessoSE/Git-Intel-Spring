@@ -20,11 +20,10 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
     private Query requestQuery;
     private OrganizationWrapper organization;
 
-    public OrganizationValidationProcessor(String organizationName, RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
+    public OrganizationValidationProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
         this.processingRepository = processingRepository;
-        this.organization = this.organizationRepository.findByOrganizationName(organizationName);
     }
 
     /**
@@ -33,6 +32,7 @@ public class OrganizationValidationProcessor extends ResponseProcessor {
      */
     public void processResponse(Query requestQuery) {
         this.requestQuery = requestQuery;
+        this.organization = this.organizationRepository.findByOrganizationName(requestQuery.getOrganizationName());
         Data responseData = ((ResponseOrganizationValidation) this.requestQuery.getQueryResponse()).getData();
         if (this.processQueryResponse(responseData)) {
             this.organization = this.generateOrganizationWrapper(this.requestQuery.getOrganizationName());
