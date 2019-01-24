@@ -289,13 +289,15 @@ public class OrganizationController {
      */
     private HttpStatus validateOrganization(ProcessingInformationProcessor processingInformationProcessor) {
         Query queryOrganizationValidation = processingInformationProcessor.getOrganizationValidationResponse();
-        if (queryOrganizationValidation.getQueryStatus().equals(RequestStatus.ERROR_RECEIVED)) {
-            return HttpStatus.UNAUTHORIZED;
-        }
         if (processingInformationProcessor.checkIfOrganizationIsValid()) {
             processingInformationProcessor.addProcessingOrganizationInformationIfMissingForTheOrganization();
             return HttpStatus.PROCESSING;
-        } else return HttpStatus.BAD_REQUEST;
+        } else {
+            if (queryOrganizationValidation.getQueryError() instanceof InvalidGithubAPITokenException) {
+                return HttpStatus.UNAUTHORIZED;
+            }
+            return HttpStatus.BAD_REQUEST;
+        }
     }
 
     private String formatInput(String input) {
