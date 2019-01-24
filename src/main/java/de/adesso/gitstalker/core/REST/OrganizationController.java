@@ -3,6 +3,7 @@ package de.adesso.gitstalker.core.REST;
 
 import de.adesso.gitstalker.core.REST.responses.ErrorMessage;
 import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
+import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.exceptions.InvalidGithubAPITokenException;
@@ -158,6 +159,8 @@ public class OrganizationController {
         OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
 
         if (httpStatus.is2xxSuccessful()) {
+            organization.setLastAccessTimestamp(new Date());
+            this.organizationRepository.save(organization);
             switch (requestType) {
                 case TEAM:
                     Collection<Team> teams = organization.getTeams().values();
@@ -182,6 +185,11 @@ public class OrganizationController {
             throw new ProcessingOrganizationException("The transferred organization is being processed.", formattedName);
         } else if (httpStatus.is4xxClientError()) {
             switch (httpStatus) {
+                case UPGRADE_REQUIRED:
+                    organization.prepareOrganizationForUpdate(organizationRepository);
+                    ProcessingInformationProcessor processingInformationProcessor = new ProcessingInformationProcessor(formattedName, this.processingRepository, organizationRepository, requestRepository);
+                    this.validateOrganization(processingInformationProcessor);
+                    throw new ProcessingOrganizationException("The transferred organization is being processed.", formattedName);
                 case UNAUTHORIZED:
                     throw new InvalidGithubAPITokenException("The entered token in the back-end seems to be incorrect...", formattedName);
                 case BAD_REQUEST:
@@ -231,50 +239,30 @@ public class OrganizationController {
                 .setProcessingMessage(e.getMessage());
     }
 
-    private ResponseEntity<?> processResponseEntity(RequestType requestType, OrganizationWrapper organization, HttpStatus httpStatus){
-        if (httpStatus.is2xxSuccessful()) {
-            switch (requestType){
-                case TEAM:
-                    Collection<Team> teams = organization.getTeams().values();
-                    return new ResponseEntity<>(teams, httpStatus);
-                case CREATED_REPOS_BY_MEMBERS:
-                    Collection<ArrayList<Repository>> createdReposByMembers = organization.getCreatedReposByMembers().values();
-                    return new ResponseEntity<>(createdReposByMembers, httpStatus);
-                case EXTERNAL_REPO:
-                    Collection<Repository> externalRepositories = organization.getExternalRepos().values();
-                    return new ResponseEntity<>(externalRepositories, httpStatus);
-                case REPOSITORY:
-                    Collection<Repository> organizationRepositories = organization.getRepositories().values();
-                    return new ResponseEntity<>(organizationRepositories, httpStatus);
-                case MEMBER:
-                    Collection<Member> organizationMember = organization.getMembers().values();
-                    return new ResponseEntity<>(organizationMember, httpStatus);
-                case ORGANIZATION_DETAIL:
-                    OrganizationDetail organizationDetail = organization.getOrganizationDetail();
-                    return new ResponseEntity<>(organizationDetail, httpStatus);
-            }
-        }
-        return new ResponseEntity<>(httpStatus);
-    }
-
     /**
      * Method used to check if there is already requested information available.
      * If there are no requests running for the requested organization then the requests are generated, after validating if the transferred organization is valid.
      *
-     * @param organizationName Transferred organization name
+     * @param formattedOrganizationName Transferred organization name
      * @return HttpStatus Status if there is data available (200 - OK), if the data is processed (202 - Accepted) or if the organization is invalid (400 - Bad Request)
      */
-    private HttpStatus checkStatusOfRequestedInformation(String organizationName) {
+    private HttpStatus checkStatusOfRequestedInformation(String formattedOrganizationName) {
         ProcessingInformationProcessor processingInformationProcessor;
-        if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
-            if (Objects.nonNull(organizationRepository.findByOrganizationName(organizationName))) {
+        if (requestRepository.findByOrganizationName(formattedOrganizationName).isEmpty()) {
+            OrganizationWrapper organizationWrapper = organizationRepository.findByOrganizationName(formattedOrganizationName);
+            if (Objects.nonNull(organizationWrapper)) {
+                if(Objects.nonNull(organizationWrapper.getLastAccessTimestamp()) && organizationWrapper.getLastAccessTimestamp().before(new Date(System.currentTimeMillis() - Config.LIMIT_BEFORE_LAST_ACCESS_DATE_IN_MS))){
+                    organizationWrapper.setLastAccessTimestamp(new Date());
+                    this.organizationRepository.save(organizationWrapper);
+                    return HttpStatus.UPGRADE_REQUIRED;
+                }
                 return HttpStatus.OK;
-            } else { processingInformationProcessor = new ProcessingInformationProcessor(organizationName, this.processingRepository, organizationRepository, requestRepository);
+            } else { processingInformationProcessor = new ProcessingInformationProcessor(formattedOrganizationName, this.processingRepository, organizationRepository, requestRepository);
                 return this.validateOrganization(processingInformationProcessor);
             }
         } else {
             logger.info("Data is still being gathered for this organization...");
-            processingInformationProcessor = new ProcessingInformationProcessor(organizationName, this.processingRepository, organizationRepository, requestRepository);
+            processingInformationProcessor = new ProcessingInformationProcessor(formattedOrganizationName, this.processingRepository, organizationRepository, requestRepository);
             processingInformationProcessor.updateProcessingOrganizationInformation();
             return HttpStatus.PROCESSING;
         }

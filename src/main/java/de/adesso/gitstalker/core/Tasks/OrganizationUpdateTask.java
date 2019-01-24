@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Transient;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.Date;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class OrganizationUpdateTask {
 
@@ -33,12 +35,24 @@ public class OrganizationUpdateTask {
      */
     @Scheduled(fixedDelay = 5000, initialDelay = 5000)
     private void generateQuery() {
-        for (OrganizationWrapper wrapper : organizationRepository.findAllByLastUpdateTimestampBefore(new Date(System.currentTimeMillis() - Config.UPDATE_RATE_DAYS_IN_MS))) {
+        ArrayList<OrganizationWrapper> updatableOrganizations = organizationRepository.findAllByLastUpdateTimestampBefore(new Date(System.currentTimeMillis() - Config.UPDATE_RATE_DAYS_IN_MS));
+        this.startUpdateForOrganizations(this.filterOrganizationsBasedOnLastAccess(updatableOrganizations));
+    }
+
+    private void startUpdateForOrganizations(List<OrganizationWrapper> updatableOrganizations){
+        for (OrganizationWrapper wrapper : updatableOrganizations) {
             logger.info("Started Update for organisation: " + wrapper.getOrganizationName());
             wrapper.prepareOrganizationForUpdate(organizationRepository);
             ProcessingInformationProcessor processingInformationProcessor = new ProcessingInformationProcessor(wrapper.getOrganizationName(), processingRepository, organizationRepository, requestRepository);
             processingInformationProcessor.getOrganizationValidationResponse();
             processingInformationProcessor.addProcessingOrganizationInformationIfMissingForTheOrganization();
         }
+    }
+
+    private List<OrganizationWrapper> filterOrganizationsBasedOnLastAccess(ArrayList<OrganizationWrapper> updatableOrganizations){
+        List<OrganizationWrapper> filteredOrganizations = updatableOrganizations.stream().filter(organizationWrapper ->
+                organizationWrapper.getLastAccessTimestamp().after(new Date(System.currentTimeMillis() - Config.LIMIT_BEFORE_LAST_ACCESS_DATE_IN_MS)))
+                .collect(Collectors.toList());
+        return filteredOrganizations;
     }
 }

@@ -25,6 +25,7 @@ public class OrganizationWrapper {
     private HashMap<String, Repository> externalRepos = new HashMap<>();
     private HashMap<String, ArrayList<Repository>> createdReposByMembers = new HashMap<>();
     private Date lastUpdateTimestamp;
+    private Date lastAccessTimestamp;
     private int completeUpdateCost = 0;
 
     /**
