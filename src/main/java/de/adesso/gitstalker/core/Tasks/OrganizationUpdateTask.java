@@ -31,7 +31,7 @@ public class OrganizationUpdateTask {
     /**
      * Scheduled task for generating queries in order to update saved organisation. Preparing the organisation for the update.
      */
-    @Scheduled(fixedDelay = 5000, initialDelay = 5000)
+    @Scheduled(fixedDelay = Config.PROCESSING_RATE_IN_MS, initialDelay = Config.PROCESSING_DELAY_IN_MS)
     private void generateQuery() {
         for (OrganizationWrapper wrapper : organizationRepository.findAllByLastUpdateTimestampBefore(new Date(System.currentTimeMillis() - Config.UPDATE_RATE_DAYS_IN_MS))) {
             logger.info("Started Update for organisation: " + wrapper.getOrganizationName());

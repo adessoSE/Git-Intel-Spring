@@ -21,5 +21,6 @@ public class Config {
     public static final long UPDATE_RATE_DAYS_IN_MS = UPDATE_RATE_DAYS * DAY_IN_MS;
 
     //Processing Speed
-    public static final int PROCESSING_RATE_IN_MS = 500;
+    public static final int PROCESSING_RATE_IN_MS = 100;
+    public static final int PROCESSING_DELAY_IN_MS = 5000;
 }

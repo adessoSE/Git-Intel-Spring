@@ -3,10 +3,12 @@ package de.adesso.gitstalker.core.REST;
 
 import de.adesso.gitstalker.core.REST.responses.ErrorMessage;
 import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
+import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.exceptions.InvalidGithubAPITokenException;
 import de.adesso.gitstalker.core.exceptions.InvalidOrganizationNameRequestException;
+import de.adesso.gitstalker.core.exceptions.NoRemainingRateLimitException;
 import de.adesso.gitstalker.core.exceptions.ProcessingOrganizationException;
 import de.adesso.gitstalker.core.objects.*;
 import de.adesso.gitstalker.core.processors.ProcessingInformationProcessor;
@@ -53,7 +55,7 @@ public class OrganizationController {
      * @throws InvalidGithubAPITokenException Error if the Github token in the back end is invalid
      */
     @RequestMapping("/organizationdetail/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationDetail(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
+    public ResponseEntity<?> retrieveOrganizationDetail(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException, NoRemainingRateLimitException {
         return this.processResponseEntity(RequestType.ORGANIZATION_DETAIL,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
@@ -68,7 +70,7 @@ public class OrganizationController {
      * @throws InvalidGithubAPITokenException Error if the Github token in the back end is invalid
      */
     @RequestMapping("/members/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
+    public ResponseEntity<?> retrieveOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException, NoRemainingRateLimitException {
         return this.processResponseEntity(RequestType.MEMBER,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
@@ -83,7 +85,7 @@ public class OrganizationController {
      * @throws InvalidGithubAPITokenException Error if the Github token in the back end is invalid
      */
     @RequestMapping("/repositories/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
+    public ResponseEntity<?> retrieveOrganizationRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException, NoRemainingRateLimitException {
         return this.processResponseEntity(RequestType.REPOSITORY,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
@@ -98,7 +100,7 @@ public class OrganizationController {
      * @throws InvalidGithubAPITokenException Error if the Github token in the back end is invalid
      */
     @RequestMapping("/externalrepositories/{organizationName}")
-    public ResponseEntity<?> retrieveExternalRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
+    public ResponseEntity<?> retrieveExternalRepositories(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException, NoRemainingRateLimitException {
         return this.processResponseEntity(RequestType.EXTERNAL_REPO,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
@@ -113,7 +115,7 @@ public class OrganizationController {
      * @throws InvalidGithubAPITokenException Error if the Github token in the back end is invalid
      */
     @RequestMapping("/teams/{organizationName}")
-    public ResponseEntity<?> retrieveOrganizationTeams(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
+    public ResponseEntity<?> retrieveOrganizationTeams(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException, NoRemainingRateLimitException {
         return this.processResponseEntity(RequestType.TEAM,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
@@ -128,7 +130,7 @@ public class OrganizationController {
      * @throws InvalidGithubAPITokenException Error if the Github token in the back end is invalid
      */
     @RequestMapping("/createdreposbymembers/{organizationName}")
-    public ResponseEntity<?> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
+    public ResponseEntity<?> retrieveCreatedReposByOrganizationMembers(@PathVariable String organizationName) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException, NoRemainingRateLimitException {
         return this.processResponseEntity(RequestType.CREATED_REPOS_BY_MEMBERS,
                 organizationName,
                 this.checkStatusOfRequestedInformation(this.formatInput(organizationName)));
@@ -153,7 +155,7 @@ public class OrganizationController {
      * @throws ProcessingOrganizationException Error if the requested organization is still being processed
      * @throws InvalidGithubAPITokenException Error if the Github token in the back end is invalid
      */
-    private ResponseEntity<?> processResponseEntity(RequestType requestType, String organizationName, HttpStatus httpStatus) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException {
+    private ResponseEntity<?> processResponseEntity(RequestType requestType, String organizationName, HttpStatus httpStatus) throws InvalidOrganizationNameRequestException, ProcessingOrganizationException, InvalidGithubAPITokenException, NoRemainingRateLimitException {
         String formattedName = this.formatInput(organizationName);
         OrganizationWrapper organization = this.organizationRepository.findByOrganizationName(formattedName);
 
@@ -186,9 +188,25 @@ public class OrganizationController {
                     throw new InvalidGithubAPITokenException("The entered token in the back-end seems to be incorrect...", formattedName);
                 case BAD_REQUEST:
                     throw new InvalidOrganizationNameRequestException("The transferred organization name is incorrect.", formattedName);
+                case PAYLOAD_TOO_LARGE:
+                    throw new NoRemainingRateLimitException("The application doesn't got any tokens remaining to process... The Rate Limit will be refreshed at " + RateLimitConfig.getResetRateLimitAt(), formattedName);
             }
         }
         return new ResponseEntity<>(httpStatus);
+    }
+
+    /**
+     * Exception handler for an invalid Github API token.
+     * @param e Transferred thrown exception
+     * @return Returns an ErrorMessage
+     */
+    @ExceptionHandler(NoRemainingRateLimitException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleNoRemainingRateLimitException(NoRemainingRateLimitException e) {
+        return new ErrorMessage()
+                .setSearchedOrganization(e.getSearchedOrganization())
+                .setErrorMessage(e.getMessage())
+                .setErrorName("Rate Limit exhausted!");
     }
 
     /**
@@ -266,6 +284,9 @@ public class OrganizationController {
      */
     private HttpStatus checkStatusOfRequestedInformation(String organizationName) {
         ProcessingInformationProcessor processingInformationProcessor;
+        if (RateLimitConfig.isRateLimitExhausted()){
+            return HttpStatus.PAYLOAD_TOO_LARGE;
+        }
         if (requestRepository.findByOrganizationName(organizationName).isEmpty()) {
             if (Objects.nonNull(organizationRepository.findByOrganizationName(organizationName))) {
                 return HttpStatus.OK;
