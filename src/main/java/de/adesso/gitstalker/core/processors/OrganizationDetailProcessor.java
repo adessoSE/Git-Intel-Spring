@@ -10,9 +10,8 @@ import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.organisation_Resources.Data;
 import de.adesso.gitstalker.core.resources.organisation_Resources.Organization;
 import de.adesso.gitstalker.core.resources.organisation_Resources.ResponseOrganization;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.Objects;
 
 
 public class OrganizationDetailProcessor extends ResponseProcessor {
@@ -31,6 +30,7 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
 
     /**
      * Performs the complete processing of an answer.
+     *
      * @param requestQuery Query to be processed.
      */
     public void processResponse(Query requestQuery) {
@@ -44,21 +44,26 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
 
     /**
      * Processes the response of the requests.
+     *
      * @param responseData Response information of the request
      */
     private void processQueryResponse(Data responseData) {
         Organization organization = responseData.getOrganization();
+        OrganizationDetail organizationDetail;
+        if (Objects.nonNull(this.organization.getOrganizationDetail())) {
+            organizationDetail = this.organization.getOrganizationDetail();
+        } else organizationDetail = new OrganizationDetail();
 
-        this.organization.setOrganizationDetail(new OrganizationDetail(
-                organization.getName(),
-                organization.getDescription(),
-                organization.getWebsiteUrl(),
-                organization.getUrl(),
-                organization.getLocation(),
-                organization.getAvatarUrl(),
-                organization.getMembers().getTotalCount(),
-                organization.getRepositories().getTotalCount(),
-                organization.getTeams().getTotalCount()));
-        this.organization.addMemberAmount(organization.getMembers().getTotalCount());
+        this.organization.setOrganizationDetail(
+                organizationDetail.setName(organization.getName())
+                        .setDescription(organization.getDescription())
+                        .setWebsiteURL(organization.getWebsiteUrl())
+                        .setGithubURL(organization.getGithubUrl())
+                        .setLocation(organization.getLocation())
+                        .setAvatarURL(organization.getAvatarUrl())
+                        .setNumOfMembers(organization.getMembers().getTotalCount())
+                        .setNumOfRepositories(organization.getRepositories().getTotalCount())
+                        .setNumOfTeams(organization.getTeams().getTotalCount())
+                        .addMemberAmountHistory(organization.getMembers().getTotalCount()));
     }
 }
