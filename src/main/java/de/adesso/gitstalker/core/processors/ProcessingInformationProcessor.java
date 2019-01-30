@@ -71,7 +71,11 @@ public class ProcessingInformationProcessor {
 
     //TODO: Nullpointer exception if the token was not set or is invalid.
     public boolean checkIfOrganizationIsValid() {
-        return Objects.nonNull(this.responseOrganizationValidation.getData().getOrganization());
+        if (Objects.nonNull(this.responseOrganizationValidation)){
+            return Objects.nonNull(this.responseOrganizationValidation.getData().getOrganization());
+        } else {
+            return !Objects.isNull(this.responseOrganizationValidation);
+        }
     }
 
     public void addProcessingOrganizationInformationIfMissingForTheOrganization() {
