@@ -18,6 +18,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class RequestProcessorTask {
 
@@ -38,7 +39,7 @@ public class RequestProcessorTask {
      * After picking one query the request starts with the specified information out of the selected query. After the request the query is saved in the repository with the additional response data.
      * The request can generate an exception because of no remaining Rate Limit.
      */
-    @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS)
+    @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS, initialDelay = Config.PROCESSING_DELAY_IN_MS)
     private void crawlQueryData() {
         ArrayList<Query> queriesToProcess;
         String organizationName;
@@ -48,11 +49,18 @@ public class RequestProcessorTask {
             queriesToProcess = this.requestRepository.findByQueryStatusAndOrganizationName(RequestStatus.CREATED, organizationName);
         } else queriesToProcess = this.requestRepository.findByQueryStatus(RequestStatus.CREATED);
 
-        if (!queriesToProcess.isEmpty() && RateLimitConfig.getRemainingRateLimit() != 0) {
+        if (!queriesToProcess.isEmpty()) {
             try {
                 this.processQuery(this.findProcessableQueryByRequestCostAndPriority(queriesToProcess));
             } catch (NoRemainingRateLimitException e) {
                 logger.error(e.getMessage());
+                if(!RateLimitConfig.checkIfRateLimitWillReset()){
+                    try {
+                        Thread.sleep(RateLimitConfig.getResetRateLimitAt().getTime() - System.currentTimeMillis());
+                    } catch (InterruptedException e1) {
+                        logger.error("InterruptedException at Thread Sleep");
+                    }
+                }
             }
         }
     }
@@ -87,7 +95,7 @@ public class RequestProcessorTask {
                 return createdQuery;
             }
         }
-        throw new NoRemainingRateLimitException("Rate Limit exhausted. Processing is paused until " + RateLimitConfig.getRemainingRateLimit());
+        throw new NoRemainingRateLimitException("Rate Limit exhausted. Processing is paused until " + RateLimitConfig.getResetRateLimitAt());
     }
 
     /**

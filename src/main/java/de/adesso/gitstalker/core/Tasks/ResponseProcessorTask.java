@@ -37,7 +37,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
      * Automatic process for processing queries with valid responses. The query is passed in to the ResponseProcessorManager, which finds the appropriate processor.
      * After processing, the query is deleted.
      */
-    @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS)
+    @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS, initialDelay = Config.PROCESSING_DELAY_IN_MS)
     private void processCrawledQueryData() {
         ArrayList<Query> queriesToProcess;
         if (!this.processingRepository.findAll().isEmpty()) {

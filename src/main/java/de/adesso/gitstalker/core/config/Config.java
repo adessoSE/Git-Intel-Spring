@@ -23,5 +23,6 @@ public class Config {
     public static final long LIMIT_BEFORE_LAST_ACCESS_DATE_IN_MS = LIMIT_BEFORE_LAST_ACCESS_DATE * DAY_IN_MS;
 
     //Processing Speed
-    public static final int PROCESSING_RATE_IN_MS = 500;
+    public static final int PROCESSING_RATE_IN_MS = 100;
+    public static final int PROCESSING_DELAY_IN_MS = 5000;
 }
