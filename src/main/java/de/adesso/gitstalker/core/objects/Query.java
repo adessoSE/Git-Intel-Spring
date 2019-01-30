@@ -3,12 +3,14 @@ package de.adesso.gitstalker.core.objects;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import de.adesso.gitstalker.core.requests.Request;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Query extends Request {
     @Id
     private String id;
