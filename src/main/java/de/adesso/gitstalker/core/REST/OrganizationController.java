@@ -5,7 +5,6 @@ import de.adesso.gitstalker.core.REST.responses.ErrorMessage;
 import de.adesso.gitstalker.core.REST.responses.ProcessingOrganization;
 import de.adesso.gitstalker.core.config.RateLimitConfig;
 import de.adesso.gitstalker.core.config.Config;
-import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.exceptions.InvalidGithubAPITokenException;
 import de.adesso.gitstalker.core.exceptions.InvalidOrganizationNameRequestException;
@@ -16,9 +15,6 @@ import de.adesso.gitstalker.core.processors.ProcessingInformationProcessor;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
-import de.adesso.gitstalker.core.requests.RequestManager;
-import de.adesso.gitstalker.core.resources.organization_validation.Organization;
-import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrganizationValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,7 +184,7 @@ public class OrganizationController {
         } else if (httpStatus.is4xxClientError()) {
             switch (httpStatus) {
                 case UPGRADE_REQUIRED:
-                    organization.prepareOrganizationForUpdate(organizationRepository);
+                    organization.prepareOrganizationForUpdateAndSaveIt(organizationRepository);
                     ProcessingInformationProcessor processingInformationProcessor = new ProcessingInformationProcessor(formattedName, this.processingRepository, organizationRepository, requestRepository);
                     this.validateOrganization(processingInformationProcessor);
                     throw new ProcessingOrganizationException("The transferred organization is being processed.", formattedName);

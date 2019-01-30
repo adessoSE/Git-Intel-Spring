@@ -10,7 +10,7 @@ public class Organization {
     private String name;
     private String location;
     private String websiteUrl;
-    private String url;
+    private String githubUrl;
     private String avatarUrl;
     private String description;
     private Members members;

@@ -20,7 +20,6 @@ public class OrganizationWrapper {
     private HashMap<String, Member> members = new HashMap<>();
     private Set<RequestType> finishedRequests = new HashSet<>();
     private HashMap<String, Repository> repositories = new HashMap<>();
-    private HashMap<String, Integer> memberAmount = new HashMap<>();
     private HashMap<String, Team> teams = new HashMap<>();
     private HashMap<String, Repository> externalRepos = new HashMap<>();
     private HashMap<String, ArrayList<Repository>> createdReposByMembers = new HashMap<>();
@@ -66,10 +65,6 @@ public class OrganizationWrapper {
         this.repositories.putAll(repositories);
     }
 
-    public void addMemberAmount(Integer memberAmount) {
-        this.memberAmount.put(new Date().toString(), memberAmount);
-    }
-
     public void addTeams(HashMap<String,Team> teams) {
         this.teams.putAll(teams);
     }
@@ -87,8 +82,8 @@ public class OrganizationWrapper {
         this.organizationDetail.setNumOfCreatedReposByMembers(sumOfCreatedMemberRepos);
     }
 
-    public void prepareOrganizationForUpdate(OrganizationRepository organizationRepository){
-        this.organizationDetail = null;
+    public void prepareOrganizationForUpdateAndSaveIt(OrganizationRepository organizationRepository){
+        this.organizationDetail = this.organizationDetail.resetOrganizationDetailWithoutDeletingMemberGrowthHistory();
         this.memberIDs = new ArrayList<>();
         this.memberPRRepoIDs = new HashMap<>();
         this.members = new HashMap<>();

@@ -13,7 +13,6 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class OrganizationUpdateTask {
@@ -42,7 +41,7 @@ public class OrganizationUpdateTask {
     private void startUpdateForOrganizations(List<OrganizationWrapper> updatableOrganizations){
         for (OrganizationWrapper wrapper : updatableOrganizations) {
             logger.info("Started Update for organisation: " + wrapper.getOrganizationName());
-            wrapper.prepareOrganizationForUpdate(organizationRepository);
+            wrapper.prepareOrganizationForUpdateAndSaveIt(organizationRepository);
             ProcessingInformationProcessor processingInformationProcessor = new ProcessingInformationProcessor(wrapper.getOrganizationName(), processingRepository, organizationRepository, requestRepository);
             processingInformationProcessor.getOrganizationValidationResponse();
             processingInformationProcessor.addProcessingOrganizationInformationIfMissingForTheOrganization();
