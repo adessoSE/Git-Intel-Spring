@@ -19,6 +19,8 @@ public class Config {
     //Update of organization information
     public static final int UPDATE_RATE_DAYS = 1;
     public static final long UPDATE_RATE_DAYS_IN_MS = UPDATE_RATE_DAYS * DAY_IN_MS;
+    public static final int LIMIT_BEFORE_LAST_ACCESS_DATE = 7;
+    public static final long LIMIT_BEFORE_LAST_ACCESS_DATE_IN_MS = LIMIT_BEFORE_LAST_ACCESS_DATE * DAY_IN_MS;
 
     //Processing Speed
     public static final int PROCESSING_RATE_IN_MS = 500;
