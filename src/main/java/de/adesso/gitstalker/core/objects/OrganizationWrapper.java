@@ -1,5 +1,6 @@
 package de.adesso.gitstalker.core.objects;
 
+import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class OrganizationWrapper {
     private HashMap<String, Team> teams = new HashMap<>();
     private HashMap<String, Repository> externalRepos = new HashMap<>();
     private HashMap<String, ArrayList<Repository>> createdReposByMembers = new HashMap<>();
+    private LinkedHashMap<String, Integer> memberAmountHistory;
     private Date lastUpdateTimestamp;
     private Date lastAccessTimestamp;
     private int completeUpdateCost = 0;
@@ -65,7 +67,7 @@ public class OrganizationWrapper {
         this.repositories.putAll(repositories);
     }
 
-    public void addTeams(HashMap<String,Team> teams) {
+    public void addTeams(HashMap<String, Team> teams) {
         this.teams.putAll(teams);
     }
 
@@ -76,14 +78,14 @@ public class OrganizationWrapper {
     public void addCreatedReposByMembers(HashMap<String, ArrayList<Repository>> createdReposByMembers) {
         this.createdReposByMembers.putAll(createdReposByMembers);
         int sumOfCreatedMemberRepos = 0;
-        for(ArrayList<Repository> memberRepos : createdReposByMembers.values()){
+        for (ArrayList<Repository> memberRepos : createdReposByMembers.values()) {
             sumOfCreatedMemberRepos += memberRepos.size();
         }
         this.organizationDetail.setNumOfCreatedReposByMembers(sumOfCreatedMemberRepos);
     }
 
-    public void prepareOrganizationForUpdateAndSaveIt(OrganizationRepository organizationRepository){
-        this.organizationDetail = this.organizationDetail.resetOrganizationDetailWithoutDeletingMemberGrowthHistory();
+    public void prepareOrganizationForUpdateAndSaveIt(OrganizationRepository organizationRepository) {
+        this.organizationDetail = null;
         this.memberIDs = new ArrayList<>();
         this.memberPRRepoIDs = new HashMap<>();
         this.members = new HashMap<>();
@@ -96,5 +98,20 @@ public class OrganizationWrapper {
         this.lastUpdateTimestamp = null;
 
         organizationRepository.save(this);
+    }
+
+    public void addMemberAmountHistory(int currentMemberAmount) {
+        if (Objects.isNull(this.memberAmountHistory)) {
+            this.memberAmountHistory = new LinkedHashMap<>();
+        }
+        this.memberAmountHistory.put(new Date().toString(), currentMemberAmount);
+        this.adaptMemberHistoryToConfiguratedTimePeriod(this.memberAmountHistory);
+    }
+
+    private void adaptMemberHistoryToConfiguratedTimePeriod(LinkedHashMap<String, Integer> memberAmountHistory) {
+        if (memberAmountHistory.size() > Config.PAST_DAYS_AMOUNT_TO_CRAWL) {
+            String firstKey = memberAmountHistory.keySet().stream().findFirst().get();
+            memberAmountHistory.remove(firstKey);
+        }
     }
 }

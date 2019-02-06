@@ -1,19 +1,23 @@
 package de.adesso.gitstalker.core.objects;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Objects;
-
 import de.adesso.gitstalker.core.config.Config;
+import de.adesso.gitstalker.core.parser.MemberGrowthChartJSParser;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
+@Component
 public class OrganizationDetail {
 
     @Id
@@ -32,29 +36,6 @@ public class OrganizationDetail {
     private int numOfCreatedReposByMembers;
     private ChartJSData internalRepositoriesCommits;
     private ChartJSData externalRepositoriesPullRequests;
-    private LinkedHashMap<String, Integer> memberAmountHistory;
+    private ChartJSData memberAmountHistory;
     private Date lastUpdate;
-
-    public OrganizationDetail addMemberAmountHistory(int currentMemberAmount) {
-        if (Objects.isNull(this.memberAmountHistory)){
-            this.memberAmountHistory = new LinkedHashMap<>();
-        }
-        this.memberAmountHistory.put(new Date().toString(), currentMemberAmount);
-        this.adaptMemberHistoryToConfiguratedTimePeriod(memberAmountHistory);
-        return this;
-    }
-
-    private LinkedHashMap<String, Integer> adaptMemberHistoryToConfiguratedTimePeriod(LinkedHashMap<String, Integer> memberAmountHistory){
-        if (memberAmountHistory.size() > Config.PAST_DAYS_AMOUNT_TO_CRAWL){
-            String firstKey = memberAmountHistory.keySet().stream().findFirst().get();
-            memberAmountHistory.remove(firstKey);
-        }
-        return memberAmountHistory;
-    }
-
-    public OrganizationDetail resetOrganizationDetailWithoutDeletingMemberGrowthHistory(){
-        OrganizationDetail resetedOrganizationDetail = new OrganizationDetail();
-        resetedOrganizationDetail.setMemberAmountHistory(this.memberAmountHistory);
-        return resetedOrganizationDetail;
-    }
 }

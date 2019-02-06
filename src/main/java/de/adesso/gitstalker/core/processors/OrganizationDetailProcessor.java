@@ -4,6 +4,7 @@ import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.OrganizationDetail;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
+import de.adesso.gitstalker.core.parser.MemberGrowthChartJSParser;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
@@ -15,6 +16,8 @@ import java.util.Objects;
 
 
 public class OrganizationDetailProcessor extends ResponseProcessor {
+
+    private MemberGrowthChartJSParser memberGrowthChartJSParser = new MemberGrowthChartJSParser();
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
@@ -54,6 +57,7 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
             organizationDetail = this.organization.getOrganizationDetail();
         } else organizationDetail = new OrganizationDetail();
 
+        this.organization.addMemberAmountHistory(organization.getMembers().getTotalCount());
         this.organization.setOrganizationDetail(
                 organizationDetail.setName(organization.getName())
                         .setDescription(organization.getDescription())
@@ -64,6 +68,7 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
                         .setNumOfMembers(organization.getMembers().getTotalCount())
                         .setNumOfRepositories(organization.getRepositories().getTotalCount())
                         .setNumOfTeams(organization.getTeams().getTotalCount())
-                        .addMemberAmountHistory(organization.getMembers().getTotalCount()));
+                        .setMemberAmountHistory(this.memberGrowthChartJSParser.parseInputToChartJSData(this.organization.getMemberAmountHistory())));
+
     }
 }
