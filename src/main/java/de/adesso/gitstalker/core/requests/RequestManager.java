@@ -5,6 +5,7 @@ import de.adesso.gitstalker.core.objects.Query;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Accessors(chain = true)
 @Setter
 @NoArgsConstructor
+@Service
 public class RequestManager {
 
     private String organizationName;

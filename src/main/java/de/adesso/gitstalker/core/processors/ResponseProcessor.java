@@ -183,23 +183,10 @@ public abstract class ResponseProcessor {
     private void checkIfOrganizationUpdateIsFinished(OrganizationWrapper organization, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         if (organization.getFinishedRequests().size() == RequestType.values().length) {
             organization.setLastUpdateTimestamp(new Date());
-            this.removeFinishedResponseProcessors(organization.getOrganizationName());
             processingRepository.deleteByInternalOrganizationName(organization.getOrganizationName());
             logger.info("Complete Update Cost: " + organization.getCompleteUpdateCost());
         }
         organizationRepository.save(organization);
-    }
-
-    private void removeFinishedResponseProcessors(String organizationName) {
-        ResponseProcessorManager.organizationValidationProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.organizationDetailProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.memberIDProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.memberProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.memberPRProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.repositoryProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.teamProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.externalRepoProcessorHashMap.remove(organizationName);
-        ResponseProcessorManager.createdReposByMembersProcessorHashMap.remove(organizationName);
     }
 
     public boolean checkIfQueryIsLastOfRequestType(OrganizationWrapper organization, Query processingQuery, RequestType requestType, RequestRepository requestRepository) {

@@ -14,22 +14,27 @@ import de.adesso.gitstalker.core.resources.memberID_Resources.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 @Getter
 @Setter
+@Service
 public class MemberIDProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
     private ProcessingRepository processingRepository;
+
     private Query requestQuery;
     private OrganizationWrapper organization;
 
     private ArrayList<String> memberIDs = new ArrayList<>();
 
+    @Autowired
     public MemberIDProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -60,8 +65,9 @@ public class MemberIDProcessor extends ResponseProcessor {
         if (pageInfo.isHasNextPage()) {
             super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.MEMBER_ID, requestRepository);
         } else {
-            this.organization.addMemberIDs(this.memberIDs);
             this.generateNextRequestsBasedOnMemberIDs(this.memberIDs);
+            this.organization.addMemberIDs(this.memberIDs);
+            this.memberIDs.clear();
         }
     }
 

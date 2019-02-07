@@ -1,19 +1,11 @@
 package de.adesso.gitstalker.core.requests;
 
-import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.config.Config;
 import de.adesso.gitstalker.core.enums.RequestStatus;
 import de.adesso.gitstalker.core.exceptions.InvalidGithubAPITokenException;
 import de.adesso.gitstalker.core.exceptions.InvalidRequestContentException;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.objects.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import de.adesso.gitstalker.core.resources.createdReposByMembers.ResponseCreatedReposByMembers;
 import de.adesso.gitstalker.core.resources.externalRepo_Resources.ResponseExternalRepository;
 import de.adesso.gitstalker.core.resources.memberID_Resources.ResponseMemberID;
@@ -23,6 +15,10 @@ import de.adesso.gitstalker.core.resources.organisation_Resources.ResponseOrgani
 import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrganizationValidation;
 import de.adesso.gitstalker.core.resources.repository_Resources.ResponseRepository;
 import de.adesso.gitstalker.core.resources.team_Resources.ResponseTeam;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
@@ -103,6 +99,7 @@ public abstract class Request {
 
     /**
      * Processing of the request for validating an organization's name.
+     *
      * @param requestQuery Query used for the request
      * @param restTemplate RestTemplate created for the request
      * @param entity       Configuration for the request
@@ -217,7 +214,7 @@ public abstract class Request {
         this.setQueryResponseInRequestQuery(requestQuery, response, Objects.nonNull(response.getData()));
     }
 
-    private void setQueryResponseInRequestQuery(Query requestQuery, Response response, boolean isValidResponse){
+    private void setQueryResponseInRequestQuery(Query requestQuery, Response response, boolean isValidResponse) {
         if (isValidResponse) {
             requestQuery.setQueryResponse(response);
             requestQuery.setQueryStatus(RequestStatus.VALID_ANSWER_RECEIVED);

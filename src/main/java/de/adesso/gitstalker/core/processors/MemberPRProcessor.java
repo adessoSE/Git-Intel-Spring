@@ -9,10 +9,12 @@ import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.memberPR_Resources.*;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class MemberPRProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -24,6 +26,7 @@ public class MemberPRProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> pullRequestsDates = new HashMap<>();
     private HashMap<String, ArrayList<String>> memberPRRepoIDs = new HashMap<>();
 
+    @Autowired
     public MemberPRProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -49,7 +52,8 @@ public class MemberPRProcessor extends ResponseProcessor {
     /**
      * Creates the subsequent requests if it becomes clear during processing that information is still open in the section.
      * If finished the amount of external contributions is calculated and new requests are generated.
-     * @param pageInfo Contains information required to define whether requests are still outstanding.
+     *
+     * @param pageInfo         Contains information required to define whether requests are still outstanding.
      * @param organizationName Organization name for creating the appropriate request
      */
     private void processRequestForRemainingInformation(PageInfo pageInfo, String organizationName) {
@@ -59,6 +63,8 @@ public class MemberPRProcessor extends ResponseProcessor {
             organization.addMemberPRs(this.memberPRRepoIDs);
             this.processNumOfExternalRepoContributions();
             this.generateRequestsBasedOnMemberPR();
+            this.memberPRRepoIDs.clear();
+            this.pullRequestsDates.clear();
         }
     }
 
@@ -75,21 +81,22 @@ public class MemberPRProcessor extends ResponseProcessor {
      */
     private void generateRequestsBasedOnMemberPR() {
         Set<String> repoIDs = super.calculateExternalRepoContributions(this.organization).keySet();
-        if(!repoIDs.isEmpty()){
-        while (!repoIDs.isEmpty()) {
-            Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
-            List<String> targetList = new ArrayList<>(subSet);
-            this.requestRepository.save(new RequestManager()
-                    .setOrganizationName(this.requestQuery.getOrganizationName())
-                    .setRepoIDs(targetList)
-                    .generateRequest(RequestType.EXTERNAL_REPO));
-            repoIDs.removeAll(subSet);
-        }
+        if (!repoIDs.isEmpty()) {
+            while (!repoIDs.isEmpty()) {
+                Set<String> subSet = new HashSet<>(new ArrayList<>(repoIDs).subList(0, Math.min(9, repoIDs.size())));
+                List<String> targetList = new ArrayList<>(subSet);
+                this.requestRepository.save(new RequestManager()
+                        .setOrganizationName(this.requestQuery.getOrganizationName())
+                        .setRepoIDs(targetList)
+                        .generateRequest(RequestType.EXTERNAL_REPO));
+                repoIDs.removeAll(subSet);
+            }
         } else organization.addFinishedRequest(RequestType.EXTERNAL_REPO);
     }
 
     /**
      * Processes the response from the requests
+     *
      * @param responseData Response information from the requests
      */
     private void processQueryResponse(Data responseData) {
@@ -122,6 +129,7 @@ public class MemberPRProcessor extends ResponseProcessor {
 
     /**
      * Checks if the selected updatedDate is within one year.
+     *
      * @param updatedDate Date to check.
      * @return Boolean if it's within one year or not.
      */

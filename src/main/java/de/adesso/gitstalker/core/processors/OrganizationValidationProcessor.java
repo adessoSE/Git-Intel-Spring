@@ -10,16 +10,22 @@ import de.adesso.gitstalker.core.requests.RequestManager;
 import de.adesso.gitstalker.core.resources.organization_validation.Data;
 import de.adesso.gitstalker.core.resources.organization_validation.ResponseOrganizationValidation;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.Objects;
 
+@Service
 public class OrganizationValidationProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
     private ProcessingRepository processingRepository;
+
     private Query requestQuery;
     private OrganizationWrapper organization;
 
+    @Autowired
     public OrganizationValidationProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;

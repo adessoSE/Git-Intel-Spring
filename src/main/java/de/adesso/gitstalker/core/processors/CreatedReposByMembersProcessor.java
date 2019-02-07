@@ -16,6 +16,8 @@ import de.adesso.gitstalker.core.resources.createdReposByMembers.ResponseCreated
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +29,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
+@Service
 public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -37,6 +40,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
 
     private HashMap<String, ArrayList<Repository>> createdRepositoriesByMembers = new HashMap<>();
 
+    @Autowired
     public CreatedReposByMembersProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -65,6 +69,7 @@ public class CreatedReposByMembersProcessor extends ResponseProcessor {
     protected void checkIfRequestTypeIsFinished() {
         if (super.checkIfQueryIsLastOfRequestType(this.organization, this.requestQuery, RequestType.CREATED_REPOS_BY_MEMBERS, this.requestRepository)) {
             this.organization.addCreatedReposByMembers(createdRepositoriesByMembers);
+            this.createdRepositoriesByMembers.clear();
         }
     }
 

@@ -13,6 +13,8 @@ import de.adesso.gitstalker.core.resources.externalRepo_Resources.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,6 +26,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
+@Service
 public class ExternalRepoProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -34,6 +37,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
 
     private HashMap<String, Repository> repositoriesMap = new HashMap<>();
 
+    @Autowired
     public ExternalRepoProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -78,6 +82,7 @@ public class ExternalRepoProcessor extends ResponseProcessor {
                     }
                 }
             }
+            this.repositoriesMap.clear();
         }
     }
 

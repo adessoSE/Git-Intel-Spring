@@ -12,6 +12,8 @@ import de.adesso.gitstalker.core.resources.member_Resources.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +22,7 @@ import java.util.HashMap;
 
 @Getter
 @Setter
+@Service
 public class MemberProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
@@ -31,6 +34,7 @@ public class MemberProcessor extends ResponseProcessor {
     private HashMap<String, ArrayList<Calendar>> committedRepos = new HashMap<>();
     private HashMap<String, Member> members = new HashMap<>();
 
+    @Autowired
     public MemberProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -58,6 +62,8 @@ public class MemberProcessor extends ResponseProcessor {
         if (this.checkIfQueryIsLastOfRequestType(this.organization, this.requestQuery, RequestType.MEMBER, requestRepository)) {
             organization.addMembers(this.members);
             super.calculateInternalOrganizationCommitsChartJSData(organization, this.committedRepos);
+            this.committedRepos.clear();
+            this.members.clear();
         }
     }
 

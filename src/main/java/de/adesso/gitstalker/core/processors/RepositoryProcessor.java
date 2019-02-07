@@ -10,23 +10,27 @@ import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.repository_Resources.*;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
-
+@Service
 public class RepositoryProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
     private ProcessingRepository processingRepository;
+
     private Query requestQuery;
     private OrganizationWrapper organization;
 
     private HashMap<String, Repository> repositories = new HashMap<>();
 
+    @Autowired
     public RepositoryProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -58,6 +62,7 @@ public class RepositoryProcessor extends ResponseProcessor {
             super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.REPOSITORY, requestRepository);
         } else {
             this.organization.addRepositories(this.repositories);
+            this.repositories.clear();
         }
     }
 

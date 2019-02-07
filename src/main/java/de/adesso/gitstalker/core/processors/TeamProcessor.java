@@ -11,21 +11,25 @@ import de.adesso.gitstalker.core.resources.team_Resources.NodesTeams;
 import de.adesso.gitstalker.core.resources.team_Resources.PageInfo;
 import de.adesso.gitstalker.core.resources.team_Resources.Teams;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+@Service
 public class TeamProcessor extends ResponseProcessor {
 
     private RequestRepository requestRepository;
     private OrganizationRepository organizationRepository;
     private ProcessingRepository processingRepository;
+
     private Query requestQuery;
     private OrganizationWrapper organization;
 
     private HashMap<String, Team> teams = new HashMap<>();
 
+    @Autowired
     public TeamProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
         this.requestRepository = requestRepository;
         this.organizationRepository = organizationRepository;
@@ -59,6 +63,7 @@ public class TeamProcessor extends ResponseProcessor {
             super.generateNextRequests(organizationName, pageInfo.getEndCursor(), RequestType.TEAM, requestRepository);
         } else {
             organization.addTeams(this.teams);
+            this.teams.clear();
         }
     }
 

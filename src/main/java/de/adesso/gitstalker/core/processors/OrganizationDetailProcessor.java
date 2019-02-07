@@ -11,24 +11,30 @@ import de.adesso.gitstalker.core.repositories.RequestRepository;
 import de.adesso.gitstalker.core.resources.organisation_Resources.Data;
 import de.adesso.gitstalker.core.resources.organisation_Resources.Organization;
 import de.adesso.gitstalker.core.resources.organisation_Resources.ResponseOrganization;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 
+@Component
 public class OrganizationDetailProcessor extends ResponseProcessor {
 
-    private MemberGrowthChartJSParser memberGrowthChartJSParser = new MemberGrowthChartJSParser();
-
-    private RequestRepository requestRepository;
+    private MemberGrowthChartJSParser memberGrowthChartJSParser;
     private OrganizationRepository organizationRepository;
+    private RequestRepository requestRepository;
     private ProcessingRepository processingRepository;
+
     private Query requestQuery;
     private OrganizationWrapper organization;
 
-    public OrganizationDetailProcessor(RequestRepository requestRepository, OrganizationRepository organizationRepository, ProcessingRepository processingRepository) {
-        this.requestRepository = requestRepository;
+    @Autowired
+    public OrganizationDetailProcessor(OrganizationRepository organizationRepository, RequestRepository requestRepository, ProcessingRepository processingRepository, MemberGrowthChartJSParser memberGrowthChartJSParser) {
         this.organizationRepository = organizationRepository;
+        this.requestRepository = requestRepository;
         this.processingRepository = processingRepository;
+        this.memberGrowthChartJSParser = memberGrowthChartJSParser;
     }
 
     /**

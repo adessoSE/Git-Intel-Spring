@@ -7,34 +7,31 @@ import de.adesso.gitstalker.core.enums.RequestType;
 import de.adesso.gitstalker.core.objects.OrganizationWrapper;
 import de.adesso.gitstalker.core.objects.Query;
 import de.adesso.gitstalker.core.processors.ResponseProcessor;
-import de.adesso.gitstalker.core.processors.ResponseProcessorManager;
+import de.adesso.gitstalker.core.processors.ResponseProcessorService;
 import de.adesso.gitstalker.core.repositories.OrganizationRepository;
 import de.adesso.gitstalker.core.repositories.ProcessingRepository;
 import de.adesso.gitstalker.core.repositories.RequestRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Transient;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ResponseProcessorTask extends ResponseProcessor {
 
     @Autowired
-    RequestRepository requestRepository;
+    private RequestRepository requestRepository;
 
     @Autowired
-    OrganizationRepository organizationRepository;
+    private OrganizationRepository organizationRepository;
 
     @Autowired
-    ProcessingRepository processingRepository;
+    private ProcessingRepository processingRepository;
 
-    private ResponseProcessorManager responseProcessorManager = new ResponseProcessorManager();
+    @Autowired
+    private ResponseProcessorService responseProcessorService;
 
     /**
-     * Automatic process for processing queries with valid responses. The query is passed in to the ResponseProcessorManager, which finds the appropriate processor.
+     * Automatic process for processing queries with valid responses. The query is passed in to the ResponseProcessorService, which finds the appropriate processor.
      * After processing, the query is deleted.
      */
     @Scheduled(fixedRate = Config.PROCESSING_RATE_IN_MS, initialDelay = Config.PROCESSING_DELAY_IN_MS)
@@ -47,7 +44,7 @@ public class ResponseProcessorTask extends ResponseProcessor {
 
         for (Query processableQuery : queriesToProcess) {
             if (this.checkIfNecessaryDataIsAvailable(processableQuery.getQueryRequestType(), processableQuery.getOrganizationName())) {
-                responseProcessorManager.processResponse(this.organizationRepository, this.requestRepository, this.processingRepository, processableQuery);
+                responseProcessorService.processResponse(processableQuery);
                 requestRepository.delete(processableQuery);
             } else continue;
         }

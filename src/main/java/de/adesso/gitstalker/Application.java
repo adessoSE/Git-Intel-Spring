@@ -1,22 +1,19 @@
 package de.adesso.gitstalker;
 
-import de.adesso.gitstalker.core.REST.OrganizationController;
 import de.adesso.gitstalker.core.Tasks.OrganizationUpdateTask;
 import de.adesso.gitstalker.core.Tasks.RequestProcessorTask;
 import de.adesso.gitstalker.core.Tasks.ResponseProcessorTask;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import de.adesso.gitstalker.core.repositories.RequestRepository;
 
 @SpringBootApplication
 @EnableMongoRepositories("de/adesso/gitstalker/core/repositories")
 @EnableScheduling
-@ComponentScan(basePackageClasses = OrganizationController.class)
+@ComponentScan(basePackages = "de.adesso.gitstalker.core")
 public class Application {
 
     public static void main(String[] args) {
@@ -41,7 +38,7 @@ public class Application {
     @Bean
     public RequestProcessorTask requestProcessorTask() {
         return new RequestProcessorTask();
-}
+    }
 
     /**
      * Initialization of the Response Task for processing the request response data of the queries.
