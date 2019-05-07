@@ -46,8 +46,8 @@ public class MemberIDProcessor extends ResponseProcessor {
         Data responseData = ((ResponseMemberID) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
 
-        this.processQueryResponse(responseData.getOrganization().getMembers());
-        this.processRequestForRemainingInformation(responseData.getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
+        this.processQueryResponse(responseData.getOrganization().getMembersWithRole());
+        this.processRequestForRemainingInformation(responseData.getOrganization().getMembersWithRole().getPageInfo(), this.requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.processingRepository, organization, requestQuery, RequestType.MEMBER_ID);
     }
 

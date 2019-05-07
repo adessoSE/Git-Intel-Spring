@@ -16,7 +16,7 @@ public class Organization {
     private String githubUrl;
     private String avatarUrl;
     private String description;
-    private Members members;
+    private Members membersWithRole;
     private Teams teams;
     private Repositories repositories;
 }

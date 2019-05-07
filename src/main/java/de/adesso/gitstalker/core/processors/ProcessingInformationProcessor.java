@@ -100,7 +100,7 @@ public class ProcessingInformationProcessor {
     }
 
     private int calculateTotalCountOfNeededRequests(Organization organization) {
-        int memberTotalCount = organization.getMembers().getTotalCount();
+        int memberTotalCount = organization.getMembersWithRole().getTotalCount();
         int teamTotalCount = organization.getTeams().getTotalCount();
         int repositoriesTotalCount = organization.getRepositories().getTotalCount();
 

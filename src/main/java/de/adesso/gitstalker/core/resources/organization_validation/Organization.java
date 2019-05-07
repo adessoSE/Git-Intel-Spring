@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class Organization {
 
     private String name;
-    private Members members;
+    private Members membersWithRole;
     private Repositories repositories;
     private Teams teams;
 }

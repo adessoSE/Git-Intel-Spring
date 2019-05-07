@@ -18,7 +18,7 @@ public class OrganizationDetailRequestTest {
             "url \n" +
             "avatarUrl \n" +
             "description \n" +
-            "members(first: 1) {\n" +
+            "membersWithRole(first: 1) {\n" +
             "totalCount\n" +
             "}\n" +
             "teams(first: 1) {\n" +

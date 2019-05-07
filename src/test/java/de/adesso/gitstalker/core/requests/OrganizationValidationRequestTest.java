@@ -13,7 +13,7 @@ public class OrganizationValidationRequestTest {
     private String expectedGeneratedQueryContent = "query {\n" +
             "organization(login:\"adessoAG\") {\n" +
             "name\n" +
-            "members(first: 1) {\n" +
+            "membersWithRole(first: 1) {\n" +
             "totalCount\n" +
             "}\n" +
             "repositories(first: 1) {\n" +

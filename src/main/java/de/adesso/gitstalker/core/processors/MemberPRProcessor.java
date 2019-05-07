@@ -42,7 +42,7 @@ public class MemberPRProcessor extends ResponseProcessor {
         Data responseData = ((ResponseMemberPR) this.requestQuery.getQueryResponse()).getData();
         super.updateRateLimit(responseData.getRateLimit(), requestQuery.getQueryRequestType());
         this.processQueryResponse(responseData);
-        this.processRequestForRemainingInformation(responseData.getOrganization().getMembers().getPageInfo(), this.requestQuery.getOrganizationName());
+        this.processRequestForRemainingInformation(responseData.getOrganization().getMembersWithRole().getPageInfo(), this.requestQuery.getOrganizationName());
         super.doFinishingQueryProcedure(this.requestRepository, this.organizationRepository, this.processingRepository, organization, requestQuery, RequestType.MEMBER_PR);
     }
 
@@ -93,7 +93,7 @@ public class MemberPRProcessor extends ResponseProcessor {
      * @param responseData Response information from the requests
      */
     private void processQueryResponse(Data responseData) {
-        Members members = responseData.getOrganization().getMembers();
+        Members members = responseData.getOrganization().getMembersWithRole();
         for (NodesMember nodes : members.getNodes()) {
             for (NodesPR pullRequests : nodes.getPullRequests().getNodes()) {
                 if (!pullRequests.getRepository().isFork() && checkIfPullRequestIsActiveSinceOneYear(pullRequests.getUpdatedAt().getTime())) {

@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Organization {
 
-    private Members members;
+    private Members membersWithRole;
 }

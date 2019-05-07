@@ -22,7 +22,7 @@ public class MemberPRRequest {
          */
         this.query = "query {\n" +
                 "organization(login:\"" + organizationName + "\") {\n" +
-                "members(first: 100, after: " + endCursor + ") {\n" +
+                "membersWithRole(first: 100, after: " + endCursor + ") {\n" +
                 "pageInfo {\n" +
                 "hasNextPage\n" +
                 "endCursor\n" +

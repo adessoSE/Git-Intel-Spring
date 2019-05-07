@@ -57,7 +57,7 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
             organizationDetail = this.organization.getOrganizationDetail();
         } else organizationDetail = new OrganizationDetail();
 
-        this.organization.addMemberAmountHistory(organization.getMembers().getTotalCount());
+        this.organization.addMemberAmountHistory(organization.getMembersWithRole().getTotalCount());
         this.organization.setOrganizationDetail(
                 organizationDetail.setName(organization.getName())
                         .setDescription(organization.getDescription())
@@ -65,7 +65,7 @@ public class OrganizationDetailProcessor extends ResponseProcessor {
                         .setGithubURL(organization.getGithubUrl())
                         .setLocation(organization.getLocation())
                         .setAvatarURL(organization.getAvatarUrl())
-                        .setNumOfMembers(organization.getMembers().getTotalCount())
+                        .setNumOfMembers(organization.getMembersWithRole().getTotalCount())
                         .setNumOfRepositories(organization.getRepositories().getTotalCount())
                         .setNumOfTeams(organization.getTeams().getTotalCount())
                         .setMemberAmountHistory(this.memberGrowthChartJSParser.parseInputToChartJSData(this.organization.getMemberAmountHistory())));

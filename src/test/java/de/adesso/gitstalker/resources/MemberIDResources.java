@@ -9,7 +9,7 @@ public class MemberIDResources {
     public String getExpectedGeneratedQueryContent() {
         return "query {\n" +
                 "organization(login: \"adessoAG\") {\n" +
-                "members(first: 100 after: testEndCursor) {\n" +
+                "membersWithRole(first: 100 after: testEndCursor) {\n" +
                 "pageInfo {\n" +
                 "hasNextPage\n" +
                 "endCursor\n" +
