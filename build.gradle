@@ -20,6 +20,7 @@ apply plugin: 'io.spring.dependency-management'
 bootJar {
     baseName = 'gitstalker-datapull'
     version = '0.1.0'
+    launchScript()
 }
 
 repositories {
