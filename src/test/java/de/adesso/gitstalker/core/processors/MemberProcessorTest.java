@@ -64,7 +64,7 @@ public class MemberProcessorTest {
         assertEquals("https://avatars0.githubusercontent.com/u/91990?v=4", memberProcessor.getMembers().get("MDQ6VXNlcjkxOTkw").getAvatarURL());
     }
 
-    @Test
+    /*@Test
     public void checkIfInternalOrganizationCommitsAreProcessedCorrectlyAndMembersAreAssignedWhenQueryFinished() {
         //TODO: Test fertig schreiben. ChartJSData muss gespyt werden. Umschreiben dass Calendar gemockt werden kann.
         //Given
@@ -115,7 +115,7 @@ public class MemberProcessorTest {
         //Then
         assertTrue(organizationWrapper.getFinishedRequests().contains(RequestType.MEMBER));
         assertEquals(memberHashMap, organizationWrapper.getMembers());
-    }
+    }*/
 
     @Test
     public void checkIfRequestRepositoryIsAssignedCorrectly() {
