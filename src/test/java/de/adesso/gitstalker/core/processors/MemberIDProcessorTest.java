@@ -44,7 +44,7 @@ public class MemberIDProcessorTest {
         Mockito.when(organizationRepository.findByOrganizationName("adessoAG")).thenReturn(organizationWrapper);
         this.memberIDProcessor = new MemberIDProcessor(this.requestRepository, this.organizationRepository, processingRepository);
     }
-
+/*
     @Test
     public void checkIfMemberIDsAreProcessedCorrectly() {
         memberIDProcessor.processQueryResponse(this.responseMemberID.getData().getOrganization().getMembers());
@@ -64,7 +64,7 @@ public class MemberIDProcessorTest {
 
         //Then (Total processedMemberIDs: 79)
         verify(requestRepository, times(158)).save(Mockito.any(Query.class));
-    }
+    }*/
 
     @Test
     public void checkIfRequestForRemainingInformationWillBeGenerated() {

@@ -1,0 +1,89 @@
+<div class="container-fluid" *ngIf="statusCode === 200">
+
+  <!--Search and sort functionality-->
+  <div class="search-container">
+    <form class="form-inline float-right">
+      <input type="text" class="form-control " placeholder="Search Repository" #searchBox (keyup)="search(searchBox.value)">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-search"></i>
+      </button>
+    </form>
+    <!-- optional: 
+    <div class="float-left mr-3">
+      <h4>Activities: Last 7 days.</h4>
+    </div>
+    -->
+    <div class="dropdown float-right mr-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+        Sort by: {{sortByTag}}
+      </button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="sortByAlphabet()">Alphabet</button>
+        <button class="dropdown-item" (click)="sortByCommits()">Commits</button>
+        <button class="dropdown-item" (click)="sortByIssues()">Issues</button>
+        <button class="dropdown-item" (click)="sortByForks()">Forks</button>
+        <button class="dropdown-item" (click)="sortByPullRequests()">Pull Requests</button>
+        <button class="dropdown-item" (click)="sortByLicense()">License</button>
+        <button class="dropdown-item" (click)="sortByStars()">Stars</button>
+      </div>
+    </div>
+  </div>
+
+  <!--Cards displaying Repositories and Repository info-->
+  <div class="row justify-content-center ">
+    <!-- Repositories -->
+    <div class="col-md-12 m-3" *ngFor="let repo of repositories">
+      <div class="card border-primary component-card">
+        <a href="{{repo.url}}" target="_blank">
+          <div class="card-body">
+            <div class="card-title">
+              <h4>{{repo.name}}
+                <ul class="float-right list-inline">
+                  <li class="mr-5">
+                    <i class="fa fa-code list-inline-item"></i>
+                    <!--Only insert '/' after an element if it is not the last one-->
+                    <span>{{repo.programmingLanguage}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-code-fork list-inline-item"></i>
+                    <span>{{repo.forks}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-star list-inline-item"></i>
+                    <span>{{repo.stars}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-list-alt list-inline-item"></i>
+                    <span>{{repo.license}}</span>
+                  </li>
+                </ul>
+              </h4>
+              <p>{{repo.description}}</p>
+            </div>
+            <div class="card-text pb-3">
+              <p>Activity in the last 7 Days:</p>
+              <div class="team-info-container">
+                <span>
+                  <i class="fa fa-stop-circle mr-3 fa-3x"></i>
+                  <span class="text-primary">{{repo.amountPreviousCommits}}</span> Commits</span>
+                <span>
+                  <i class="fa fa-question-circle-o mr-3 fa-3x"></i>
+                  <span class="text-primary">{{repo.amountPreviousPullRequests}}</span> Pull Requests</span>
+                <span>
+                  <i class="fa fa-exclamation-circle mr-3 fa-3x"></i>
+                  <span class="text-primary">{{repo.amountPreviousIssues}}</span> Issues</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Processing organization -->
+<app-processing *ngIf="statusCode === 202" [processingInformation]=processingInformation [progressBarPercentage]=progressBarPercentage></app-processing>
+
+
+<!-- Invalid Organization -->
+<app-error *ngIf="statusCode === 400" [error]=error></app-error>

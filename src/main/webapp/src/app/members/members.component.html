@@ -1,0 +1,69 @@
+<div class="container-fluid" *ngIf="statusCode === 200">
+
+  <!-- Search and sort functionality -->
+  <div class="search-container mb-3">
+    <form class="form-inline float-right">
+      <input type="text" class="form-control" placeholder="Search Member" #searchBox (keyup)="search(searchBox.value)">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-search"></i>
+      </button>
+    </form>
+    <div class="dropdown float-right mr-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+        Sort by: {{sortByTag}}
+      </button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="sortByAlphabet()">Alphabet</button>
+        <button class="dropdown-item" (click)="sortByCommits()">Commits</button>
+        <button class="dropdown-item" (click)="sortByPullRequests()">Pull Requests</button>
+        <button class="dropdown-item" (click)="sortByIssues()">Issues</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards displaying users and user info -->
+  <div class="row justify-content-center pb-5">
+    <!-- Members -->
+    <div class="col-md-4 mb-3" *ngFor="let member of members">
+      <div class="card border-primary component-card">
+        <a routerLink={{member.username}}>
+          <div class="card-body">
+            <!-- If a user does not have a 'name', display the 'username' instead-->
+            <h3 class="card-title">{{member.name != null ? member.name : member.username}}
+              <img class="profile-pic" src="{{member.avatarURL}}" alt="{{member.name}}'s github profile picture'">
+            </h3>
+            <div class="card-text">
+              <p>Activity Last 7 Days:</p>
+              <ul>
+                <li>
+                  <div class="small-member-icon">
+                    <i class="fa fa-stop-circle"></i>
+                  </div>
+                  <span class="text-primary"> {{member.amountPreviousCommits}}</span> Commits
+                </li>
+                <li>
+                  <div class="small-member-icon">
+                    <i class="fa fa-code-fork"></i>
+                  </div>
+                  <span class="text-primary"> {{member.amountPreviousPullRequests}}</span> Pull Requests
+                </li>
+                <li>
+                  <div class="small-member-icon">
+                    <i class="fa fa-exclamation-circle"></i>
+                  </div>
+                  <span class="text-primary"> {{member.amountPreviousIssues}}</span> Issues (Closed/Opened)
+                </li>
+              </ul>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Processing organization -->
+<app-processing *ngIf="statusCode === 202" [processingInformation]=processingInformation [progressBarPercentage]=progressBarPercentage></app-processing>
+
+<!-- Invalid Organization -->
+<app-error *ngIf="statusCode === 400" [error]=error></app-error>

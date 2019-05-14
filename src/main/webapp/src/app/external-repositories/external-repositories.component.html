@@ -1,0 +1,91 @@
+<div class="container-fluid">
+
+  <!--Search and sort functionality-->
+  <div class="search-container">
+    <form class="form-inline float-right">
+      <input type="text" class="form-control" placeholder="Search Repository or Member" #searchBox (keyup)="search(searchBox.value)">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-search"></i>
+      </button>
+    </form>
+    <div class="dropdown float-right mr-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+        Sort by: {{sortByTag}}
+      </button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="sortByAlphabet()">Alphabet</button>
+        <button class="dropdown-item" (click)="sortByCommits()">Commits</button>
+        <button class="dropdown-item" (click)="sortByIssues()">Issues</button>
+        <button class="dropdown-item" (click)="sortByForks()">Forks</button>
+        <button class="dropdown-item" (click)="sortByPullRequests()">Pull Requests</button>
+        <button class="dropdown-item" (click)="sortByLicense()">License</button>
+        <button class="dropdown-item" (click)="sortByStars()">Stars</button>
+      </div>
+    </div>
+  </div>
+
+  <!--Cards displaying teams and team info-->
+  <div class="row justify-content-center  ">
+    <!-- Teams -->
+    <div class="col-md-12 m-3" *ngFor="let repo of extRepos">
+      <div class="card border-primary component-card">
+        <!-- Contributing user -->
+        <div class="float-right list-inline p-3">
+          <span class="badge badge-info" style="display: inline-block;">
+            <i class="fa fa-user mr-4 fa"></i>
+            <span *ngFor="let user of repo.contributors, let last = last">
+              <a href="{{user.githubURL}}" target="_blank" id="userLink">{{user.username}}</a>
+              <span *ngIf="!last">, </span>
+            </span>
+          </span>
+        </div>
+        <a href="{{repo.url}}" target="_blank">
+          <div class="card-body">
+            <div class="card-title">
+              <h4>{{repo.name}}
+                <ul class="float-right list-inline">
+                  <li class="mr-5">
+                    <i class="fa fa-code list-inline-item"></i>
+                    <!--Only insert '/' after an element if it is not the last one-->
+                    <span>{{repo.programmingLanguage}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-code-fork list-inline-item"></i>
+                    <span>{{repo.forks}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-star list-inline-item"></i>
+                    <span>{{repo.stars}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-list-alt list-inline-item"></i>
+                    <span>{{repo.license}}</span>
+                  </li>
+                </ul>
+              </h4>
+              <p>{{repo.description}}</p>
+            </div>
+
+            <div class="card-text pb-3">
+              <p>Activity last 7 days:</p>
+              <div class="team-info-container">
+                <span>
+                  <i class="fa fa-stop-circle mr-3 fa-3x"></i>
+                  <span class="text-primary">{{repo.amountPreviousCommits}}</span> Commits
+                </span>
+                <span>
+                  <i class="fa fa-question-circle-o mr-3 fa-3x"></i>
+                  <span class="text-primary">{{repo.amountPreviousPullRequests}}</span> Pull Requests
+                </span>
+                <span>
+                  <i class="fa fa-exclamation-circle mr-3 fa-3x"></i>
+                  <span class="text-primary">{{repo.amountPreviousIssues}}</span> Issues
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>

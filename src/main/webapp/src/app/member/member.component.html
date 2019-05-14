@@ -1,0 +1,102 @@
+<div class="container-fluid" *ngIf="statusCode === 200">
+  <div class="card border-primary col-md-12  customContainer" style="margin-bottom: 2%">
+    <div class="row">
+      <div class="col-md-4" style="padding-left: 1.5%">
+        <h1>{{member.name}}</h1>
+        <h4>({{member.username}})</h4>
+      </div>
+      <span class="col-md-4">
+        <a href="{{member.githubURL}}" target="_blank ">
+          <i class="fa fa-github fa-4x " style="padding-right: 10px; "></i>{{member.githubURL}}
+        </a>
+      </span>
+      <span class="col-md-4">
+        <a href="{{member.avatarURL}}" target="_blank">
+          <img class="img-responsive img-circle float-right " width="50% " height="50% " src="{{member.avatarURL}}"
+            class="profile-pic">
+        </a>
+      </span>
+    </div>
+
+    <div class="card border-secondary col-md-12  " style="border : 0; ">
+      <div class="row ">
+        <div class="col-md-4 ">
+          <div class="member-icon">
+            <i class="fa fa-stop-circle fa-3x "></i>
+          </div>
+          <span class="text-primary">{{member.amountPreviousCommits}}</span> Commits
+        </div>
+
+        <div class="col-md-4 ">
+          <div class="member-icon">
+            <i class="fa fa-code-fork fa-3x "></i>
+          </div>
+          <span class="text-primary">{{member.amountPreviousPullRequests}}</span> Pull Requests
+        </div>
+
+        <div class="col-md-4 ">
+          <div class="member-icon">
+            <i class="fa fa-exclamation-circle fa-3x "></i>
+          </div>
+          <span class="text-primary"> {{member.amountPreviousIssues}}</span> Issues (Closed/Opened)
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row col-md-12 customContainer">
+    <graph class="col-md-4 " [chartData]="chartCommits" [organization]="organization"></graph>
+    <graph class="col-md-4 " [chartData]="chartPRs" [organization]="organization"></graph>
+    <graph class="col-md-4 " [chartData]="chartIssues" [organization]="organization"></graph>
+  </div>
+
+  <div class="row col-md-12 customContainer">
+    <div class="col-md-4">
+      <h2>Latest Commits - <span class="text-primary">{{commitsTableData.length}}</span></h2>
+      <table class="table table-hover">
+        <tr>
+          <th>Date</th>
+          <th>Commit</th>
+        </tr>
+        <tr *ngFor="let commit of commitsTableData">
+          <td>{{commit.date.toUTCString()}}</td>
+          <td><a href="{{commit.value}}" target="_blank" class="text-primary">{{commit.value.substring(commit.value.indexOf("commit/")+7)}}</a></td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <h2>Latest Pull Requests - <span class="text-primary">{{pullRequestsTableData.length}}</span></h2>
+      <table class="table table-hover">
+        <tr>
+          <th>Date</th>
+          <th>Pull Request</th>
+        </tr>
+        <tr *ngFor="let pr of pullRequestsTableData">
+          <td>{{pr.date.toUTCString()}}</td>
+          <td><a href="{{pr.value}}" target="_blank" class="text-primary">{{pr.value.substring(pr.value.indexOf("pull/")+5)}}</a></td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <h2>Latest Issues - <span class="text-primary">{{issuesTableData.length}}</span></h2>
+      <table class="table table-hover">
+        <tr>
+          <th>Date</th>
+          <th>Issue</th>
+        </tr>
+        <tr *ngFor="let issue of issuesTableData">
+          <td>{{issue.date.toUTCString()}}</td>
+          <td><a href="{{issue.value}}" target="_blank" class="text-primary">{{issue.value.substring(issue.value.indexOf("issues/")+7)}}</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Processing organization -->
+<app-processing *ngIf="statusCode === 202" [processingInformation]=processingInformation [progressBarPercentage]=progressBarPercentage></app-processing>
+
+<!-- Invalid Organization -->
+<app-error *ngIf="statusCode === 400" [error]=error></app-error>

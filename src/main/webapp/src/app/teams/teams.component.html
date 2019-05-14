@@ -1,0 +1,60 @@
+<div class="container-fluid" *ngIf="statusCode === 200">
+
+  <!--Search and sort functionality-->
+  <div class="search-container mb-5">
+    <form class="form-inline float-right">
+      <input type="text" class="form-control " placeholder="Search Team" #searchBox (keyup)="search(searchBox.value)">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-search"></i>
+      </button>
+    </form>
+    <div class="dropdown float-right mr-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+        Sort by: {{sortByTag}}
+      </button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="sortByAlphabet()">Alphabet</button>
+        <button class="dropdown-item" (click)="sortByMembers()">Members</button>
+        <button class="dropdown-item" (click)="sortByRepositories()">Repositories</button>
+      </div>
+    </div>
+  </div>
+
+  <!--Cards displaying teams and team info-->
+  <div class="row justify-content-center  ">
+    <!-- Teams -->
+    <div class="col-md-12 m-3" *ngFor="let team of teams">
+      <div class="card border-primary component-card">
+        <a routerLink={{team.name}}>
+          <div class="card-body">
+            <div class="card-title">
+              <h4>{{team.name}}
+                <picture style="float: right;">
+                  <img src="{{team.avatarURL}}" alt="The team's github profile picture" class="profile-pic">
+                </picture>
+              </h4>
+              <p>{{team.description}}</p>
+            </div>
+            <div class="card-text pb-3">
+              <div class="team-info-container">
+                <span>
+                  <i class="fa fa-users mr-3 fa-3x"></i>
+                  <span class="text-primary">{{team.teamMembers.length}}</span> Members</span>
+                <span>
+                  <i class="fa fa-book mr-3 fa-3x"></i>
+                  <span class="text-primary">{{team.teamRepositories.length}}</span> Repositories</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Processing organization -->
+<app-processing *ngIf="statusCode === 202" [processingInformation]=processingInformation [progressBarPercentage]=progressBarPercentage></app-processing>
+
+
+<!-- Invalid Organization -->
+<app-error *ngIf="statusCode === 400" [error]=error></app-error>

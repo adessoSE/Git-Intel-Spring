@@ -1,0 +1,18 @@
+.searchForm {
+    width: 20%;
+    margin-right: 20%;
+}
+
+.tabBar {
+    margin-top: -2%;
+    background: #eeeeee;
+}
+
+.close {
+    padding-left: 10px;
+}
+
+.active {
+    background: #ffff !important;
+    font-weight: bold;
+}

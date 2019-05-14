@@ -1,0 +1,13 @@
+<ng-container *ngIf="showNavigation">
+  <div class="breadcrumb">
+    <h2>
+      <button type="button" class="btn btn-link" style="vertical-align:middle" (click)="goBack()">
+        <i class="fa fa-2x fa-arrow-left"></i>
+      </button>
+
+      <li class="nav-item" *ngFor="let route of routeHistory" style="display: inline-block;">
+        <a class="nav-link" [routerLink]="route">/ {{route | lastWord | capitalize}}</a>
+      </li><span *ngIf="numOfEntities > 0">({{numOfEntities}})</span>
+    </h2>
+  </div>
+</ng-container>

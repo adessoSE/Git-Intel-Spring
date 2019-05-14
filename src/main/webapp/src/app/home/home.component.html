@@ -1,0 +1,14 @@
+<!-- Search history -->
+<div class="jumbotron jumbotron-fluid vertical-center" style="align-items: center; margin: 0; background-color: white">
+  <div class="container w-75">
+    <h1 class="display-4 text-center">Welcome!</h1>
+    <p class="lead text-center">This is the place where your data will be displayed.</p>
+    <p class="lead text-center"> Just enter an organisation's name and hit <span class="label label-success">Gather Intel!</span>.</p>
+    <div class="alert alert-info col-md-4 offset-md-4" role="alert">
+      <h2 class="text-center">Search History</h2>
+      <ul class="list-group text-center" *ngFor="let org of searchHistory">
+        <li class="list-group-item"><button type="button" class="btn btn-secondary" (click)="openNewTab(org)">{{org}}</button></li>
+      </ul>
+    </div>
+  </div>
+</div>

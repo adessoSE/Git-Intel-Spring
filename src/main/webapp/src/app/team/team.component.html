@@ -1,0 +1,121 @@
+<div class="container-fluid" *ngIf="statusCode === 200">
+  <!-- Search and sort functionality -->
+  <div class="search-container">
+
+    <!-- Search -->
+    <form class="form-inline float-right">
+      <input type="text" class="form-control " placeholder="Search Member or Repo" #searchBox (keyup)="search(searchBox.value)">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-search"></i>
+      </button>
+    </form>
+
+    <!-- Sort -->
+    <div class="dropdown float-right mr-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+        Sort by: {{sortByTag}}
+      </button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="sortByAlphabet()">Alphabet</button>
+        <button class="dropdown-item" (click)="sortByCommits()">Commits</button>
+        <button class="dropdown-item" (click)="sortByPullRequests()">Pull Requests</button>
+        <button class="dropdown-item" (click)="sortByIssues()">Issues</button>
+      </div>
+    </div>
+
+    <!-- Check Boxes -->
+    <form class="form-inline float-right mr-3">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input #cbRepos type="checkbox" name="size" (change)="0" checked="">&nbsp;Repositories
+        </label>
+      </div>
+    </form>
+
+    <form class="form-inline float-right mr-3">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input #cbMembers type="checkbox" name="size" (change)="0" checked="">&nbsp;Members
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <!-- Cards displaying users and user info -->
+  <h3>Team Members</h3>
+  <div class="row justify-content-center " *ngIf="cbMembers.checked">
+    <!-- Members -->
+    <div class="col-md-4 " *ngFor="let member of teamMembers">
+      <div class="card border-primary component-card">
+        <a routerLink={{member.username}}>
+          <div class="card-body">
+            <h4 class="card-title">{{member.name != null ? member.name : member.username}}
+              <img class="profile-pic" src="{{member.avatarURL}}" alt="{{member.name}}'s github profile picture'">
+              <br>
+              <h5>({{member.username}})</h5>
+            </h4>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <h3>Team Repositories</h3>
+  <!--Cards displaying Repositories and Repository info-->
+  <div class="row justify-content-center " *ngIf="cbRepos.checked">
+    <!-- Repositories -->
+    <div class="col-md-12 " *ngFor="let repo of teamRepositories">
+
+      <div class="card border-primary component-card">
+        <a href="{{repo.url}}" target="_blank">
+          <div class="card-body">
+            <div class="card-title">
+              <h4>{{repo.name}}
+                <ul class="float-right list-inline">
+                  <li class="mr-5">
+                    <i class="fa fa-code list-inline-item"></i>
+                    <!--Only insert '/' after an element if it is not the last one-->
+                    <span>{{repo.programmingLanguage}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-code-fork list-inline-item"></i>
+                    <span>{{repo.forks}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-star list-inline-item"></i>
+                    <span>{{repo.stars}}</span>
+                  </li>
+                  <li class="mr-5">
+                    <i class="fa fa-list-alt list-inline-item"></i>
+                    <span>{{repo.license}}</span>
+                  </li>
+                </ul>
+              </h4>
+              <p>{{repo.description}}</p>
+            </div>
+            <div class="card-text pb-3">
+              <div class="team-info-container">
+                <span>
+                  <i class="fa fa-stop-circle mr-3 fa-3x"></i>
+                  <span class="text-primary">{{sumOf(repo.previousCommits.chartJSDataset)}}</span> Commits</span>
+                <span>
+                  <i class="fa fa-question-circle-o mr-3 fa-3x"></i>
+                  <span class="text-primary">{{sumOf(repo.previousPullRequests.chartJSDataset)}}</span> Pull Requests</span>
+                <span>
+                  <i class="fa fa-exclamation-circle mr-3 fa-3x"></i>
+                  <span class="text-primary">{{sumOf(repo.previousIssues.chartJSDataset)}}</span> Issues</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Processing organization -->
+<app-processing *ngIf="statusCode === 202" [processingInformation]=processingInformation [progressBarPercentage]=progressBarPercentage></app-processing>
+
+<!-- Invalid Organization -->
+<app-error *ngIf="statusCode === 400" [error]=error></app-error>

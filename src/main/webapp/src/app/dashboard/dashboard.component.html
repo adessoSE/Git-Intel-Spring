@@ -1,0 +1,78 @@
+<!-- Bootstrap legend: pb-5=padding-botom: 5, m-0=margin: 0 -->
+
+<div class="container-fluid w-75" *ngIf="statusCode === 200">
+
+  <!-- Company meta data -->
+  <div class="mt-5">
+
+    <div class="row">
+      <div class="col-md-4">
+        <span class="orga-name">{{organization.name}} |
+          <img width="100" class="img-fluid" src="{{organization.avatarURL}}" alt="{{organization.name}}'s github picture'">
+        </span>
+        <!-- Location -->
+        <p>
+          <i class="fa fa-map-marker fa-2x pb-5 mr-4"></i>{{organization.location}}</p>
+        <!-- Description -->
+        <p>
+          <i class="fa fa-paper-plane fa-1x mr-4"></i>{{organization.description}}.</p>
+      </div>
+      <!-- Website -->
+      <span class="col-md-4">
+        <a href="{{organization.websiteURL}}" target="_blank">
+          <i class="fa fa-globe fa-4x pr-3"></i>
+          <span class="metadata-link">Website</span>
+        </a>
+      </span>
+      <!-- Github -->
+      <span class="col-md-4">
+        <a class="m-0" href="{{organization.githubURL}}" target="_blank">
+          <i class="fa fa-github fa-4x pr-3"></i>
+          <span class="metadata-link">GitHub Repository</span>
+        </a>
+      </span>
+    </div>
+
+  </div>
+
+  <!-- Data tile components (Members, Repositories, Teams, ...) -->
+  <div class="row col-mb-12 justify-content-center mt-5">
+    <!-- Members -->
+    <app-tile link="members/" displayData="{{ organization.numOfMembers }}" title="Members" faIcon="user" class="col-md-6"></app-tile>
+    <!-- Teams -->
+    <app-tile link="teams/" displayData="{{ organization.numOfTeams }}" title="Teams" faIcon="users" class="col-md-6"></app-tile>
+  </div>
+  <div class="row col-mb-12 justify-content-center mt-5">
+    <!-- Repositories -->
+    <app-tile link="repositories/" displayData="{{ organization.numOfRepositories }}" title="Repositories" faIcon="book"
+      class="col-md-4"></app-tile>
+    <!-- External Repositories -->
+    <app-tile link="external-repositories/" displayData="{{ organization.numOfExternalRepoContributions }}" title="Ext. Repositories"
+      faIcon="location-arrow" class="col-md-4"></app-tile>
+    <!-- Member Repositories -->
+    <app-tile link="member-repositories/" displayData="{{ organization.numOfCreatedReposByMembers }}" title="Member Repositories"
+      faIcon="folder-open" class="col-md-4"></app-tile>
+  </div>
+  <div class="row col-mb-12">
+    <!-- Graphs -->
+    <div class="row justify-content-center mt-5">
+      <graph class="col-md-4" [chartData]="chartMembers" [organization]="organization.name"></graph>
+      <graph class="col-md-4" [chartData]="chartCommits" [organization]="organization.name"></graph>
+      <graph class="col-md-4" [chartData]="chartPRs" [organization]="organization.name"></graph>
+    </div>
+
+    <!-- Last Update -->
+    <span class="badge badge-warning w-100 m-5">
+      <i class="fa fa-clock-o pr-3"></i>
+      <span class="align-middle">
+        Last update: {{organization.lastUpdate | date:'MMM
+        d, y, h:mm'}}
+      </span>
+    </span>
+  </div>
+</div>
+
+<!-- Processing organization -->
+<app-processing *ngIf="statusCode === 202" [processingInformation]=processingInformation [progressBarPercentage]=progressBarPercentage></app-processing>
+
+<app-error *ngIf="statusCode === 400" [error]=error></app-error>

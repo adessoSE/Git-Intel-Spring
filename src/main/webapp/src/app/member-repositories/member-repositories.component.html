@@ -1,0 +1,76 @@
+<div class="container-fluid">
+
+    <!--Search and sort functionality-->
+    <div class="search-container">
+      <form class="form-inline float-right">
+        <input type="text" class="form-control " placeholder="Search Repository" #searchBox (keyup)="search(searchBox.value)">
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-search"></i>
+        </button>
+      </form>
+      <!-- optional: 
+      <div class="float-left mr-3">
+        <h4>Activities: Last 7 days.</h4>
+      </div>
+      -->
+      <div class="dropdown float-right mr-3">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+          Sort by: {{sortByTag}}
+        </button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" (click)="sortByAlphabet()">Alphabet</button>
+          <button class="dropdown-item" (click)="sortByForks()">Forks</button>
+          <button class="dropdown-item" (click)="sortByLicense()">License</button>
+          <button class="dropdown-item" (click)="sortByStars()">Stars</button>
+        </div>
+      </div>
+    </div>
+  
+    <!--Cards displaying Repositories and Repository info-->
+    <div class="row justify-content-center  ">
+      <!-- Repositories -->
+      <ng-container *ngFor="let repo of repositories">
+      <div class="col-md-12 m-3">
+        <div class="card border-primary component-card">
+        <!-- Contributing user -->
+        <div class="float-right list-inline p-3">
+            <span class="badge badge-info" style="display: inline-block;">
+              <i class="fa fa-user mr-4 fa"></i>
+              <span *ngFor="let user of repo.contributors, let last = last">
+                <a href="{{user.githubURL}}" target="_blank" id="userLink">{{user.username}}</a>
+                <span *ngIf="!last">, </span>
+              </span>
+            </span>
+          </div>
+          <a href="{{repo.url}}" target="_blank">
+            <div class="card-body">
+              <div class="card-title">
+                <h4>{{repo.name}}
+                  <ul class="float-right list-inline">
+                    <li class="mr-5">
+                      <i class="fa fa-code list-inline-item"></i>
+                      <!--Only insert '/' after an element if it is not the last one-->
+                      <span>{{repo.programmingLanguage}}</span>
+                    </li>
+                    <li class="mr-5">
+                      <i class="fa fa-code-fork list-inline-item"></i>
+                      <span>{{repo.forks}}</span>
+                    </li>
+                    <li class="mr-5">
+                      <i class="fa fa-star list-inline-item"></i>
+                      <span>{{repo.stars}}</span>
+                    </li>
+                    <li class="mr-5">
+                      <i class="fa fa-list-alt list-inline-item"></i>
+                      <span>{{repo.license}}</span>
+                    </li>
+                  </ul>
+                </h4>
+                <p>{{repo.description}}</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      </ng-container>
+    </div>

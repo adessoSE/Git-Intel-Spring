@@ -1,0 +1,44 @@
+<div class="jumbotron header m-0">
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Title -->
+      <div class="col-md-12 text-center">
+        <h1 class="display-3">
+          <a routerLink="home"><img src="../assets/logo.png" alt="Git-Intel-Logo" id="logo"></a>
+        </h1>
+      </div>
+    </div>
+    <div class="row">
+      <h2 class="col-md-12 text-center p-5">Every GitHub Organisation, every Detail.</h2>
+    </div>
+    <div class="row">
+      <!-- Search field -->
+      <div class="col-md-12 pb-5">
+        <form class="form-inline justify-content-center" style="padding-top: 1em;">
+          <input id="name" class="form-control mr-sm-2 searchForm" [ngClass]="{'is-invalid': isSearchInvalid}"
+            [(ngModel)]="organization" required minlength="4" name="search" placeholder="Type your organisation's name here..."
+            type="text" style="width: 35%;" #name="ngModel">
+          <button id="stalk" class="btn btn-success my-2 my-sm-0" (click)="onClickStalk(organization)"><b>Gather Intel!</b></button>
+        </form>
+        <div id="error" class="alert alert-danger text-center" role="alert" style="width: 35%; margin-top: 1em; margin-left: auto; margin-right: auto">
+          Invalid Organisation Name!
+          <button (click)="hideWarning(true)" type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<ul class="nav nav-tabs tabBar" style="margin-top: -3em">
+  <li class="nav-item" *ngFor="let tab of tabs; let idx = index">
+    <a class="nav-link" data-toggle="tab" [class.active]="idx === activeTabIdx && isHome === false" [routerLink]="tab.url"
+      (click)="setActiveTab(idx)" style="display: inline-block">
+      {{tab.name}}
+      <button (click)="closeTab(idx)" type="button" class="close" data-dismiss="alert" style="padding-left: 0.5em">&times;</button>
+    </a>
+  </li>
+</ul>

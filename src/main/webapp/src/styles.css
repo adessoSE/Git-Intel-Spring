@@ -1,0 +1,81 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "https://bootswatch.com/4/cerulean/bootstrap.min.css";
+
+/* Simple links everywhere */
+a, a:active {
+    color: inherit !important;
+    text-decoration:none !important;
+}
+
+.nav a {
+    background: rgba(255, 255, 255, 0.541)!important;
+}
+
+.nav-item > .active {
+    background: white!important;
+}
+
+.nav a:hover {
+    background: white!important;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.fa {
+    vertical-align: middle;
+}
+
+#logo {
+    margin-right: 10%;
+    width: 6.5em;
+    height: 3em;
+}
+
+.search-container {
+    width: 100%;
+    display: table;
+}
+
+.team-info-container {
+    width: 75%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-title {
+    margin-bottom: 2em;
+}
+
+.profile-pic {
+    float: right; 
+    width: 100px; 
+    height: 100px;
+    border-radius: 0.5em;
+    margin-bottom: 5%;
+}
+
+.member-icon {
+    display: inline-block;
+    padding-right: 5%;
+}
+
+.small-member-icon {
+    display: inline-block;
+    padding-right: 5%;
+    width: 10%;
+}
+
+#userLink:hover { 
+    color: #428bca !important;
+}
+
+table {
+    margin: 10px;
+}
+
+.customContainer {
+    padding-bottom: 2em;
+}
